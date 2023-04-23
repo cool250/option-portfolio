@@ -18,7 +18,6 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link")),
         dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link")),
         dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-5-link")),
-        dbc.NavItem(dbc.NavLink("Token", href="/oauth", id="page-6-link")),
     ],
     brand="MITRA",
     brand_href="#",
@@ -52,4 +51,4 @@ def render_page_content(pathname):
 port = int(os.environ.get('PORT', 8080)) 
 # Adding Host
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=port)
+    app.run(debug=True, port=port)

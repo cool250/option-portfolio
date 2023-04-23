@@ -11,7 +11,7 @@ logging.basicConfig(filename="app.log",
 VALID_USERNAME_PASSWORD_PAIRS = [
     ['hello', 'nishant']
 ]
-external_stylesheets=[dbc.themes.CERULEAN]
+external_stylesheets=[dbc.themes.FLATLY]
 
 # Since we're adding callbacks to elements that don't exist in the app.layout,
 # Dash will raise an exception to warn us that we might be
@@ -23,8 +23,6 @@ app = dash.Dash(
     external_stylesheets= external_stylesheets,
     suppress_callback_exceptions=True
 )
-
-app.config.suppress_callback_exceptions = True
 
 app.title = 'Options Tracker'
 # auth = dash_auth.BasicAuth(

@@ -16,7 +16,7 @@ from service.account_transactions import get_report
 TOP_COLUMN = html.Div(
     [
         html.H5(children="Reports"),
-        html.Hr(className="my-2"),
+        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(
@@ -30,7 +30,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -43,7 +42,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -56,7 +54,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ],
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -73,7 +70,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ],
                     ),
-                    className="mb-2"
                 ),
             ],
         ),
@@ -86,7 +82,7 @@ TOP_COLUMN = html.Div(
             className="d-md-flex justify-content-md-end mt-3",
         ),
     ],
-    className="h-100 p-5 bg-light border",
+    className="p-3 bg-light border",
 )
 
 SEARCH_RESULT = html.Div(

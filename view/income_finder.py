@@ -11,7 +11,7 @@ from utils.constants import screener_list
 TOP_COLUMN = html.Div(
     [
         html.H5(children="Income Finder"),
-        html.Hr(className="my-2"),
+        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(
@@ -29,7 +29,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -45,7 +44,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-1"
                 ),
                 dbc.Col(
                     html.Div(
@@ -61,7 +59,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-3"
                 ),
                 dbc.Col(
                     html.Div(
@@ -70,9 +67,9 @@ TOP_COLUMN = html.Div(
                             dbc.Input(type="text", id="ticker", placeholder="Select for watchlist or Enter Ticker",),
                         ]
                     ),
-                    className="mb-3"
                 ),
             ],
+            className="p-3",
         ),
         dbc.Row(
             [
@@ -85,7 +82,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -96,7 +92,6 @@ TOP_COLUMN = html.Div(
                             ),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -105,7 +100,6 @@ TOP_COLUMN = html.Div(
                             dbc.Input(type="text", id="min_delta", placeholder="0.25",),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -114,7 +108,6 @@ TOP_COLUMN = html.Div(
                             dbc.Input(type="text", id="max_delta", placeholder="0.35",),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -123,7 +116,6 @@ TOP_COLUMN = html.Div(
                             dbc.Input(type="text", id="premium", placeholder="2",),
                         ]
                     ),
-                    className="mb-2"
                 ),
                 dbc.Col(
                     html.Div(
@@ -132,7 +124,6 @@ TOP_COLUMN = html.Div(
                             dbc.Input(type="text", id="moneyness", placeholder="5",),
                         ]
                     ),
-                    className="mb-2"
                 ),
             ]
         ),
@@ -143,13 +134,7 @@ TOP_COLUMN = html.Div(
             className="d-md-flex justify-content-md-end mt-3",
         ),
     ],
-    className="p-5 bg-light border",
-)
-SEARCH_RESULT = html.Div(
-    [
-        dbc.Alert(id="report-message", is_open=False,),
-        dbc.Spinner(html.Div(id="report-output")),
-    ]
+    className="p-3 bg-light border",
 )
 SEARCH_RESULT = html.Div(
         [
