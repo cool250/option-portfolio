@@ -28,7 +28,7 @@ navbar = dbc.NavbarSimple(
 content = html.Div(id="page-content", className="content")
 
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
-
+server = app.server
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
