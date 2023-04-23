@@ -25,7 +25,7 @@ TOP_COLUMN = html.Div(
                             dbc.Label("From Close Date", className="mr-3",),
                             dbc.Col(
                                 dcc.DatePickerSingle(
-                                    id="start-date-picker", display_format="YYYY-MM-DD", date='2022-01-01'
+                                    id="start-date-picker", display_format="YYYY-MM-DD", date='2023-01-01'
                                 ),
                             ),
                         ]
