@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
+import os
 
 from app import app
 from view import income_finder, oauth, portfolio, report
@@ -28,7 +29,6 @@ navbar = dbc.NavbarSimple(
 content = html.Div(id="page-content", className="content")
 
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
-server = app.server
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
@@ -48,5 +48,7 @@ def render_page_content(pathname):
             html.P(f"The pathname {pathname} was not recognised..."),
         ]
     )
+
+port = int(os.environ.get('PORT', 8080)) 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=port)
