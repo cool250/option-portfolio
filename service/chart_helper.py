@@ -122,6 +122,6 @@ def update_graph(ticker):
         height=800, title=ticker, template="plotly_white", showlegend=False,
     )
 
-    info_text = f" {description} EPS:{eps} PE:{pe_ratio} PEG: {peg_ratio} 30D Avg close: {mean_period} "
+    info_text = f" EPS:{eps} PE:{pe_ratio} 30D Avg close: {mean_period} "
 
     return fig, info_text

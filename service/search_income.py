@@ -104,8 +104,8 @@ def income_finder(ticker, **kwargs):
                 option.breakeven = option.strike_price + option.mark
 
             option.stock_price = float(current_stock_price)
-            option.open_interest = int(strike_detail["openInterest"])
-            option.volume = int(strike_detail["totalVolume"])
+            #option.open_interest = int(strike_detail["openInterest"])
+            #option.volume = int(strike_detail["totalVolume"])
             option.percentage_otm = formatter_percent((option.stock_price - option.strike_price) /option.stock_price)
 
             option.spread = float(strike_detail["ask"]) - float(strike_detail["bid"])
@@ -164,6 +164,4 @@ def filter_strikes(option):
         else:
             return False
     except:
-        # printing stack trace
-        traceback.print_exc()
-        return True
+        return False
