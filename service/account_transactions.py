@@ -119,7 +119,7 @@ def get_transactions(
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
     
     """
-    This method is called from Transactions screen.
+    This method is called from Reports screen.
     It will internally call get_transactions method.
 
     Args:
@@ -186,7 +186,7 @@ def parse_option_response(df, instrument_type):
     # All opening positions
     df_open = df_options[df_options["INSTRUCTION"] == 'SELL']
 
-    # Combine orders which were split by broker into multiple orders while execution
+    # Edge case - Combine orders which were split by broker into multiple orders while execution
     df_open = df_open.groupby(['SYMBOL', 'DATE', 'EXPIRY_DATE', 'TICKER', 'INSTRUCTION'])\
         .agg({'TOTAL_PRICE':'sum','PRICE':'mean', 'QTY':'sum'})
     df_open = df_open.reset_index()
@@ -257,6 +257,14 @@ def get_assigned_stock(df, instruction):
 
 
 def calculate_final_payoff(result_df):
+    """Calculates the trade profit ( open trade - close trade)
+
+    Args:
+        result_df (DataFrame): Input dataframe 
+
+    Returns:
+        DataFrame:  DF with Total Price and Status for each trade
+    """
 
     result_df[["DATE", "CLOSE_DATE"]] = result_df.apply(get_date, axis=1, result_type="expand")
     result_df["PRICE"] = result_df["PRICE"].fillna(0)
@@ -275,7 +283,7 @@ def calculate_final_payoff(result_df):
 
 
 def get_net_total_price(row):
-    """[summary]
+    """Calculate net price for each trade row
 
     Args:
         row ([df row]): [Single row of DF to whch the function is applied]
@@ -299,6 +307,14 @@ def get_net_total_price(row):
 
 
 def get_transaction_status(row):
+    """Assign transcation status for each row
+
+    Args:
+        row ([df row]): [Single row of DF to whch the function is applied]
+
+    Returns:
+        Trade Status:Assigned, Rolled, Expired or Active status 
+    """
     if row.CLOSE_PRICE == row.PRICE:
         return "Assigned"
     elif row.CLOSE_PRICE > 0:
@@ -358,6 +374,14 @@ def get_date(row):
 
 
 def get_previous_bdate(date):
+    """gets previous businessdate based on US trading calendar
+
+    Args:
+        date (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     previous_business_date = (dt.strptime(date, "%Y-%m-%d") - CustomBusinessDay(1, calendar=cal)).strftime("%Y-%m-%d")
     return previous_business_date
 

@@ -2,9 +2,27 @@ import json, dbm
 import redis
 from utils.config import Config
 from utils.exceptions import HaltCallbackException
+from abc import ABC, abstractmethod
 
+class Store_Factory:
+    def get_store():
+        config = Config()
+        cache_type = config.get("CACHE", "CACHE_TYPE", fallback="local")
+        if cache_type == "local":
+            return LocalStore()
+        else:
+            return RedisStore()
+        
 
-class RedisStore:
+class Store(ABC):
+    @abstractmethod
+    def set_dict(self, key, val):
+        pass
+
+    def get_dict (self, key):
+        pass
+
+class RedisStore(Store):
     def __init__(self):
         config = Config()
         host=config.get("REDIS", "HOST", fallback="localhost")
@@ -35,7 +53,7 @@ class RedisStore:
             return None
         
 
-class LocalStore:
+class LocalStore(Store):
     def __init__(self):
         pass
 

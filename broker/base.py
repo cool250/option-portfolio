@@ -5,7 +5,7 @@ import urllib.parse
 import requests
 
 from utils.exceptions import APIException
-from utils.store import RedisStore, LocalStore
+from utils.store import Store, Store_Factory
 
 from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
 
@@ -13,7 +13,7 @@ from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
 class Base:
 
     # Cache store
-    store = LocalStore()
+    store = Store_Factory.get_store()
 
     """
         TD Ameritrade API Client Class.
