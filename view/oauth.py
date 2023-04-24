@@ -15,16 +15,14 @@ layout = dbc.Container(
                 dbc.Col(
                     dbc.Label("URL"),
                 ),
-
                 dbc.Col(
                     dbc.Input(
                         type="text",
                         id="url_str",
                         placeholder="",
                     ),
-                    width = 8
+                    width=8,
                 ),
-     
                 dbc.Col(
                     dbc.Button(
                         "Enter",
@@ -38,7 +36,6 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Spinner(html.Div(id="success-message")),
         ),
-     
     ]
 )
 

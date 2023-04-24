@@ -63,8 +63,12 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Ticker", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="ticker", placeholder="Select for watchlist or Enter Ticker",),
+                            dbc.Label("Ticker"),
+                            dbc.Input(
+                                type="text",
+                                id="ticker",
+                                placeholder="Select for watchlist or Enter Ticker",
+                            ),
                         ]
                     ),
                 ),
@@ -76,9 +80,11 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Min Exp Days", html_for="example-email-grid"),
+                            dbc.Label("Min Days"),
                             dbc.Input(
-                                type="text", id="min_expiration_days", placeholder="15",
+                                type="text",
+                                id="min_expiration_days",
+                                placeholder="15",
                             ),
                         ]
                     ),
@@ -86,9 +92,11 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Max Exp Days", html_for="example-password-grid"),
+                            dbc.Label("Max Days"),
                             dbc.Input(
-                                type="text", id="max_expiration_days", placeholder="45",
+                                type="text",
+                                id="max_expiration_days",
+                                placeholder="45",
                             ),
                         ]
                     ),
@@ -96,16 +104,24 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Min Delta", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="min_delta", placeholder="0.25",),
+                            dbc.Label("Min Delta"),
+                            dbc.Input(
+                                type="text",
+                                id="min_delta",
+                                placeholder="0.25",
+                            ),
                         ]
                     ),
                 ),
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Max Delta", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="max_delta", placeholder="0.35",),
+                            dbc.Label("Max Delta"),
+                            dbc.Input(
+                                type="text",
+                                id="max_delta",
+                                placeholder="0.35",
+                            ),
                         ]
                     ),
                 ),
@@ -113,15 +129,23 @@ TOP_COLUMN = html.Div(
                     html.Div(
                         [
                             dbc.Label("Premium %", html_for="premium"),
-                            dbc.Input(type="text", id="premium", placeholder="2",),
+                            dbc.Input(
+                                type="text",
+                                id="premium",
+                                placeholder="2",
+                            ),
                         ]
                     ),
                 ),
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Discount/Gain %", html_for="moneyness"),
-                            dbc.Input(type="text", id="moneyness", placeholder="5",),
+                            dbc.Label("OTM %", html_for="moneyness"),
+                            dbc.Input(
+                                type="text",
+                                id="moneyness",
+                                placeholder="5",
+                            ),
                         ]
                     ),
                 ),
@@ -129,7 +153,9 @@ TOP_COLUMN = html.Div(
         ),
         html.Div(
             dbc.Button(
-                "Search", color="primary", id="income-btn",
+                "Search",
+                color="primary",
+                id="income-btn",
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),
@@ -137,22 +163,36 @@ TOP_COLUMN = html.Div(
     className="p-3 bg-light border",
 )
 SEARCH_RESULT = html.Div(
-        [
-            html.Div(
-                dbc.Alert(
-                    id="income-message", is_open=False, duration=2000, color="danger",
+    [
+        html.Div(
+            dbc.Alert(
+                id="income-message",
+                is_open=False,
+                duration=2000,
+                color="danger",
+            ),
+        ),
+        dbc.Modal(
+            [
+                dbc.ModalHeader("Charts"),
+                dbc.ModalBody(
+                    id="chart-output",
                 ),
-            ),
-            dbc.Modal(
-                [dbc.ModalHeader("Charts"), dbc.ModalBody(id="chart-output",),],
-                id="modal-chart",
-                size="xl",
-            ),
-            html.Div(dbc.Spinner(html.Div(id="income-output"))),
-        ]
-    )
+            ],
+            id="modal-chart",
+            size="xl",
+        ),
+        html.Div(dbc.Spinner(html.Div(id="income-output"))),
+    ]
+)
 
-layout = html.Div([dbc.Row(TOP_COLUMN), html.P(), dbc.Row(SEARCH_RESULT),])
+layout = html.Div(
+    [
+        dbc.Row(TOP_COLUMN),
+        html.P(),
+        dbc.Row(SEARCH_RESULT),
+    ]
+)
 
 
 @app.callback(
@@ -221,18 +261,26 @@ def on_button_click(
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            options = {"selectable":1, "pagination":"local", "paginationSize":20, "responsiveLayout":"true", "movableRows": "true"}
+            options = {
+                "selectable": 1,
+                "pagination": "local",
+                "paginationSize": 20,
+                "responsiveLayout": "true",
+                "movableRows": "true",
+            }
 
             # add groupBy option to the Tabulator component to group at Ticker level
             if is_group:
                 options["groupBy"] = "TICKER"
 
-            dt = dash_tabulator.DashTabulator(
-                id='screener-table',
-                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
-                data=df.to_dict("records"),
-                options=options,
+            dt = (
+                dash_tabulator.DashTabulator(
+                    id="screener-table",
+                    columns=[{"id": i, "title": i, "field": i} for i in df.columns],
+                    data=df.to_dict("records"),
+                    options=options,
                 ),
+            )
             return dt, False, ""
 
         else:
@@ -242,19 +290,23 @@ def on_button_click(
 # dash_tabulator can register a callback on rowClicked
 # to receive a dict of the row values
 @app.callback(
-    [Output("chart-output", "children"), Output("modal-chart", "is_open"),],
-    [Input('screener-table', 'rowClicked')])
+    [
+        Output("chart-output", "children"),
+        Output("modal-chart", "is_open"),
+    ],
+    [Input("screener-table", "rowClicked")],
+)
 def display_output(value):
-  
     if value:
         # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
         ticker = value["TICKER"]
         fig, info_text = update_graph(ticker)
         chart = html.Div(
-            [dbc.Alert(info_text, color="primary"), dcc.Graph(figure=fig),]
+            [
+                dbc.Alert(info_text, color="primary"),
+                dcc.Graph(figure=fig),
+            ]
         )
         return chart, True
     else:
         return "", False
-
-    

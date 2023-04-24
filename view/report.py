@@ -22,10 +22,15 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("From Close Date", className="mr-3",),
+                            dbc.Label(
+                                "From Close Date",
+                                className="mr-3",
+                            ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
-                                    id="start-date-picker", display_format="YYYY-MM-DD", date='2023-01-01'
+                                    id="start-date-picker",
+                                    display_format="YYYY-MM-DD",
+                                    date="2023-01-01",
                                 ),
                             ),
                         ]
@@ -34,10 +39,15 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("To Close Date", className="mr-3",),
+                            dbc.Label(
+                                "To Close Date",
+                                className="mr-3",
+                            ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
-                                    id="end-date-picker", display_format="YYYY-MM-DD", placeholder='Enter Date'
+                                    id="end-date-picker",
+                                    display_format="YYYY-MM-DD",
+                                    placeholder="Enter Date",
                                 ),
                             ),
                         ]
@@ -66,7 +76,7 @@ TOP_COLUMN = html.Div(
                                     {"label": "PUT", "value": "PUT"},
                                     {"label": "EQUITY", "value": "EQUITY"},
                                 ],
-                                value="PUT"
+                                value="PUT",
                             ),
                         ],
                     ),
@@ -87,13 +97,24 @@ TOP_COLUMN = html.Div(
 
 SEARCH_RESULT = html.Div(
     [
-        dbc.Alert(id="report-message", is_open=False,),
+        dbc.Alert(
+            id="report-message",
+            is_open=False,
+        ),
         dbc.Spinner(html.Div(id="report-output")),
     ]
 )
 
-layout = dbc.Container([dbc.Row(TOP_COLUMN), html.P(), dbc.Row(SEARCH_RESULT), ], fluid=True)
-downloadButtonType = {"css": "btn btn-primary mb-3", "text": "Export", "type": "csv"}
+layout = dbc.Container(
+    [
+        dbc.Row(TOP_COLUMN),
+        html.P(),
+        dbc.Row(SEARCH_RESULT),
+    ],
+    fluid=True,
+)
+downloadButtonType = {"css": "btn btn-secondary mb-3", "text": "Export", "type": "csv"}
+
 
 @app.callback(
     [
@@ -101,7 +122,9 @@ downloadButtonType = {"css": "btn btn-primary mb-3", "text": "Export", "type": "
         Output("report-message", "is_open"),
         Output("report-message", "children"),
     ],
-    [Input("report-btn", "n_clicks"), ],
+    [
+        Input("report-btn", "n_clicks"),
+    ],
     [
         State("start-date-picker", "date"),
         State("end-date-picker", "date"),
@@ -113,16 +136,22 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
     if n is None:
         return None, False, ""
     else:
-
         df = get_report(start_date, end_date, ticker, instrument_type)
         if not df.empty:
             if instrument_type == "EQUITY":
-               columns = [
-                    {"title": "SYMBOL", "field": "SYMBOL", "headerFilter":"input"},
+                columns = [
+                    {"title": "SYMBOL", "field": "SYMBOL", "headerFilter": "input"},
                     {"title": "DATE", "field": "DATE"},
                     {"title": "PRICE", "field": "PRICE"},
                     {"title": "INSTRUCTION", "field": "INSTRUCTION"},
-                    {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
+                    {
+                        "title": "TOTAL PRICE",
+                        "field": "TOTAL_PRICE",
+                        "topCalc": "sum",
+                        "topCalcParams": {
+                            "precision": 2,
+                        },
+                    },
                     {"title": "QTY", "field": "QTY"},
                 ]
             else:
@@ -131,12 +160,24 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
                     {"title": "OPEN DATE", "field": "DATE"},
                     {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
                     {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
-                    {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc": "sum", "topCalcParams": {"precision": 2,}},
+                    {
+                        "title": "TOTAL PRICE",
+                        "field": "TOTAL_PRICE",
+                        "topCalc": "sum",
+                        "topCalcParams": {
+                            "precision": 2,
+                        },
+                    },
                     {"title": "PRICE", "field": "PRICE"},
                     {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
                     {"title": "QTY", "field": "QTY"},
                     {"title": "SYMBOL", "field": "SYMBOL"},
-                    {"title": "STATUS", "field": "STATUS", "headerFilter": "input", "topCalc": "count"},
+                    {
+                        "title": "STATUS",
+                        "field": "STATUS",
+                        "headerFilter": "input",
+                        "topCalc": "count",
+                    },
                 ]
             dt = (
                 dash_tabulator.DashTabulator(

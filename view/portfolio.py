@@ -18,30 +18,50 @@ layout = dbc.Container(
             ),
             className="d-md-flex justify-content-md-end",
         ),
-        dbc.Row(html.H4(children = "PUTS")),
+        dbc.Row(html.H4(children="PUTS")),
         html.Hr(className="my-2"),
         dbc.Row(
             [
                 dbc.Col(
                     [
-                        html.Div((dbc.Alert(id="put-total", is_open=False,))),
+                        html.Div(
+                            (
+                                dbc.Alert(
+                                    id="put-total",
+                                    is_open=False,
+                                )
+                            )
+                        ),
                         dbc.Spinner(html.Div(id="puts_table")),
                     ]
                 )
             ]
         ),
         html.P(),
-        dbc.Row(html.H4(children = "CALLS")),
+        dbc.Row(html.H4(children="CALLS")),
         html.Hr(className="my-2"),
-        dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
+        dbc.Row(
+            [
+                dbc.Col(
+                    dbc.Spinner(html.Div(id="calls_table")),
+                )
+            ]
+        ),
         html.P(),
-        dbc.Row(html.H4(children = "STOCKS")),
+        dbc.Row(html.H4(children="STOCKS")),
         html.Hr(className="my-2"),
         dbc.Row(
             [
                 dbc.Col(
                     [
-                        html.Div((dbc.Alert(id="stock-detail", is_open=False,))),
+                        html.Div(
+                            (
+                                dbc.Alert(
+                                    id="stock-detail",
+                                    is_open=False,
+                                )
+                            )
+                        ),
                         dbc.Spinner(html.Div(id="stocks_table")),
                     ]
                 )
@@ -62,7 +82,9 @@ layout = dbc.Container(
         Output("stock-detail", "is_open"),
         Output("stock-detail", "children"),
     ],
-    [Input("portfolio-btn", "n_clicks"),],
+    [
+        Input("portfolio-btn", "n_clicks"),
+    ],
 )
 def on_button_click(n):
     if n is not None:
@@ -72,8 +94,12 @@ def on_button_click(n):
         df_calls = positions.get_call_positions()
         df_stocks = positions.get_stock_positions()
         cash_required = formatter_currency(df_puts["COST"].sum())
-        stock_value = formatter_currency((df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum())
-        stock_cost = formatter_currency((df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum())
+        stock_value = formatter_currency(
+            (df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum()
+        )
+        stock_cost = formatter_currency(
+            (df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum()
+        )
 
         calls_dt = (
             dash_tabulator.DashTabulator(
