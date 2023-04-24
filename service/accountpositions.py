@@ -112,7 +112,7 @@ class AccountPositions:
 
     def get_stock_positions(self):
         """ 
-        Get all open Calls first from Accounts API and later pricing information
+        Get all open Stocks first from Accounts API and later pricing information
         for the symbol via Qouotes
         """
 

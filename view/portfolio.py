@@ -18,7 +18,7 @@ layout = dbc.Container(
             ),
             className="d-md-flex justify-content-md-end",
         ),
-        dbc.Row(html.H3(dbc.Badge("PUTS", color="primary", className="ml-1"))),
+        dbc.Row(html.H4(children = "PUTS")),
         html.Hr(className="my-2"),
         dbc.Row(
             [
@@ -31,13 +31,22 @@ layout = dbc.Container(
             ]
         ),
         html.P(),
-        dbc.Row(html.H3(dbc.Badge("CALLS", color="primary", className="ml-1"))),
+        dbc.Row(html.H4(children = "CALLS")),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
         html.P(),
-        dbc.Row(html.H3(dbc.Badge("STOCKS", color="primary", className="ml-1"))),
+        dbc.Row(html.H4(children = "STOCKS")),
         html.Hr(className="my-2"),
-        dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="stocks_table")),)]),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Div((dbc.Alert(id="stock-detail", is_open=False,))),
+                        dbc.Spinner(html.Div(id="stocks_table")),
+                    ]
+                )
+            ]
+        ),
     ],
     fluid=True,
 )
@@ -50,6 +59,8 @@ layout = dbc.Container(
         Output("stocks_table", "children"),
         Output("put-total", "is_open"),
         Output("put-total", "children"),
+        Output("stock-detail", "is_open"),
+        Output("stock-detail", "children"),
     ],
     [Input("portfolio-btn", "n_clicks"),],
 )
@@ -61,6 +72,7 @@ def on_button_click(n):
         df_calls = positions.get_call_positions()
         df_stocks = positions.get_stock_positions()
         cash_required = formatter_currency(df_puts["COST"].sum())
+        stock_value = formatter_currency((df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum())
         stock_cost = formatter_currency((df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum())
 
         calls_dt = (
@@ -92,7 +104,9 @@ def on_button_click(n):
             calls_dt,
             stocks_dt,
             True,
-            f" Put Exposure : {cash_required}  Stock Cost : {stock_cost} ",
+            f" Put Exposure : {cash_required}",
+            True,
+            f" Stock Value : {stock_value}  Stock Cost : {stock_cost}",
         )
     else:
-        return None, None, None, None, None
+        return None, None, None, None, None, None, None
