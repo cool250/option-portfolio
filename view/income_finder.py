@@ -186,12 +186,13 @@ SEARCH_RESULT = html.Div(
     ]
 )
 
-layout = html.Div(
+layout = dbc.Container(
     [
         dbc.Row(TOP_COLUMN),
         html.P(),
         dbc.Row(SEARCH_RESULT),
-    ]
+    ],
+    fluid=True,
 )
 
 
