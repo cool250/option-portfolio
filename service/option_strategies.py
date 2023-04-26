@@ -17,7 +17,7 @@ TABLE_MAPPING = {
     "stock_price": "STOCK PRICE",
     "volatility": "VOLATILITY",
     "delta": "DELTA",
-    "mark": "PRICE",
+    "mark": "MARK",
     "underlying": "TICKER",
     "expiration": "EXPIRATION",
     "days_to_expiration": "DAYS",

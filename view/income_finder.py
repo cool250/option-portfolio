@@ -128,7 +128,7 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Premium %", html_for="premium"),
+                            dbc.Label("Mark %", html_for="premium"),
                             dbc.Input(
                                 type="text",
                                 id="premium",

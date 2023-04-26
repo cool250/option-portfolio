@@ -57,21 +57,3 @@ screener_list["ETF"] = [
 ]
 screener_list["Favorites"] = ["SPY", "QQQ"]
 
-style_cell = {
-    "padding": "12px",
-    "width": "auto",
-    "textAlign": "center",
-    "fontFamily": '"Segoe UI", "Source Sans Pro", Calibri, Candara, Arial, sans-serif',
-}
-style_header = {
-    "backgroundColor": "#2C3E50",
-    "color": "white",
-    "textAlign": "center",
-}
-style_data_conditional = [
-    {
-        # stripped rows
-        "if": {"row_index": "odd"},
-        "backgroundColor": "rgb(248, 248, 248)",
-    },
-]
