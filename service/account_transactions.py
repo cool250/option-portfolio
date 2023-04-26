@@ -249,9 +249,9 @@ def get_assigned_stock(df, instruction):
 
     """
     df_assigned_stocks = df[(df["TRAN_TYPE"] == "OA") & (df["INSTRUCTION"] == instruction)]
-    df_assigned_stocks.QTY = df_assigned_stocks.QTY / 100
-    df_assigned_stocks.TICKER = df_assigned_stocks.SYMBOL
-    df_assigned_stocks.EXPIRY_DATE = df_assigned_stocks["DATE"].apply(get_previous_bdate)
+    df_assigned_stocks.loc[:,'QTY'] = df_assigned_stocks.QTY / 100
+    df_assigned_stocks.loc[:,'TICKER'] = df_assigned_stocks.SYMBOL
+    df_assigned_stocks.loc[:,'EXPIRY_DATE'] = df_assigned_stocks["DATE"].apply(get_previous_bdate)
 
     return df_assigned_stocks
 
