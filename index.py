@@ -18,7 +18,7 @@ navbar = dbc.NavbarSimple(
     dark=True,
 )
 
-content = html.Div(id="page-content", className="content")
+content = html.Div(id="page-content", className="p-3")
 
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 

@@ -24,7 +24,6 @@ TOP_COLUMN = html.Div(
                         [
                             dbc.Label(
                                 "From Close Date",
-                                className="mr-3",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -41,7 +40,6 @@ TOP_COLUMN = html.Div(
                         [
                             dbc.Label(
                                 "To Close Date",
-                                className="mr-3",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
