@@ -144,7 +144,9 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 
     # Pull transactions 45 days before search date to get options expiring around start_date
     # Report uses close date for filtering results
-    search_start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=60)).strftime("%Y-%m-%d")
+    # search_start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=60)).strftime("%Y-%m-%d")
+    search_start_date = start_date
+
     df = get_transactions(search_start_date, end_date, symbol, instrument_type)
  
     # Processing for Options
@@ -152,7 +154,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-            df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
+            # df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
@@ -185,6 +187,7 @@ def parse_option_response(df, instrument_type):
 
     # All opening positions
     df_open = df_options[df_options["INSTRUCTION"] == 'SELL']
+    
 
     # Edge case - Combine orders which were split by broker into multiple orders while execution
     df_open = df_open.groupby(['SYMBOL', 'DATE', 'EXPIRY_DATE', 'TICKER', 'INSTRUCTION'])\
@@ -201,6 +204,7 @@ def parse_option_response(df, instrument_type):
 
     # Merge opening and closing trades
     result_df = pd.merge(df_open, df_close, how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=(None, "_C"))
+    logging.error(result_df.to_string())
 
     # Merge assigned stock positions
     oa_df = pd.merge(result_df, df_assigned_stocks, how="outer", on=["QTY", "TICKER", "EXPIRY_DATE"],
@@ -211,6 +215,8 @@ def parse_option_response(df, instrument_type):
     oa_df.drop_duplicates(subset=["SYMBOL", "QTY", "TICKER", "DATE", "DATE_E"], keep='last', inplace=True)
 
     final_df = calculate_final_payoff(oa_df)
+    final_df = final_df.sort_values(by=['DATE'])
+    # logging.error(final_df.to_string())
 
     return final_df
 
@@ -228,12 +234,6 @@ def parse_equity_response(df, instrument_type):
 
     # Filter for either Equity transactions
     df_equities = df[df["TYPE"] == instrument_type]
-
-    df_equities_open = df_equities[df_equities["INSTRUCTION"] == 'BUY']
-    logging.debug(df_equities_open.to_string())
-
-    df_equities_close = df_equities[df_equities["INSTRUCTION"] == 'SELL']
-    logging.debug(df_equities_close.to_string())
 
     return df_equities
 
@@ -278,7 +278,7 @@ def calculate_final_payoff(result_df):
     result_df["STATUS"] = result_df.apply(get_transaction_status, axis=1)
     # Add Close Date if missing and Strike price by parsing option symbol string
     result_df[["CLOSE_DATE", "STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1, result_type="expand")
-    result_df = result_df.sort_values(by=['CLOSE_DATE'])
+
     return result_df
 
 

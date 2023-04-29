@@ -90,7 +90,7 @@ TOP_COLUMN = html.Div(
             className="d-md-flex justify-content-md-end mt-3",
         ),
     ],
-    className="p-3 bg-light border",
+    className="p-2 bg-light border",
 )
 
 SEARCH_RESULT = html.Div(
