@@ -31,42 +31,6 @@ params = {
 }
 
 
-def retrive_transactions(
-    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
-):
-    """
-    This method is called from Transactions screen.
-    It will internally call get_transactions method.
-
-    Args:
-        start_date ([str], optional): [Include Transcations after the start date]. Defaults to None.
-        end_date ([str], optional): [Include Transcations before the end date]. Defaults to None.
-        symbol ([str], optional): [description]. Defaults to None.
-        instrument_type ([str], optional): [description]. Defaults to None.
-        tran_type ([str], optional): [description]. Defaults to None.
-
-    Returns:
-        [df]: [Transactions for given search criteria]
-    """    
-
-    df = get_transactions(start_date, end_date, symbol, instrument_type, tran_type)
-    if instrument_type:
-        if instrument_type == "PUT" or instrument_type == "CALL":
-            # Filter for either PUT or CALL option types
-            df = df.rename(columns=params)
-            df = df[df["OPTION_TYPE"] == instrument_type]
-
-        elif instrument_type == "EQUITY":
-            # Filter for either EQUITY or OPTION asset types
-            df = df.rename(columns=params)
-            df = df[df["TYPE"] == instrument_type]
-
-    if tran_type:
-        # Filter for Transaction sub type
-        df = df[df["transactionSubType"] == tran_type]
-    return df
-
-
 def get_transactions(
     start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
 ):
@@ -133,28 +97,26 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
     """
 
     # In case start date or end date is not passed, use to initialize default
-    to_date = dt.now()
+    today = dt.now()
 
     if not end_date:
-        end_date = to_date.strftime("%Y-%m-%d")
+        end_date = today.strftime("%Y-%m-%d")
 
     if not start_date:
-        from_date = to_date - timedelta(days=default_start_duration)
+        from_date = today - timedelta(days=default_start_duration)
         start_date = from_date.strftime("%Y-%m-%d")
 
-    # Pull transactions 45 days before search date to get options expiring around start_date
-    # Report uses close date for filtering results
-    # search_start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=60)).strftime("%Y-%m-%d")
-    search_start_date = start_date
-
-    df = get_transactions(search_start_date, end_date, symbol, instrument_type)
+    df = get_transactions(start_date, end_date, symbol, instrument_type)
  
     # Processing for Options
     if not df.empty:
         df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-            # df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
+
+            # Filter out last year's records if search date is earlier than Jan
+            starting_day_of_current_year = dt.now().date().replace(month=1, day=1) 
+            df = df[(df['CLOSE_DATE'] >= starting_day_of_current_year.strftime("%Y-%m-%d"))]
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
@@ -204,7 +166,6 @@ def parse_option_response(df, instrument_type):
 
     # Merge opening and closing trades
     result_df = pd.merge(df_open, df_close, how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=(None, "_C"))
-    logging.error(result_df.to_string())
 
     # Merge assigned stock positions
     oa_df = pd.merge(result_df, df_assigned_stocks, how="left", on=["QTY", "TICKER", "EXPIRY_DATE"],
@@ -216,7 +177,7 @@ def parse_option_response(df, instrument_type):
 
     final_df = calculate_final_payoff(oa_df)
     final_df = final_df.sort_values(by=['DATE'])
-    # logging.error(final_df.to_string())
+
 
     return final_df
 

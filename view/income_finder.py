@@ -168,7 +168,6 @@ SEARCH_RESULT = html.Div(
             dbc.Alert(
                 id="income-message",
                 is_open=False,
-                duration=2000,
                 color="danger",
             ),
         ),

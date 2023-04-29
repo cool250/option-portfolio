@@ -1,3 +1,4 @@
+import logging
 from dash import Dash, dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
@@ -84,7 +85,13 @@ TOP_COLUMN = html.Div(
 
 SEARCH_RESULT = html.Div(
     [
-        dcc.Graph(id="graph"),
+        html.Div(
+            dbc.Alert(
+                id="total-message",
+                color="primary",
+            ),
+        ),
+         dcc.Graph(id="graph"),
     ]
 )
 
@@ -99,6 +106,7 @@ layout = dbc.Container(
 
 
 @app.callback(
+    Output("total-message", "children"),
     Output("graph", "figure"),
     [
         Input("chart-btn", "n_clicks"),
@@ -111,18 +119,32 @@ layout = dbc.Container(
     ],
 )
 def on_search(n, start_date, end_date, ticker, instrument_type):
+    
     df = get_report(start_date, end_date, ticker, instrument_type)
-    dfs = df.groupby('CLOSE_DATE').sum()
-    fig = px.bar(df, x="CLOSE_DATE", y = "TOTAL_PRICE", color="TICKER")
 
-    fig.add_trace(go.Scatter(
-        x=dfs.index, 
-        y=dfs['TOTAL_PRICE'],
-        text=dfs['TOTAL_PRICE'],
-        mode='text',
-        textposition='top center',
-        textfont=dict(
-            size=10,
-        ),
-    ))
-    return fig
+    if not df.empty:
+        fig = px.bar(df, x="CLOSE_DATE", y = "TOTAL_PRICE", color="TICKER")
+
+        # Add Trace for displaying total sum on top of stacked bar chart
+        
+        # Sum the totals for a given close date
+        dfs = df.groupby('CLOSE_DATE').sum() 
+
+        total = df['TOTAL_PRICE'].sum()
+
+        # Create a scatter trace
+        fig.add_trace(go.Scatter(
+            x=dfs.index, 
+            y=dfs['TOTAL_PRICE'],
+            text=dfs['TOTAL_PRICE'],
+            mode='text',
+            textposition='top center',
+            textfont=dict(
+                size=10,
+            ),
+            showlegend=False
+        ))
+        return total, fig
+    else:
+        return "No records", {}
+
