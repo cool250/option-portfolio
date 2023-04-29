@@ -194,7 +194,7 @@ def parse_option_response(df, instrument_type):
         .agg({'TOTAL_PRICE':'sum','PRICE':'mean', 'QTY':'sum'})
     df_open = df_open.reset_index()
 
-    # All Closing positions
+    # All Closing positions ( for rolled trades)
     df_close = df_options [df_options["INSTRUCTION"] == 'BUY']
 
     # Combine orders which were split by broker into multiple orders while execution
@@ -207,7 +207,7 @@ def parse_option_response(df, instrument_type):
     logging.error(result_df.to_string())
 
     # Merge assigned stock positions
-    oa_df = pd.merge(result_df, df_assigned_stocks, how="outer", on=["QTY", "TICKER", "EXPIRY_DATE"],
+    oa_df = pd.merge(result_df, df_assigned_stocks, how="left", on=["QTY", "TICKER", "EXPIRY_DATE"],
                      suffixes=(None, "_E"))
 
     # RARE: Merge with stocks can produce duplicates is same Ticker has multiple lots with same expiry date and qty

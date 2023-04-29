@@ -1,20 +1,19 @@
 from dash import Dash, dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
+import plotly.graph_objects as go
 from app import app
 from service.account_transactions import get_report
 
 TOP_COLUMN = html.Div(
     [
-        html.H5(children="Reports"),
-        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(
                     html.Div(
                         [
                             dbc.Label(
-                                "From Close Date",
+                                "From Date",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -30,7 +29,7 @@ TOP_COLUMN = html.Div(
                     html.Div(
                         [
                             dbc.Label(
-                                "To Close Date",
+                                "To Date",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -63,7 +62,6 @@ TOP_COLUMN = html.Div(
                                 options=[
                                     {"label": "CALL", "value": "CALL"},
                                     {"label": "PUT", "value": "PUT"},
-                                    {"label": "EQUITY", "value": "EQUITY"},
                                 ],
                                 value="PUT",
                             ),
@@ -114,5 +112,17 @@ layout = dbc.Container(
 )
 def on_search(n, start_date, end_date, ticker, instrument_type):
     df = get_report(start_date, end_date, ticker, instrument_type)
+    dfs = df.groupby('CLOSE_DATE').sum()
     fig = px.bar(df, x="CLOSE_DATE", y = "TOTAL_PRICE", color="TICKER")
+
+    fig.add_trace(go.Scatter(
+        x=dfs.index, 
+        y=dfs['TOTAL_PRICE'],
+        text=dfs['TOTAL_PRICE'],
+        mode='text',
+        textposition='top center',
+        textfont=dict(
+            size=10,
+        ),
+    ))
     return fig

@@ -15,15 +15,13 @@ from service.account_transactions import get_report
 
 TOP_COLUMN = html.Div(
     [
-        html.H5(children="Reports"),
-        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(
                     html.Div(
                         [
                             dbc.Label(
-                                "From Close Date",
+                                "From Date",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -39,7 +37,7 @@ TOP_COLUMN = html.Div(
                     html.Div(
                         [
                             dbc.Label(
-                                "To Close Date",
+                                "To Date",
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
