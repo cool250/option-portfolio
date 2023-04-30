@@ -88,7 +88,6 @@ SEARCH_RESULT = html.Div(
         html.Div(
             dbc.Alert(
                 id="total-message",
-                color="primary",
             ),
         ),
          dcc.Graph(id="graph"),
@@ -144,7 +143,7 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
             ),
             showlegend=False
         ))
-        return total, fig
+        return f'Total : {total}', fig
     else:
         return "No records", {}
 

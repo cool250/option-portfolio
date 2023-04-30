@@ -128,7 +128,7 @@ TOP_COLUMN = html.Div(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Mark %", html_for="premium"),
+                            dbc.Label("Premium %", html_for="premium"),
                             dbc.Input(
                                 type="text",
                                 id="premium",
@@ -167,8 +167,7 @@ SEARCH_RESULT = html.Div(
         html.Div(
             dbc.Alert(
                 id="income-message",
-                is_open=False,
-                color="danger",
+                dismissable=True
             ),
         ),
         dbc.Modal(
