@@ -13,7 +13,7 @@ from service.account_transactions import get_report
 #       type    => type of download (csv/ xlsx / pdf, remember to include appropriate 3rd party js libraries)
 #       filename => filename prefix defaults to data, will download as filename.type
 
-TOP_COLUMN = html.Div(
+TOP_COLUMN = dbc.Form(
     [
         dbc.Row(
             [
@@ -84,6 +84,7 @@ TOP_COLUMN = html.Div(
                 "Search",
                 color="primary",
                 id="report-btn",
+                outline=True,
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),

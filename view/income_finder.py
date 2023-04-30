@@ -8,10 +8,8 @@ from service.chart_helper import update_graph
 from service.option_strategies import short_call, short_put, watchlist_income
 from utils.constants import screener_list
 
-TOP_COLUMN = html.Div(
+TOP_COLUMN = dbc.Form(
     [
-        html.H5(children="Income Finder"),
-        html.Hr(),
         dbc.Row(
             [
                 dbc.Col(
@@ -156,6 +154,7 @@ TOP_COLUMN = html.Div(
                 "Search",
                 color="primary",
                 id="income-btn",
+                outline=True,
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),

@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from app import app
 from service.account_transactions import get_report
 
-TOP_COLUMN = html.Div(
+TOP_COLUMN = dbc.Form(
     [
         dbc.Row(
             [
@@ -76,6 +76,8 @@ TOP_COLUMN = html.Div(
                 "Search",
                 color="primary",
                 id="chart-btn",
+                outline=True,
+                type="submit",
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),
