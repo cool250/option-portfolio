@@ -56,6 +56,9 @@ def get_transactions(
     if not start_date:
         from_date = to_date - timedelta(days=default_start_duration)
         start_date = from_date.strftime("%Y-%m-%d")
+    else:
+        # Try to use 45 days in advance to get all options expiring before entered start date 
+        start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(

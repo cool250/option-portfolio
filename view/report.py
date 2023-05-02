@@ -58,7 +58,6 @@ TOP_COLUMN = dbc.Form(
                                 type="text",
                                 id="report-ticker",
                                 placeholder="symbol",
-                                size="sm"
                             ),
                         ],
                     ),
@@ -75,7 +74,6 @@ TOP_COLUMN = dbc.Form(
                                     {"label": "EQUITY", "value": "EQUITY"},
                                 ],
                                 value="PUT",
-                                size="sm"
                             ),
                         ],
                     ),
