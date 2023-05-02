@@ -50,6 +50,7 @@ TOP_COLUMN = dbc.Form(
                                 type="text",
                                 id="db_report-ticker",
                                 placeholder="symbol",
+                                size="sm"
                             ),
                         ],
                     ),
@@ -65,6 +66,7 @@ TOP_COLUMN = dbc.Form(
                                     {"label": "PUT", "value": "PUT"},
                                 ],
                                 value="PUT",
+                                size="sm"
                             ),
                         ],
                     ),

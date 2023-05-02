@@ -28,6 +28,7 @@ TOP_COLUMN = dbc.Form(
                                     id="start-date-picker",
                                     display_format="YYYY-MM-DD",
                                     date="2023-01-01",
+        
                                 ),
                             ),
                         ]
@@ -57,6 +58,7 @@ TOP_COLUMN = dbc.Form(
                                 type="text",
                                 id="report-ticker",
                                 placeholder="symbol",
+                                size="sm"
                             ),
                         ],
                     ),
@@ -73,6 +75,7 @@ TOP_COLUMN = dbc.Form(
                                     {"label": "EQUITY", "value": "EQUITY"},
                                 ],
                                 value="PUT",
+                                size="sm"
                             ),
                         ],
                     ),
