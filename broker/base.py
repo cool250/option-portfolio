@@ -613,9 +613,8 @@ class Base:
         response = requests.get(
             url=url, headers=self.merged_headers, params=params, verify=verify
         )
-        logging.debug(response.text)
-
         response_dict = response.json()
+        logging.debug (response_dict)
 
         try:
             response_dict[

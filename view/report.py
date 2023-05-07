@@ -21,7 +21,7 @@ TOP_COLUMN = dbc.Form(
                     html.Div(
                         [
                             dbc.Label(
-                                "From Date",
+                                "From Date", size="sm"
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -38,7 +38,7 @@ TOP_COLUMN = dbc.Form(
                     html.Div(
                         [
                             dbc.Label(
-                                "To Date",
+                                "To Date", size="sm"
                             ),
                             dbc.Col(
                                 dcc.DatePickerSingle(
@@ -53,7 +53,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Ticker", html_for="example-email-grid"),
+                            dbc.Label("Ticker", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="report-ticker",
@@ -65,7 +65,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Instrument Type", html_for="example-email-grid"),
+                            dbc.Label("Instrument Type", size="sm"),
                             dbc.Select(
                                 id="instrument-type",
                                 options=[
@@ -86,6 +86,7 @@ TOP_COLUMN = dbc.Form(
                 color="primary",
                 id="report-btn",
                 outline=True,
+                size="sm"
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),

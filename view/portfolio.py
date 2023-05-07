@@ -74,7 +74,7 @@ layout = dbc.Container(
         Output("stock-detail", "children"),
     ],
     [
-       [Input('url', 'pathname')],
+        [Input("url", "pathname")],
     ],
 )
 def on_button_click(n):
@@ -84,12 +84,12 @@ def on_button_click(n):
     df_calls = positions.get_call_positions()
     df_stocks = positions.get_stock_positions()
     cash_required = formatter_currency(df_puts["COST"].sum())
+    puts_maintenance = formatter_currency(df_puts["MAINTENANCE"].sum())
     stock_value = formatter_currency(
         (df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum()
     )
-    stock_cost = formatter_currency(
-        (df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum()
-    )
+    stock_cost = formatter_currency((df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum())
+    stocks_maintenance = formatter_currency(df_stocks["MAINTENANCE"].sum())
 
     calls_dt = (
         dash_tabulator.DashTabulator(
@@ -120,8 +120,7 @@ def on_button_click(n):
         calls_dt,
         stocks_dt,
         True,
-        f" Put Exposure : {cash_required}",
+        f" Put Exposure : {cash_required} Maintenance: {puts_maintenance}",
         True,
-        f" Stock Value : {stock_value}  Stock Cost : {stock_cost}",
+        f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}",
     )
-

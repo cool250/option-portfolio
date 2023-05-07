@@ -27,6 +27,7 @@ class AccountPositions:
             "theta": "THETA",
             "averagePrice": "PURCHASE PRICE",
             "daysToExpiration": "DAYS",
+            "maintenanceRequirement": "MAINTENANCE",
         }
 
         self.params_stocks = {
@@ -35,6 +36,7 @@ class AccountPositions:
             "mark": "TICKER PRICE",
             "averagePrice": "AVG PRICE",
             "total": "TOTAL",
+            "maintenanceRequirement": "MAINTENANCE",
         }
 
         # Get All Open Positions
@@ -72,7 +74,7 @@ class AccountPositions:
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
-        df["RETURNS"] = (df["CURRENT PRICE"] * 365 / (df["STRIKE PRICE"] * df["DAYS"]))\
+        df["RETURNS"] = (df["CURRENT PRICE"] * 365 *  df["QTY"]/ (df["MAINTENANCE"] * df["DAYS"]) * 100)\
             .apply(formatter_percent_2_digits)
 
         return df

@@ -91,6 +91,7 @@ class Account(Base):
                 option_type = position["instrument"]["putCall"]
             else:
                 option_type = None
+            
 
             new_position = Position(
                 quantity=quantity,
@@ -99,6 +100,8 @@ class Account(Base):
                 underlying=underlying,
                 option_type=option_type,
                 averagePrice = position["averagePrice"],
+                maintenanceRequirement = position["maintenanceRequirement"]
+
             )
             positions.append(new_position)
 

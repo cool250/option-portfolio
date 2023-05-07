@@ -13,9 +13,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label(
-                                "From Date",
-                            ),
+                            dbc.Label("From Date", size="sm"),
                             dbc.Col(
                                 dcc.DatePickerSingle(
                                     id="db_start-date-picker",
@@ -29,9 +27,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label(
-                                "To Date",
-                            ),
+                            dbc.Label("To Date", size="sm"),
                             dbc.Col(
                                 dcc.DatePickerSingle(
                                     id="db_end-date-picker",
@@ -45,7 +41,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Ticker", html_for="example-email-grid"),
+                            dbc.Label("Ticker", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="db_report-ticker",
@@ -57,7 +53,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Instrument Type", html_for="example-email-grid"),
+                            dbc.Label("Instrument Type", size="sm"),
                             dbc.Select(
                                 id="db_instrument-type",
                                 options=[
@@ -78,6 +74,7 @@ TOP_COLUMN = dbc.Form(
                 id="chart-btn",
                 outline=True,
                 type="submit",
+                size="sm",
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),
@@ -92,7 +89,7 @@ SEARCH_RESULT = html.Div(
                 id="total-message",
             ),
         ),
-         dcc.Graph(id="graph"),
+        dcc.Graph(id="graph"),
     ]
 )
 
@@ -120,32 +117,32 @@ layout = dbc.Container(
     ],
 )
 def on_search(n, start_date, end_date, ticker, instrument_type):
-    
     df = get_report(start_date, end_date, ticker, instrument_type)
 
     if not df.empty:
-        fig = px.bar(df, x="CLOSE_DATE", y = "TOTAL_PRICE", color="TICKER")
+        fig = px.bar(df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER")
 
         # Add Trace for displaying total sum on top of stacked bar chart
-        
-        # Sum the totals for a given close date
-        dfs = df.groupby('CLOSE_DATE').sum() 
 
-        total = df['TOTAL_PRICE'].sum()
+        # Sum the totals for a given close date
+        dfs = df.groupby("CLOSE_DATE").sum()
+
+        total = df["TOTAL_PRICE"].sum()
 
         # Create a scatter trace
-        fig.add_trace(go.Scatter(
-            x=dfs.index, 
-            y=dfs['TOTAL_PRICE'],
-            text=dfs['TOTAL_PRICE'],
-            mode='text',
-            textposition='top center',
-            textfont=dict(
-                size=10,
-            ),
-            showlegend=False
-        ))
-        return f'Total : {total}', fig
+        fig.add_trace(
+            go.Scatter(
+                x=dfs.index,
+                y=dfs["TOTAL_PRICE"],
+                text=dfs["TOTAL_PRICE"],
+                mode="text",
+                textposition="top center",
+                textfont=dict(
+                    size=10,
+                ),
+                showlegend=False,
+            )
+        )
+        return f"Total : {total}", fig
     else:
         return "No records", {}
-

@@ -15,7 +15,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Choose one"),
+                            dbc.Label("Choose one" , size="sm"),
                             dbc.RadioItems(
                                 options=[
                                     {"label": "SECURED PUT", "value": "PUT"},
@@ -31,7 +31,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("GroupTicker"),
+                            dbc.Label("GroupTicker" , size="sm"),
                             dbc.Checklist(
                                 options=[
                                     {"value": 1},
@@ -46,7 +46,7 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("WatchList"),
+                            dbc.Label("WatchList" , size="sm"),
                             dbc.Select(
                                 options=[
                                     {"label": i, "value": i} for i in screener_list
@@ -54,6 +54,7 @@ TOP_COLUMN = dbc.Form(
                                 value="",
                                 id="ticker_list",
                                 placeholder="Select",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -61,11 +62,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Ticker"),
+                            dbc.Label("Ticker" , size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="ticker",
                                 placeholder="Select for watchlist or Enter Ticker",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -78,11 +80,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Min Days"),
+                            dbc.Label("Min Days" , size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="min_expiration_days",
                                 placeholder="15",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -90,11 +93,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Max Days"),
+                            dbc.Label("Max Days", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="max_expiration_days",
                                 placeholder="45",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -102,11 +106,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Min Delta"),
+                            dbc.Label("Min Delta", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="min_delta",
                                 placeholder="0.25",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -114,11 +119,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Max Delta"),
+                            dbc.Label("Max Delta", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="max_delta",
                                 placeholder="0.35",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -126,11 +132,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("Premium %", html_for="premium"),
+                            dbc.Label("Premium %", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="premium",
                                 placeholder="2",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -138,11 +145,12 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("OTM %", html_for="moneyness"),
+                            dbc.Label("OTM %", size="sm"),
                             dbc.Input(
                                 type="text",
                                 id="moneyness",
                                 placeholder="5",
+                                size="sm"
                             ),
                         ]
                     ),
@@ -155,6 +163,7 @@ TOP_COLUMN = dbc.Form(
                 color="primary",
                 id="income-btn",
                 outline=True,
+                size="sm",
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),
