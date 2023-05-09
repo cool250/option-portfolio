@@ -84,12 +84,12 @@ def on_button_click(n):
     df_calls = positions.get_call_positions()
     df_stocks = positions.get_stock_positions()
     cash_required = formatter_currency(df_puts["COST"].sum())
-    puts_maintenance = formatter_currency(df_puts["MAINTENANCE"].sum())
+    puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
     stock_value = formatter_currency(
         (df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum()
     )
     stock_cost = formatter_currency((df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum())
-    stocks_maintenance = formatter_currency(df_stocks["MAINTENANCE"].sum())
+    stocks_maintenance = formatter_currency(df_stocks["MARGIN"].sum())
 
     calls_dt = (
         dash_tabulator.DashTabulator(
