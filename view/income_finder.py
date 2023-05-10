@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output, State
 
 from app import app
 from service.chart_helper import update_graph
-from service.option_strategies import short_call, short_put, watchlist_income
+from service.option_strategies import watchlist_income
 from utils.constants import screener_list
 
 TOP_COLUMN = dbc.Form(
@@ -18,8 +18,8 @@ TOP_COLUMN = dbc.Form(
                             dbc.Label("Choose one" , size="sm"),
                             dbc.RadioItems(
                                 options=[
-                                    {"label": "SECURED PUT", "value": "PUT"},
-                                    {"label": "COVERED CALL", "value": "CALL"},
+                                    {"label": "PUT", "value": "PUT"},
+                                    {"label": "CALL", "value": "CALL"},
                                 ],
                                 value="PUT",
                                 id="contract_type",
@@ -31,14 +31,15 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     html.Div(
                         [
-                            dbc.Label("GroupTicker" , size="sm"),
-                            dbc.Checklist(
+                            dbc.Label("Choose one" , size="sm"),
+                            dbc.RadioItems(
                                 options=[
-                                    {"value": 1},
+                                    {"label": "SINGLE", "value": "SINGLE"},
+                                    {"label": "VERTICAL", "value": "VERTICAL"},
                                 ],
-                                value=[],
-                                id="is_group",
-                                switch=True,
+                                value="SINGLE",
+                                id="strategy",
+                                inline=True,
                             ),
                         ]
                     ),
@@ -211,6 +212,7 @@ layout = dbc.Container(
     [Input("income-btn", "n_clicks")],
     [
         State("contract_type", "value"),
+        State("strategy", "value"),
         State("min_expiration_days", "value"),
         State("max_expiration_days", "value"),
         State("min_delta", "value"),
@@ -219,12 +221,12 @@ layout = dbc.Container(
         State("moneyness", "value"),
         State("ticker", "value"),
         State("ticker_list", "value"),
-        State("is_group", "value"),
     ],
 )
 def on_button_click(
     n,
     contract_type,
+    strategy,
     min_expiration_days,
     max_expiration_days,
     min_delta,
@@ -233,19 +235,14 @@ def on_button_click(
     moneyness,
     ticker,
     ticker_list,
-    is_group,
 ):
     if n is None:
         return None, False, ""
     else:
         params = {}
-        func = None
 
-        if contract_type == "PUT":
-            func = short_put
-        else:
-            func = short_call
-
+        params["contractType"] = contract_type
+        params["strategy"] = strategy
         if min_expiration_days:
             params["min_expiration_days"] = int(min_expiration_days)
         if max_expiration_days:
@@ -259,6 +256,7 @@ def on_button_click(
         if moneyness:
             params["moneyness"] = moneyness
 
+        # Convert single ticker to list for consistency with ticker list
         if ticker:
             tickers = [ticker]
         elif ticker_list:
@@ -266,7 +264,7 @@ def on_button_click(
         else:
             return None, True, "Enter Ticker or Select Watchlist"
 
-        df = watchlist_income(tickers, params, func)
+        df = watchlist_income(tickers, params)
         if not df.empty:
             options = {
                 "selectable": 1,
@@ -276,9 +274,9 @@ def on_button_click(
                 "movableRows": "true",
             }
 
-            # add groupBy option to the Tabulator component to group at Ticker level
-            if is_group:
-                options["groupBy"] = "TICKER"
+            # # add groupBy option to the Tabulator component to group at Ticker level
+            # if is_group:
+            #     options["groupBy"] = "TICKER"
 
             dt = (
                 dash_tabulator.DashTabulator(

@@ -109,13 +109,13 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         from_date = today - timedelta(days=default_start_duration)
         start_date = from_date.strftime("%Y-%m-%d")
 
-    df = get_transactions(start_date, end_date, symbol, instrument_type)
+    df_all = get_transactions(start_date, end_date, symbol, instrument_type)
  
     # Processing for Options
     if not df.empty:
         df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
-            df = parse_option_response(df, instrument_type)
+            df = parse_option_response(df_all, instrument_type)
 
             # starting date of current year
             starting_day_of_current_year = dt.now().date().replace(month=1, day=1).strftime("%Y-%m-%d")
@@ -129,7 +129,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
-            df = parse_equity_response(df, instrument_type)
+            df = parse_equity_response(df_all, instrument_type)
             df = df[(df['DATE'] >= start_date)]
 
     return df
@@ -157,7 +157,7 @@ def parse_option_response(df, instrument_type):
     df_assigned_stocks = get_assigned_stock(df, instruction)
 
     # All opening positions
-    df_open = df_options[df_options["INSTRUCTION"] == 'SELL']
+    df_open = df_options[df_options["POSITION"] == 'OPENING']
     
 
     # Edge case - Combine orders which were split by broker into multiple orders while execution
@@ -166,7 +166,7 @@ def parse_option_response(df, instrument_type):
     df_open = df_open.reset_index()
 
     # All Closing positions ( for rolled trades)
-    df_close = df_options [df_options["INSTRUCTION"] == 'BUY']
+    df_close = df_options [df_options["POSITION"] == 'CLOSING']
 
     # Combine orders which were split by broker into multiple orders while execution
     df_close = df_close.groupby(['SYMBOL', 'DATE', 'EXPIRY_DATE', 'TICKER', 'INSTRUCTION'])\

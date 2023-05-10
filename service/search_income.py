@@ -25,6 +25,9 @@ def income_finder(ticker, **kwargs):
         "volatility": None,
         "min_delta": 0.25,
         "max_delta": 0.35,
+        "strategy": "SINGLE",
+        "interval": 1,
+        "range": "OTM"
     }
 
     for key in kwargs:
@@ -46,10 +49,11 @@ def income_finder(ticker, **kwargs):
     options = Options()
     option_chain_req = OptionChain(
         symbol=ticker,
-        strategy="SINGLE",
+        strategy=params["strategy"],
         contractType=params["contractType"],
         fromDate=startDate,
         toDate=endDate,
+        range=params["range"],
     )
 
     # API call

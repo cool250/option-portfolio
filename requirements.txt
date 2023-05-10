@@ -44,3 +44,4 @@ urllib3
 Werkzeug
 redis
 dash-pivottable
+scipy
