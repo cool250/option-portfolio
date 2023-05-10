@@ -60,20 +60,4 @@ class Options(Base):
         return self._data
 
 
-    def get_options_chainDF(self, option_chain=None, args_dictionary=None):
-        '''get transaction information as Dataframe'''
-        return pd.json_normalize(self.get_options_chain(option_chain, args_dictionary))
-
-    def get_put_options_chainDF(self, option_chain=None, args_dictionary=None):
-        res = self.get_options_chain(option_chain, args_dictionary)
-        '''get transaction information as Dataframe'''
-        return pd.json_normalize(res['putExpDateMap'])
-
-    def get_call_options_chainDF(self, option_chain=None, args_dictionary=None):
-        '''get transaction information as Dataframe'''
-        df = self.get_options_chain(option_chain, args_dictionary)
-        return df['callExpDateMap']
-
-
-
 
