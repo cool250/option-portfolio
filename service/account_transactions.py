@@ -109,13 +109,13 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         from_date = today - timedelta(days=default_start_duration)
         start_date = from_date.strftime("%Y-%m-%d")
 
-    df_all = get_transactions(start_date, end_date, symbol, instrument_type)
+    df = get_transactions(start_date, end_date, symbol, instrument_type)
  
     # Processing for Options
     if not df.empty:
         df = df.rename(columns=params)
-        if instrument_type == "PUT" or instrument_type == "CALL":
-            df = parse_option_response(df_all, instrument_type)
+        if instrument_type == "PUT" or instrument_type == "CALL" or instrument_type == "CALL":
+            df = parse_option_response(df, instrument_type)
 
             # starting date of current year
             starting_day_of_current_year = dt.now().date().replace(month=1, day=1).strftime("%Y-%m-%d")
@@ -129,7 +129,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
-            df = parse_equity_response(df_all, instrument_type)
+            df = parse_equity_response(df, instrument_type)
             df = df[(df['DATE'] >= start_date)]
 
     return df
