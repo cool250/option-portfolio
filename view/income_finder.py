@@ -137,7 +137,7 @@ TOP_COLUMN = dbc.Form(
                             dbc.Input(
                                 type="text",
                                 id="premium",
-                                placeholder="2",
+                                placeholder="1",
                                 size="sm"
                             ),
                         ]
@@ -150,7 +150,7 @@ TOP_COLUMN = dbc.Form(
                             dbc.Input(
                                 type="text",
                                 id="moneyness",
-                                placeholder="5",
+                                placeholder="2",
                                 size="sm"
                             ),
                         ]

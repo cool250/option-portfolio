@@ -78,9 +78,9 @@ class Account(Base):
         for position in self._key:
 
             if position["shortQuantity"]:
-                quantity = position["shortQuantity"]
+                quantity = position["settledShortQuantity"]
             else:
-                quantity = position["longQuantity"]
+                quantity = position["settledLongQuantity"]
 
             try:
                 underlying = position["instrument"]["underlyingSymbol"]

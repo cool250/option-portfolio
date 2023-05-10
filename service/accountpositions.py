@@ -7,8 +7,7 @@ from broker.account import Account
 from broker.config import ACCOUNT_NUMBER
 from broker.quotes import Quotes
 from utils.enums import PUT_CALL
-from utils.functions import (formatter_number_2_digits,
-                             formatter_percent_2_digits)
+from utils.functions import formatter_number_2_digits, formatter_percent
 
 
 class AccountPositions:
@@ -43,7 +42,7 @@ class AccountPositions:
         self.res = pd.DataFrame()
 
     def get_put_positions(self):
-        """ 
+        """
         Get all open Puts first from Accounts API and later pricing information
         for the symbol via Quotes
         """
@@ -69,18 +68,31 @@ class AccountPositions:
         df = df.join(res_df)
 
         if not df.empty:
-            df = df.drop(["option_type", "instrument_type", "intrinsic", "extrinsic"], axis=1)
+            df = df.drop(
+                ["option_type", "instrument_type", "intrinsic", "extrinsic"], axis=1
+            )
             df = df.rename(columns=self.params_options)
 
         # Add liquidity for Puts if assigned
-        df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
-        df["RETURNS"] = (df["CURRENT PRICE"] * 365 *  df["QTY"]/ (df["MARGIN"] * df["DAYS"]) * 100)\
-            .apply(formatter_percent_2_digits)
+        df["COST"] = df["STRIKE PRICE"] * df["QTY"].abs() * 100
+        df["RETURNS"] = (
+            (
+                (
+                    df["CURRENT PRICE"]
+                    * 365
+                    * df["QTY"]
+                    / (df["MARGIN"] * df["DAYS"])
+                    * 100
+                )
+            )
+            .abs()
+            .apply(formatter_percent)
+        )
 
         return df
 
     def get_call_positions(self):
-        """ 
+        """
         Get all open Calls first from Accounts API and later pricing information
         for the symbol via Qouotes
         """
@@ -113,7 +125,7 @@ class AccountPositions:
         return df
 
     def get_stock_positions(self):
-        """ 
+        """
         Get all open Stocks first from Accounts API and later pricing information
         for the symbol via Qouotes
         """
@@ -128,12 +140,14 @@ class AccountPositions:
         df = self.__get_stock_pricing(res_equity)
         if not df.empty:
             df = df.drop(["option_type", "instrument_type", "symbol"], axis=1)
-            df['total'] = (df['quantity'] * df['averagePrice']).apply(formatter_number_2_digits)
+            df["total"] = (df["quantity"] * df["averagePrice"]).apply(
+                formatter_number_2_digits
+            )
             df = df.rename(columns=self.params_stocks)
         return df
 
     def get_account_positions(self):
-        """ 
+        """
         Get open positions for a given account
         """
 
@@ -145,12 +159,12 @@ class AccountPositions:
         return self.res
 
     def __get_option_pricing(self, df):
-        """ 
+        """
         Get pricing info or the symbol via Quotes
         """
 
         def get_quotes(row):
-            """ 
+            """
             Invoke quotes for passed symbol
             """
 
@@ -159,22 +173,22 @@ class AccountPositions:
             return res
 
         # Invoke getQuotesForSymbol for each symbol
-        res = df.apply(
-            get_quotes, axis=1, result_type="expand"
-        )
+        res = df.apply(get_quotes, axis=1, result_type="expand")
 
-        res = res[["underlyingPrice", "strikePrice", "lastPrice", "theta", "daysToExpiration"]]
+        res = res[
+            ["underlyingPrice", "strikePrice", "lastPrice", "theta", "daysToExpiration"]
+        ]
         res["theta"] = res["theta"].apply(formatter_number_2_digits)
         df = df.join(res)
         return df
 
     def __get_stock_pricing(self, df):
-        """ 
+        """
         Get pricing info or the symbol via Quotes
         """
 
         def get_quotes(row):
-            """ 
+            """
             Invoke quotes for passed symbol
             """
 
