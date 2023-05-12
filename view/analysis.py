@@ -14,11 +14,11 @@ TOP_COLUMN = dbc.Form(
                         dbc.Label("Option Type", size="sm"),
                         dbc.Select(
                             options=[
-                                {"label": "SINGLE PUT", "value": "PUT"},
-                                {"label": "SINGLE CALL", "value": "CALL"},
+                                {"label": "PUT", "value": "PUT"},
+                                {"label": "CALL", "value": "CALL"},
                             ],
                             value="",
-                            id="a_option_type",
+                            id="a_contractType",
                             placeholder="Select",
                             size="sm",
                         ),
@@ -97,17 +97,17 @@ layout = dbc.Container(
     Output('cache_data', 'data'),
     [Input("add-btn", "n_clicks")],
     [
-        State("a_option_type", "value"),
+        State("a_contractType", "value"),
         State("a_tran_type", "value"),
         State("a_ticker", "value"),
         State('cache_data', 'data'),
     ],
 )
-def on_add_click(n, a_option_type, a_tran_type, ticker, cache_data):
+def on_add_click(n, a_contractType, a_tran_type, ticker, cache_data):
     if n is None:
         return []
     else:
-        contract_obj = {'a_option_type': a_option_type, 'a_tran_type': a_tran_type, 'ticker': ticker}
+        contract_obj = {'a_contractType': a_contractType, 'a_tran_type': a_tran_type, 'ticker': ticker}
         cache_obj = cache_data
         if not cache_obj:
             cache_obj = []

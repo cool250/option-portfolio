@@ -21,7 +21,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "CALL", "value": "CALL"},
                             ],
                             value="PUT",
-                            id="contract_type",
+                            id="contractType",
                             size="sm",
                         ),
                     ],
@@ -36,7 +36,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "VERTICAL", "value": "VERTICAL"},
                             ],
                             value="SINGLE",
-                            id="strategy",
+                            id="tran_type",
                             size="sm",
                         ),
                     ],
@@ -192,8 +192,8 @@ layout = dbc.Container(
     ],
     [Input("income-btn", "n_clicks")],
     [
-        State("contract_type", "value"),
-        State("strategy", "value"),
+        State("contractType", "value"),
+        State("tran_type", "value"),
         State("min_expiration_days", "value"),
         State("max_expiration_days", "value"),
         State("min_delta", "value"),
@@ -206,8 +206,8 @@ layout = dbc.Container(
 )
 def on_button_click(
     n,
-    contract_type,
-    strategy,
+    contractType,
+    tran_type,
     min_expiration_days,
     max_expiration_days,
     min_delta,
@@ -222,8 +222,8 @@ def on_button_click(
     else:
         params = {}
 
-        params["contractType"] = contract_type
-        params["strategy"] = strategy
+        params["contractType"] = contractType
+        params["tran_type"] = tran_type
         if min_expiration_days:
             params["min_expiration_days"] = int(min_expiration_days)
         if max_expiration_days:
