@@ -22,10 +22,10 @@ TOP_COLUMN = dbc.Form(
                             ],
                             value="PUT",
                             id="contract_type",
+                            size="sm",
                         ),
                     ],
-                    width=2
-
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -37,9 +37,10 @@ TOP_COLUMN = dbc.Form(
                             ],
                             value="SINGLE",
                             id="strategy",
+                            size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -52,7 +53,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -64,7 +65,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -73,7 +74,7 @@ TOP_COLUMN = dbc.Form(
                             type="text", id="premium", placeholder="1", size="sm"
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -82,7 +83,7 @@ TOP_COLUMN = dbc.Form(
                             type="text", id="moneyness", placeholder="2", size="sm"
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
             ],
             className="p-3",
@@ -99,7 +100,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -111,7 +112,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -123,7 +124,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -135,7 +136,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -143,16 +144,16 @@ TOP_COLUMN = dbc.Form(
                             "Search",
                             color="primary",
                             id="income-btn",
-                            outline=True,
-                            size="sm",
+                            className="mt-4",
                         ),
                     ],
-                    class_name="d-md-flex justify-content-md-end",
+                    width=4,
                 ),
-            ]
+            ],
+            
         ),
     ],
-    className="p-2 bg-light border",
+    className="p-3 bg-light border",
 )
 SEARCH_RESULT = html.Div(
     [

@@ -25,7 +25,7 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
                 ),
                 dbc.Col(
                     children=[
@@ -37,19 +37,25 @@ TOP_COLUMN = dbc.Form(
                             size="sm",
                         ),
                     ],
-                    width=2
+                    width=2,
+                ),
+                dbc.Col(
+                    children=[
+                        dbc.Button(
+                            "Search",
+                            color="primary",
+                            id="analysis-btn",
+                            className="mt-4",
+                        ),
+                    ],
+                    width=2,
                 ),
             ],
         ),
     ],
 )
 
-SEARCH_RESULT = html.Div(
-    [
-        html.Div(),
-        # dcc.Graph(id="a_graph"),
-    ]
-)
+SEARCH_RESULT = html.Div(id="a_content")
 
 layout = dbc.Container(
     [
@@ -58,3 +64,15 @@ layout = dbc.Container(
         dbc.Row(SEARCH_RESULT),
     ],
 )
+
+
+@app.callback(
+    Output("a_content", "children"),
+    [Input("analysis-btn", "n_clicks")],
+    [
+        State("a_contract_type", "value"),
+        State("a_ticker", "value"),
+    ],
+)
+def on_button_click(n, contract_type, ticker):
+    return ""

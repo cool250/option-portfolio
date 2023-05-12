@@ -41,6 +41,7 @@ TOP_COLUMN = dbc.Form(
                             type="text",
                             id="db_report-ticker",
                             placeholder="symbol",
+                            size="sm"
                         ),
                     ],
                 ),
@@ -54,21 +55,21 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "PUT", "value": "PUT"},
                             ],
                             value="PUT",
+                            size="sm"
                         ),
                     ],
                 ),
+                dbc.Col(
+                    children=[
+                        dbc.Button(
+                            "Search",
+                            color="primary",
+                            id="chart-btn",
+                            className="mt-4",
+                        ),
+                    ]
+                ),
             ],
-        ),
-        html.Div(
-            dbc.Button(
-                "Search",
-                color="primary",
-                id="chart-btn",
-                outline=True,
-                type="submit",
-                size="sm",
-            ),
-            className="d-md-flex justify-content-md-end mt-3",
         ),
     ],
     className="p-2 bg-light border",

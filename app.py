@@ -15,6 +15,7 @@ VALID_USERNAME_PASSWORD_PAIRS = [
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.COSMO],
+    suppress_callback_exceptions=True
 )
 
 app.title = 'Options Tracker'
