@@ -8,11 +8,11 @@ from view import income_finder, oauth, portfolio, report, dashboard, analysis
 
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link")),
-        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-2-link")),
-        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-3-link")),
-        dbc.NavItem(dbc.NavLink("Dashboard", href="/dashboard", id="page-4-link")),
-        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link")),
+        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-2-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-3-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Dashboard", href="/dashboard", id="page-4-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),
     ],
     brand="MITRA",
     brand_href="#",
