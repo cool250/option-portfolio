@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output, State
 
 from app import app
 from service.chart_helper import update_graph
-from service.option_strategies import watchlist_income
+from service.search_income import watchlist_income
 from utils.constants import screener_list
 
 TOP_COLUMN = dbc.Form(

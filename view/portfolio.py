@@ -4,7 +4,7 @@ from dash import html
 from dash.dependencies import Input, Output
 
 from app import app
-from service.accountpositions import AccountPositions
+from service.account_positions import AccountPositions
 from utils.functions import formatter_currency
 
 layout = dbc.Container(

@@ -1,17 +1,39 @@
 from datetime import datetime as dt
 from datetime import timedelta
 import pandas as pd
-import traceback
 
 from broker.option import Option
 from broker.option_chain import OptionChain
 from broker.options import Options
 from utils.enums import PUT_CALL
-from utils.functions import formatter_currency, formatter_percent
+from utils.functions import formatter_percent, formatter_currency_with_cents
+import multiprocessing
 
+import pandas as pd
+from joblib import Parallel, delayed
+
+num_cores = multiprocessing.cpu_count()
+
+# Mapping column for UI display
+TABLE_MAPPING = {
+    "strike_price": "STRIKE",
+    "stock_price": "STOCK PRICE",
+    "volatility": "VOLATILITY",
+    "delta": "DELTA",
+    "mark": "MARK",
+    "underlying": "TICKER",
+    "expiration": "EXPIRATION",
+    "days_to_expiration": "DAYS",
+    "returns": "RETURNS",
+    "breakeven": "BREAK EVEN",
+    "symbol": "SYMBOL",
+    "open_interest": "OPEN INT",
+    "volume": "VOLUME",
+    "percentage_otm": "OTM",
+}
 
 def income_finder(ticker, **kwargs):
-    """ 
+    """
     Get option chain for a given ticker
     """
 
@@ -27,7 +49,7 @@ def income_finder(ticker, **kwargs):
         "max_delta": 0.35,
         "strategy": "SINGLE",
         "interval": 1,
-        "range": "OTM"
+        "range": "OTM",
     }
 
     for key in kwargs:
@@ -108,9 +130,11 @@ def income_finder(ticker, **kwargs):
                 option.breakeven = option.strike_price + option.mark
 
             option.stock_price = float(current_stock_price)
-            #option.open_interest = int(strike_detail["openInterest"])
-            #option.volume = int(strike_detail["totalVolume"])
-            option.percentage_otm = formatter_percent((option.stock_price - option.strike_price) /option.stock_price)
+            # option.open_interest = int(strike_detail["openInterest"])
+            # option.volume = int(strike_detail["totalVolume"])
+            option.percentage_otm = formatter_percent(
+                (option.stock_price - option.strike_price) / option.stock_price
+            )
 
             option.spread = float(strike_detail["ask"]) - float(strike_detail["bid"])
             option.desired_premium = float(params["premium"])
@@ -126,7 +150,7 @@ def income_finder(ticker, **kwargs):
 
 
 def filter_strikes(option):
-    """ 
+    """
     Filter out strikes not matching filter criteria in screener
     """
 
@@ -162,6 +186,7 @@ def filter_strikes(option):
                 and (option.desired_min_delta < option.delta < option.desired_max_delta)
             )
         )
+
     try:
         if premium_flag(option) and moneyness_flag(option) and delta_flag(option):
             return True
@@ -169,3 +194,40 @@ def filter_strikes(option):
             return False
     except:
         return False
+
+def watchlist_income(watch_list, params):
+    df = pd.DataFrame()
+
+    # Get Option chain for watch list
+    # Parallel mode for API calls
+    results = Parallel(n_jobs=num_cores)(
+        delayed(income_finder)(i, **params) for i in watch_list
+    )
+
+    #  Aggregate the results
+    for result in results:
+        df = pd.concat([df, result], ignore_index=True)
+
+    if not df.empty:
+        df = df.sort_values(by=["returns"], ascending=False)
+        df["strike_price"] = df["strike_price"].apply(formatter_currency_with_cents)
+        df["stock_price"] = df["stock_price"].apply(formatter_currency_with_cents)
+        df["mark"] = df["mark"].apply(formatter_currency_with_cents)
+        df["breakeven"] = df["breakeven"].apply(formatter_currency_with_cents)
+
+        df = df.drop(
+            [
+                "desired_premium",
+                "desired_moneyness",
+                "desired_min_delta",
+                "desired_max_delta",
+                "type",
+                "expiration_type",
+                "spread",
+                "expiration",
+            ],
+            axis=1,
+        )
+
+        df = df.rename(columns=TABLE_MAPPING)
+    return df

@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-import dash_tabulator
+import json
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
@@ -11,16 +11,30 @@ TOP_COLUMN = dbc.Form(
             [
                 dbc.Col(
                     children=[
-                        dbc.Label("Choose one", size="sm"),
+                        dbc.Label("Option Type", size="sm"),
                         dbc.Select(
                             options=[
                                 {"label": "SINGLE PUT", "value": "PUT"},
                                 {"label": "SINGLE CALL", "value": "CALL"},
-                                {"label": "VERTICAL PUT", "value": "V_PUT"},
-                                {"label": "VERTICAL CALL", "value": "V_CALL"},
                             ],
                             value="",
-                            id="a_contract_type",
+                            id="a_option_type",
+                            placeholder="Select",
+                            size="sm",
+                        ),
+                    ],
+                    width=2,
+                ),
+                dbc.Col(
+                    children=[
+                        dbc.Label("Transaction Type", size="sm"),
+                        dbc.Select(
+                            options=[
+                                {"label": "SELL", "value": "SELL"},
+                                {"label": "BUY", "value": "BUY"},
+                            ],
+                            value="",
+                            id="a_tran_type",
                             placeholder="Select",
                             size="sm",
                         ),
@@ -42,7 +56,18 @@ TOP_COLUMN = dbc.Form(
                 dbc.Col(
                     children=[
                         dbc.Button(
-                            "Search",
+                            "Add",
+                            color="primary",
+                            id="add-btn",
+                            className="mt-4",
+                        ),
+                    ],
+                    width=2,
+                ),
+                dbc.Col(
+                    children=[
+                        dbc.Button(
+                            "Analyze",
                             color="primary",
                             id="analysis-btn",
                             className="mt-4",
@@ -62,17 +87,45 @@ layout = dbc.Container(
         dbc.Row(TOP_COLUMN),
         html.P(),
         dbc.Row(SEARCH_RESULT),
+        # dcc.Store stores the intermediate value
+        dcc.Store(id='cache_data')
     ],
 )
 
 
 @app.callback(
-    Output("a_content", "children"),
-    [Input("analysis-btn", "n_clicks")],
+    Output('cache_data', 'data'),
+    [Input("add-btn", "n_clicks")],
     [
-        State("a_contract_type", "value"),
+        State("a_option_type", "value"),
+        State("a_tran_type", "value"),
         State("a_ticker", "value"),
+        State('cache_data', 'data'),
     ],
 )
-def on_button_click(n, contract_type, ticker):
-    return ""
+def on_add_click(n, a_option_type, a_tran_type, ticker, cache_data):
+    if n is None:
+        return []
+    else:
+        contract_obj = {'a_option_type': a_option_type, 'a_tran_type': a_tran_type, 'ticker': ticker}
+        cache_obj = cache_data
+        if not cache_obj:
+            cache_obj = []
+        cache_obj.append(contract_obj)
+        return cache_obj
+    
+
+@app.callback(
+    Output('a_content', 'children'),
+    [Input("analysis-btn", "n_clicks")],
+    [
+        State('cache_data', 'data'),
+    ],
+)
+def on_analyze_click(n, cache_data):
+    if n is None:
+        return ""
+    else:
+        cache_obj = cache_data
+        return cache_obj
+    
