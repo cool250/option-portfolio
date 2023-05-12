@@ -18,75 +18,58 @@ TOP_COLUMN = dbc.Form(
         dbc.Row(
             [
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label(
-                                "From Date", size="sm"
+                    children=[
+                        dbc.Label("From Date", size="sm"),
+                        dbc.Col(
+                            dcc.DatePickerSingle(
+                                id="start-date-picker",
+                                display_format="YYYY-MM-DD",
+                                date="2023-01-01",
                             ),
-                            dbc.Col(
-                                dcc.DatePickerSingle(
-                                    id="start-date-picker",
-                                    display_format="YYYY-MM-DD",
-                                    date="2023-01-01",
-        
-                                ),
-                            ),
-                        ]
-                    ),
+                        ),
+                    ]
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label(
-                                "To Date", size="sm"
+                    children=[
+                        dbc.Label("To Date", size="sm"),
+                        dbc.Col(
+                            dcc.DatePickerSingle(
+                                id="end-date-picker",
+                                display_format="YYYY-MM-DD",
+                                placeholder="Enter Date",
                             ),
-                            dbc.Col(
-                                dcc.DatePickerSingle(
-                                    id="end-date-picker",
-                                    display_format="YYYY-MM-DD",
-                                    placeholder="Enter Date",
-                                ),
-                            ),
-                        ]
-                    ),
+                        ),
+                    ]
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("Ticker", size="sm"),
-                            dbc.Input(
-                                type="text",
-                                id="report-ticker",
-                                placeholder="symbol",
-                            ),
-                        ],
-                    ),
+                    children=[
+                        dbc.Label("Ticker", size="sm"),
+                        dbc.Input(
+                            type="text",
+                            id="report-ticker",
+                            placeholder="symbol",
+                        ),
+                    ],
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("Instrument Type", size="sm"),
-                            dbc.Select(
-                                id="instrument-type",
-                                options=[
-                                    {"label": "CALL", "value": "CALL"},
-                                    {"label": "PUT", "value": "PUT"},
-                                    {"label": "EQUITY", "value": "EQUITY"},
-                                ],
-                                value="PUT",
-                            ),
-                        ],
-                    ),
+                    children=[
+                        dbc.Label("Instrument Type", size="sm"),
+                        dbc.Select(
+                            id="instrument-type",
+                            options=[
+                                {"label": "CALL", "value": "CALL"},
+                                {"label": "PUT", "value": "PUT"},
+                                {"label": "EQUITY", "value": "EQUITY"},
+                            ],
+                            value="PUT",
+                        ),
+                    ],
                 ),
             ],
         ),
         html.Div(
             dbc.Button(
-                "Search",
-                color="primary",
-                id="report-btn",
-                outline=True,
-                size="sm"
+                "Search", color="primary", id="report-btn", outline=True, size="sm"
             ),
             className="d-md-flex justify-content-md-end mt-3",
         ),

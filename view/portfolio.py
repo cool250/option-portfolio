@@ -18,6 +18,7 @@ layout = dbc.Container(
                         [
                             html.Div(id="put-detail"),
                             html.Div(id="puts_table"),
+                            
                         ]
                     )
                 ]

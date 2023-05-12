@@ -11,17 +11,10 @@ logging.basicConfig(filename="app.log",
 VALID_USERNAME_PASSWORD_PAIRS = [
     ['hello', 'nishant']
 ]
-external_stylesheets=[dbc.themes.FLATLY]
 
-# Since we're adding callbacks to elements that don't exist in the app.layout,
-# Dash will raise an exception to warn us that we might be
-# doing something wrong.
-# In this case, we're adding the elements through a callback, so we can ignore
-# the exception.
 app = dash.Dash(
     __name__,
-    external_stylesheets= external_stylesheets,
-    suppress_callback_exceptions=True
+    external_stylesheets=[dbc.themes.COSMO],
 )
 
 app.title = 'Options Tracker'

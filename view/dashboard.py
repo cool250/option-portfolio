@@ -11,59 +11,51 @@ TOP_COLUMN = dbc.Form(
         dbc.Row(
             [
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("From Date", size="sm"),
-                            dbc.Col(
-                                dcc.DatePickerSingle(
-                                    id="db_start-date-picker",
-                                    display_format="YYYY-MM-DD",
-                                    date="2023-01-01",
-                                ),
+                    children=[
+                        dbc.Label("From Date", size="sm"),
+                        dbc.Col(
+                            dcc.DatePickerSingle(
+                                id="db_start-date-picker",
+                                display_format="YYYY-MM-DD",
+                                date="2023-01-01",
                             ),
-                        ]
-                    ),
+                        ),
+                    ]
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("To Date", size="sm"),
-                            dbc.Col(
-                                dcc.DatePickerSingle(
-                                    id="db_end-date-picker",
-                                    display_format="YYYY-MM-DD",
-                                    placeholder="Enter Date",
-                                ),
+                    children=[
+                        dbc.Label("To Date", size="sm"),
+                        dbc.Col(
+                            dcc.DatePickerSingle(
+                                id="db_end-date-picker",
+                                display_format="YYYY-MM-DD",
+                                placeholder="Enter Date",
                             ),
-                        ]
-                    ),
+                        ),
+                    ]
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("Ticker", size="sm"),
-                            dbc.Input(
-                                type="text",
-                                id="db_report-ticker",
-                                placeholder="symbol",
-                            ),
-                        ],
-                    ),
+                    children=[
+                        dbc.Label("Ticker", size="sm"),
+                        dbc.Input(
+                            type="text",
+                            id="db_report-ticker",
+                            placeholder="symbol",
+                        ),
+                    ],
                 ),
                 dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Label("Instrument Type", size="sm"),
-                            dbc.Select(
-                                id="db_instrument-type",
-                                options=[
-                                    {"label": "CALL", "value": "CALL"},
-                                    {"label": "PUT", "value": "PUT"},
-                                ],
-                                value="PUT",
-                            ),
-                        ],
-                    ),
+                    children=[
+                        dbc.Label("Instrument Type", size="sm"),
+                        dbc.Select(
+                            id="db_instrument-type",
+                            options=[
+                                {"label": "CALL", "value": "CALL"},
+                                {"label": "PUT", "value": "PUT"},
+                            ],
+                            value="PUT",
+                        ),
+                    ],
                 ),
             ],
         ),
@@ -120,7 +112,9 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
     df = get_report(start_date, end_date, ticker, instrument_type)
 
     if not df.empty:
-        fig = px.bar(df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER")
+        fig = px.bar(
+            df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
+        )
 
         # Add Trace for displaying total sum on top of stacked bar chart
 
@@ -129,19 +123,6 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
 
         total = df["TOTAL_PRICE"].sum()
 
-        # Create a scatter trace
-        fig.add_trace(
-            go.Bar(
-                x=dfs.index,
-                y=dfs["TOTAL_PRICE"],
-                text=dfs["TOTAL_PRICE"],
-                textposition="inside",
-                textfont=dict(
-                    size=500,
-                ),
-                showlegend=False,
-            )
-        )
         return f"Total : {total}", fig
     else:
         return "No records", {}
