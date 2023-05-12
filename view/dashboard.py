@@ -79,7 +79,7 @@ TOP_COLUMN = dbc.Form(
             className="d-md-flex justify-content-md-end mt-3",
         ),
     ],
-    className="p-3 bg-light border",
+    className="p-2 bg-light border",
 )
 
 SEARCH_RESULT = html.Div(
@@ -131,14 +131,13 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
 
         # Create a scatter trace
         fig.add_trace(
-            go.Scatter(
+            go.Bar(
                 x=dfs.index,
                 y=dfs["TOTAL_PRICE"],
                 text=dfs["TOTAL_PRICE"],
-                mode="text",
-                textposition="top center",
+                textposition="inside",
                 textfont=dict(
-                    size=10,
+                    size=500,
                 ),
                 showlegend=False,
             )

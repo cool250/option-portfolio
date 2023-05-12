@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 import os
 
 from app import app
-from view import income_finder, oauth, portfolio, report, dashboard
+from view import income_finder, oauth, portfolio, report, dashboard, analysis
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -12,6 +12,7 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-2-link")),
         dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-3-link")),
         dbc.NavItem(dbc.NavLink("Dashboard", href="/dashboard", id="page-4-link")),
+        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link")),
     ],
     brand="MITRA",
     brand_href="#",
@@ -35,6 +36,8 @@ def render_page_content(pathname):
         return oauth.layout
     elif pathname == "/dashboard":
         return dashboard.layout
+    elif pathname == "/analysis":
+        return analysis.layout
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [

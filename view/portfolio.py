@@ -8,58 +8,45 @@ from service.accountpositions import AccountPositions
 from utils.functions import formatter_currency
 
 layout = dbc.Container(
-    [
-        dbc.Row(html.H4(children="PUTS")),
-        html.Hr(className="my-2"),
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        html.Div(
-                            (
-                                dbc.Alert(
-                                    id="put-total",
-                                    is_open=False,
-                                )
-                            )
-                        ),
-                        dbc.Spinner(html.Div(id="puts_table")),
-                    ]
-                )
-            ]
-        ),
-        html.P(),
-        dbc.Row(html.H4(children="CALLS")),
-        html.Hr(className="my-2"),
-        dbc.Row(
-            [
-                dbc.Col(
-                    dbc.Spinner(html.Div(id="calls_table")),
-                )
-            ]
-        ),
-        html.P(),
-        dbc.Row(html.H4(children="STOCKS")),
-        html.Hr(className="my-2"),
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        html.Div(
-                            (
-                                dbc.Alert(
-                                    id="stock-detail",
-                                    is_open=False,
-                                )
-                            )
-                        ),
-                        dbc.Spinner(html.Div(id="stocks_table")),
-                    ]
-                )
-            ]
-        ),
-    ],
-    fluid=True,
+    dbc.Spinner(
+        [
+            dbc.Row(html.H4(children="PUTS")),
+            html.Hr(className="my-2"),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            html.Div(id="put-detail"),
+                            html.Div(id="puts_table"),
+                        ]
+                    )
+                ]
+            ),
+            html.P(),
+            dbc.Row(html.H4(children="CALLS")),
+            html.Hr(className="my-2"),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Div(id="calls_table"),
+                    )
+                ]
+            ),
+            html.P(),
+            dbc.Row(html.H4(children="STOCKS")),
+            html.Hr(className="my-2"),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            html.Div(id="stock-detail"),
+                            html.Div(id="stocks_table"),
+                        ]
+                    )
+                ]
+            ),
+        ],
+    ),
 )
 
 
@@ -68,9 +55,7 @@ layout = dbc.Container(
         Output("puts_table", "children"),
         Output("calls_table", "children"),
         Output("stocks_table", "children"),
-        Output("put-total", "is_open"),
-        Output("put-total", "children"),
-        Output("stock-detail", "is_open"),
+        Output("put-detail", "children"),
         Output("stock-detail", "children"),
     ],
     [
@@ -119,8 +104,6 @@ def on_button_click(n):
         puts_dt,
         calls_dt,
         stocks_dt,
-        True,
-        f" Put Exposure : {cash_required} Maintenance: {puts_maintenance}",
-        True,
-        f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}",
+        html.Div([f" Put Exposure : {cash_required} Maintenance: {puts_maintenance}", html.Br(),]),
+        html.Div([f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}", html.Br(),]),
     )
