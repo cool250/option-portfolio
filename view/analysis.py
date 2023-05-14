@@ -9,7 +9,7 @@ import plotly.express as px
 
 from app import app
 
-TOP_COLUMN = dbc.Form(
+SEARCH_ROW = dbc.Form(
     [
         dbc.Row(
             [
@@ -36,6 +36,7 @@ TOP_COLUMN = dbc.Form(
                             options=[
                                 {"label": "PUT", "value": "p"},
                                 {"label": "CALL", "value": "c"},
+                                {"label": "STOCK", "value": "e"},
                             ],
                             value="",
                             id="a_contractType",
@@ -138,7 +139,7 @@ STRATEGY_CHART = dbc.Row(id="graph_div")
 
 layout = dbc.Container(
     [
-        TOP_COLUMN,
+        SEARCH_ROW,
         html.P(),
         STRATEGY_LIST,
         html.P(),

@@ -4,13 +4,13 @@ import plotly.graph_objects as go
 
 from .helpers import payoff_calculator, check_optype, check_trtype
 
-abb = {"c": "Call", "p": "Put", "b": "Long", "s": "Short"}
+abb = {"c": "Call", "p": "Put", "e": "Equity", "b": "Long", "s": "Short"}
 
 
 def multi_plotter(
     spot,
     op_list,
-    spot_range=10,
+    spot_range=5,
 ):
     """
     Plots a basic option payoff diagram for a multiple options and resultant payoff diagram
