@@ -3,14 +3,30 @@ import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_tabulator
-import plotly.graph_objects as go
 from opstrat import multi_plotter
-import numpy as np
+
+import plotly.express as px
 
 from app import app
 
 TOP_COLUMN = dbc.Form(
     [
+        dbc.Row(
+            [
+                dbc.Col(
+                    children=[
+                        dbc.Label("Ticker", size="sm"),
+                        dbc.Input(
+                            type="text",
+                            id="a_ticker",
+                            placeholder="",
+                            size="sm",
+                        ),
+                    ],
+                    width=1,
+                ),
+            ]
+        ),
         dbc.Row(
             [
                 dbc.Col(
@@ -47,18 +63,6 @@ TOP_COLUMN = dbc.Form(
                 ),
                 dbc.Col(
                     children=[
-                        dbc.Label("Ticker", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="a_ticker",
-                            placeholder="",
-                            size="sm",
-                        ),
-                    ],
-                    width=1,
-                ),
-                dbc.Col(
-                    children=[
                         dbc.Label("Premium", size="sm"),
                         dbc.Input(
                             type="text",
@@ -81,7 +85,7 @@ TOP_COLUMN = dbc.Form(
                     ],
                     width=1,
                 ),
-                   dbc.Col(
+                dbc.Col(
                     children=[
                         dbc.Label("Lot Size", size="sm"),
                         dbc.Input(
@@ -138,11 +142,11 @@ STRATEGY_CHART = dbc.Row(
 
 layout = dbc.Container(
     [
-        dbc.Row(TOP_COLUMN),
+        TOP_COLUMN,
         html.P(),
-        dbc.Row(STRATEGY_LIST),
+        STRATEGY_LIST,
         html.P(),
-        dbc.Row(STRATEGY_CHART),
+        STRATEGY_CHART,
         # dcc.Store stores the intermediate value
         dcc.Store(id="cache_data"),
     ],
@@ -171,7 +175,6 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
         contract_obj = {
             "op_type": op_type,
             "tr_type": tr_type,
-            "ticker": ticker,
             "op_pr": int(op_pr),
             "contract": int(contract),
             "strike": int(strike),
@@ -201,12 +204,8 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
 )
 def on_analyze_click(n, cache_data):
     if n is None:
-        return None
+        return {}
     else:
         spot = 410
-        # fig = multi_plotter(spot=spot, op_list=cache_data)
-        op_1 = {'op_type':'c','strike':420,'tr_type':'s','op_pr':3.27}
-        op_2 = {'op_type':'p','strike':400,'tr_type':'s','op_pr':3.02}
-        op_3 = {'op_type':'c','strike':425,'tr_type':'b','op_pr':1.53}
-        fig = multi_plotter(spot=412, op_list=[op_1,op_2, op_3])
+        fig = multi_plotter(spot=spot, op_list=cache_data)
         return fig

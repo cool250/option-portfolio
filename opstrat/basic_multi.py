@@ -8,9 +8,9 @@ abb = {"c": "Call", "p": "Put", "b": "Long", "s": "Short"}
 
 
 def multi_plotter(
-    spot_range=20, 
-    spot=100,
-    op_list=[],
+    spot,
+    op_list,
+    spot_range=10,
 ):
     """
     Plots a basic option payoff diagram for a multiple options and resultant payoff diagram
@@ -54,7 +54,7 @@ def multi_plotter(
     #Plots option payoff diagrams for each op1 and op2 and combined payoff
 
     """
-    x = spot * np.arange(100 - spot_range, 101 + spot_range, 0.01) / 100
+    x = spot * np.arange(100 - spot_range, 101 + spot_range, 0.1) / 100
     y0 = np.zeros_like(x)
 
     y_list = []
