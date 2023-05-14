@@ -134,11 +134,7 @@ STRATEGY_LIST = dbc.Row(
     ]
 )
 
-STRATEGY_CHART = dbc.Row(
-    children=[
-        dcc.Graph(id="a_graph"),
-    ]
-)
+STRATEGY_CHART = dbc.Row(id="graph_div")
 
 layout = dbc.Container(
     [
@@ -196,7 +192,7 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
 
 
 @app.callback(
-    Output("a_graph", "figure"),
+    Output("graph_div", "children"),
     [Input("analysis-btn", "n_clicks")],
     [
         State("cache_data", "data"),
@@ -204,8 +200,8 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
 )
 def on_analyze_click(n, cache_data):
     if n is None:
-        return {}
+        return None
     else:
         spot = 410
         fig = multi_plotter(spot=spot, op_list=cache_data)
-        return fig
+        return dcc.Graph(figure= fig)
