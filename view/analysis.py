@@ -21,6 +21,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_spot",
                             placeholder="",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -42,6 +43,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_contractType",
                             placeholder="Select",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -58,6 +60,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_tran_type",
                             placeholder="Select",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -70,6 +73,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_premium",
                             placeholder="",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -82,6 +86,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_strike",
                             placeholder="",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -94,6 +99,7 @@ SEARCH_ROW = dbc.Form(
                             id="a_lot",
                             placeholder="",
                             size="sm",
+                            required=True
                         ),
                     ],
                     width=1,
@@ -170,7 +176,7 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
         return [], None, dict(display="none")
     else:
         contract_obj = {
-            "key": n,
+            # "key": n,
             "op_type": op_type,
             "tr_type": tr_type,
             "op_pr": int(op_pr),
