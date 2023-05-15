@@ -41,7 +41,7 @@ TOP_COLUMN = dbc.Form(
                             type="text",
                             id="db_report-ticker",
                             placeholder="symbol",
-                            size="sm"
+                            size="sm",
                         ),
                     ],
                 ),
@@ -55,7 +55,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "PUT", "value": "PUT"},
                             ],
                             value="PUT",
-                            size="sm"
+                            size="sm",
                         ),
                     ],
                 ),
@@ -75,16 +75,7 @@ TOP_COLUMN = dbc.Form(
     className="p-2 bg-light border",
 )
 
-SEARCH_RESULT = html.Div(
-    [
-        html.Div(
-            dbc.Alert(
-                id="total-message",
-            ),
-        ),
-        dcc.Graph(id="graph"),
-    ]
-)
+SEARCH_RESULT = html.Div(id="dashboard_content")
 
 layout = dbc.Container(
     [
@@ -97,8 +88,7 @@ layout = dbc.Container(
 
 
 @app.callback(
-    Output("total-message", "children"),
-    Output("graph", "figure"),
+    Output("dashboard_content", "children"),
     [
         Input("chart-btn", "n_clicks"),
     ],
@@ -117,13 +107,14 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
             df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
         )
 
-        # Add Trace for displaying total sum on top of stacked bar chart
-
-        # Sum the totals for a given close date
-        dfs = df.groupby("CLOSE_DATE").sum()
-
         total = df["TOTAL_PRICE"].sum()
-
-        return f"Total : {total}", fig
+        return [
+            html.Div(
+                dbc.Alert(id="total-message", children=f"Total : {total}"),
+            ),
+            dcc.Graph(id="graph", figure=fig),
+        ]
     else:
-        return "No records", {}
+        return html.Div(
+            dbc.Alert(id="total-message", children="No records"),
+        )

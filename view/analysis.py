@@ -179,7 +179,7 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
             # "key": n,
             "op_type": op_type,
             "tr_type": tr_type,
-            "op_pr": int(op_pr),
+            "op_pr": float(op_pr),
             "contract": int(contract),
             "strike": int(strike),
         }
@@ -212,7 +212,7 @@ def on_analyze_click(n, cache_data, spot_price):
     if n is None:
         return None
     else:
-        spot = int(spot_price)
+        spot = float(spot_price)
         fig = multi_plotter(spot=spot, op_list=cache_data)
         return dcc.Graph(figure= fig)
         
