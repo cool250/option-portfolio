@@ -10,126 +10,132 @@ import plotly.express as px
 
 from app import app
 
-TICKER_LOOKUP_ROW = dbc.Row(children=
-        [
-            dbc.Col(
-                children=[
-                    dbc.Label("TICKER", size="sm"),
-                    dbc.Input(
-                        type="text",
-                        id="a_ticker",
-                        placeholder="",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    html.Div(id="a_spot"),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Button(
-                        "Lookup",
-                        color="primary",
-                        id="lookup-btn",
-                        className="mt-4",
-                    ),
-                ],
-                width=1,
-            ),
-        ],
-    )
+TICKER_LOOKUP_ROW = dbc.Row(
+    children=[
+        dbc.Col(
+            children=[
+                dbc.Label("TICKER", size="sm"),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Input(
+                    type="text",
+                    id="a_ticker",
+                    placeholder="",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                html.Div(id="a_spot"),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Button(
+                    "Lookup",
+                    color="primary",
+                    id="lookup-btn",
+                ),
+            ],
+            width=1,
+        ),
+    ],
+    className="mt-4",
+)
 
-STRATEGY_ENTRY_ROW = dbc.Row(children=
-        [
-            dbc.Col(
-                children=[
-                    dbc.Label("Option Type", size="sm"),
-                    dbc.Select(
-                        options=[
-                            {"label": "PUT", "value": "p"},
-                            {"label": "CALL", "value": "c"},
-                            {"label": "STOCK", "value": "e"},
-                        ],
-                        value="",
-                        id="a_contractType",
-                        placeholder="Select",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Label("Transaction", size="sm"),
-                    dbc.Select(
-                        options=[
-                            {"label": "SELL", "value": "s"},
-                            {"label": "BUY", "value": "b"},
-                        ],
-                        value="",
-                        id="a_tran_type",
-                        placeholder="Select",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Label("Premium", size="sm"),
-                    dbc.Input(
-                        type="text",
-                        id="a_premium",
-                        placeholder="",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Label("Strike", size="sm"),
-                    dbc.Input(
-                        type="text",
-                        id="a_strike",
-                        placeholder="",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Label("Lot Size", size="sm"),
-                    dbc.Input(
-                        type="text",
-                        id="a_lot",
-                        placeholder="",
-                        size="sm",
-                    ),
-                ],
-                width=1,
-            ),
-            dbc.Col(
-                children=[
-                    dbc.Button(
-                        "Add",
-                        color="primary",
-                        id="add-btn",
-                        className="mt-4",
-                    ),
-                ],
-                width=1,
-            ),
-        ],
-        style=dict(display="none"),
-        id="table_row",
-    )
+STRATEGY_ENTRY_ROW = dbc.Row(
+    children=[
+        dbc.Col(
+            children=[
+                dbc.Label("Option Type", size="sm"),
+                dbc.Select(
+                    options=[
+                        {"label": "PUT", "value": "p"},
+                        {"label": "CALL", "value": "c"},
+                        {"label": "STOCK", "value": "e"},
+                    ],
+                    value="",
+                    id="a_contractType",
+                    placeholder="Select",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Label("Transaction", size="sm"),
+                dbc.Select(
+                    options=[
+                        {"label": "SELL", "value": "s"},
+                        {"label": "BUY", "value": "b"},
+                    ],
+                    value="",
+                    id="a_tran_type",
+                    placeholder="Select",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Label("Premium", size="sm"),
+                dbc.Input(
+                    type="text",
+                    id="a_premium",
+                    placeholder="",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Label("Strike", size="sm"),
+                dbc.Input(
+                    type="text",
+                    id="a_strike",
+                    placeholder="",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Label("Lot Size", size="sm"),
+                dbc.Input(
+                    type="text",
+                    id="a_lot",
+                    placeholder="",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Button(
+                    "Add",
+                    color="primary",
+                    id="add-btn",
+                    className="mt-4",
+                ),
+            ],
+            width=1,
+        ),
+    ],
+    style=dict(display="none"),
+    id="table_row",
+    className="mt-4",
+)
 STRATEGY_LIST = dbc.Row(
     children=[
         dbc.Col(
@@ -148,7 +154,8 @@ STRATEGY_LIST = dbc.Row(
                 ),
             ]
         ),
-    ]
+    ],
+    className="mt-4",
 )
 
 STRATEGY_CHART = dbc.Row(id="graph_div")
@@ -164,9 +171,34 @@ layout = dbc.Container(
         STRATEGY_CHART,
         # dcc.Store stores the intermediate value
         dcc.Store(id="cache_data"),
-        html.Div(id="hidden-div", style={"display": "none"}),
     ],
 )
+
+@app.callback(
+    Output("a_spot", "children"),
+    Output("table_row", "style"),
+    [Input("lookup-btn", "n_clicks")],
+    [
+        State("a_ticker", "value"),
+    ],
+)
+def on_lookup_click(n, ticker):
+    """ Lookup the current price of ticker
+
+    Args:
+        n (_type_): Number of clicks of button to prevent being called during onLoad
+        ticker (_type_): Symbol for which price needs to be fetched
+
+    Returns:
+        int: Ticker Price
+        dict: Style to make strategy entry row visible
+    """
+    if n is None:
+        return None, dict(display="none")
+    else:
+        quotes = Quotes()
+        res = quotes.get_quotes(ticker)
+        return res["mark"], dict()
 
 
 @app.callback(
@@ -184,6 +216,20 @@ layout = dbc.Container(
     ],
 )
 def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
+    """_summary_
+
+    Args:
+        n (_type_): _description_
+        op_type (_type_): _description_
+        tr_type (_type_): _description_
+        op_pr (_type_): _description_
+        contract (_type_): _description_
+        strike (_type_): _description_
+        cache_data (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if n is None:
         return [], None, dict(display="none")
     else:
@@ -221,26 +267,19 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
     ],
 )
 def on_analyze_click(n, cache_data, spot_price):
+    """_summary_
+
+    Args:
+        n (_type_): _description_
+        cache_data (_type_): _description_
+        spot_price (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if n is None:
         return None
     else:
         spot = float(spot_price)
         fig = multi_plotter(spot=spot, op_list=cache_data)
         return dcc.Graph(figure=fig)
-
-
-@app.callback(
-    Output("a_spot", "children"),
-    Output("table_row", "style"),
-    [Input("lookup-btn", "n_clicks")],
-    [
-        State("a_ticker", "value"),
-    ],
-)
-def on_lookup_click(n, ticker):
-    if n is None:
-        return None, dict(display="none")
-    else:
-        quotes = Quotes()
-        res = quotes.get_quotes(ticker)
-        return res["mark"], dict()
