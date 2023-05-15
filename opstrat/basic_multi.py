@@ -54,7 +54,7 @@ def multi_plotter(
     #Plots option payoff diagrams for each op1 and op2 and combined payoff
 
     """
-    x = spot * np.arange(100 - spot_range, 101 + spot_range, 0.1) / 100
+    x = spot * np.arange(100 - spot_range, 101 + spot_range, 0.01) / 100
     y0 = np.zeros_like(x)
 
     y_list = []

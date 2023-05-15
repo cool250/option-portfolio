@@ -1,6 +1,6 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import dcc, html
+from dash import dcc, html, dash_table
 from dash.dependencies import Input, Output, State
 import dash_tabulator
 from opstrat import multi_plotter
@@ -15,10 +15,10 @@ SEARCH_ROW = dbc.Form(
             [
                 dbc.Col(
                     children=[
-                        dbc.Label("Ticker", size="sm"),
+                        dbc.Label("TICKER PRICE", size="sm"),
                         dbc.Input(
                             type="text",
-                            id="a_ticker",
+                            id="a_spot",
                             placeholder="",
                             size="sm",
                         ),
@@ -146,6 +146,7 @@ layout = dbc.Container(
         STRATEGY_CHART,
         # dcc.Store stores the intermediate value
         dcc.Store(id="cache_data"),
+        html.Div(id='hidden-div', style={'display':'none'})
     ],
 )
 
@@ -158,18 +159,18 @@ layout = dbc.Container(
     [
         State("a_contractType", "value"),
         State("a_tran_type", "value"),
-        State("a_ticker", "value"),
         State("a_premium", "value"),
         State("a_lot", "value"),
         State("a_strike", "value"),
         State("cache_data", "data"),
     ],
 )
-def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_data):
+def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
     if n is None:
         return [], None, dict(display="none")
     else:
         contract_obj = {
+            "key": n,
             "op_type": op_type,
             "tr_type": tr_type,
             "op_pr": int(op_pr),
@@ -187,6 +188,7 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
                 id="analysis-table",
                 columns=[{"id": i, "title": i, "field": i} for i in df.columns],
                 data=df.to_dict("records"),
+                rowDeleted=True,
             ),
         )
         return cache_obj, dt, dict()
@@ -197,12 +199,15 @@ def on_add_click(n, op_type, tr_type, ticker, op_pr, contract, strike, cache_dat
     [Input("analysis-btn", "n_clicks")],
     [
         State("cache_data", "data"),
+        State("a_spot", "value"),
     ],
 )
-def on_analyze_click(n, cache_data):
+def on_analyze_click(n, cache_data, spot_price):
     if n is None:
         return None
     else:
-        spot = 410
+        spot = int(spot_price)
         fig = multi_plotter(spot=spot, op_list=cache_data)
         return dcc.Graph(figure= fig)
+        
+
