@@ -78,11 +78,11 @@ class AccountPositions:
         df["RETURNS"] = (
             (
                 (
-                    df["CURRENT PRICE"]
+                    (df["CURRENT PRICE"]
                     * 365
                     * df["QTY"]
+                    * 100)
                     / (df["MARGIN"] * df["DAYS"])
-                    * 100
                 )
             )
             .abs()
