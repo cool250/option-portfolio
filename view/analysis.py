@@ -174,6 +174,7 @@ layout = dbc.Container(
     ],
 )
 
+
 @app.callback(
     Output("a_spot", "children"),
     Output("table_row", "style"),
@@ -183,7 +184,7 @@ layout = dbc.Container(
     ],
 )
 def on_lookup_click(n, ticker):
-    """ Lookup the current price of ticker
+    """Lookup the current price of ticker
 
     Args:
         n (_type_): Number of clicks of button to prevent being called during onLoad
@@ -247,12 +248,19 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
         cache_obj.append(contract_obj)
         # Display the strategies selected
         df = pd.DataFrame.from_dict(cache_obj)
+
+        table_columns = [
+            {"title": "OPTION", "field": "op_type", "editor": "input"},
+            {"title": "BUY", "field": "tr_type", "editor": "input"},
+            {"title": "PREMIUM", "field": "op_pr", "editor": "input"},
+            {"title": "CONTRACT", "field": "contract", "editor": "input"},
+            {"title": "STRIKE", "field": "strike", "editor": "input"},
+        ]
         dt = (
             dash_tabulator.DashTabulator(
                 id="analysis-table",
-                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
+                columns=table_columns,
                 data=df.to_dict("records"),
-                rowDeleted=True,
             ),
         )
         return cache_obj, dt, dict()
@@ -260,10 +268,11 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
 
 @app.callback(
     Output("graph_div", "children"),
-    [Input("analysis-btn", "n_clicks")],
+    [Input("analysis-btn", "n_clicks"),],
     [
         State("cache_data", "data"),
         State("a_spot", "children"),
+
     ],
 )
 def on_analyze_click(n, cache_data, spot_price):
