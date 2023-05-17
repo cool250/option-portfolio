@@ -110,8 +110,6 @@ def income_finder(ticker, **kwargs):
             option.symbol = strike_detail["symbol"]
             option.underlying = ticker
             option.mark = float(strike_detail["mark"])
-            option.delta = strike_detail["delta"]
-            option.volatility = strike_detail["volatility"]
             option.expiration_type = strike_detail["expirationType"]
             option.expiration = expiration_week[0]
             option.strike_price = float(strike_detail["strikePrice"])
@@ -130,6 +128,8 @@ def income_finder(ticker, **kwargs):
                 option.breakeven = option.strike_price + option.mark
 
             option.stock_price = float(current_stock_price)
+            option.delta = strike_detail["delta"]
+            option.volatility = strike_detail["volatility"]
             # option.open_interest = int(strike_detail["openInterest"])
             # option.volume = int(strike_detail["totalVolume"])
             option.percentage_otm = formatter_percent(

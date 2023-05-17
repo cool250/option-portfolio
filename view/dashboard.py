@@ -1,6 +1,7 @@
 import logging
 from dash import Dash, dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
+import dash_tabulator
 import plotly.express as px
 import plotly.graph_objects as go
 from app import app
@@ -61,6 +62,20 @@ TOP_COLUMN = dbc.Form(
                 ),
                 dbc.Col(
                     children=[
+                        dbc.Label("Report Type", size="sm"),
+                        dbc.Select(
+                            id="db_report-type",
+                            options=[
+                                {"label": "TABLE", "value": "TABLE"},
+                                {"label": "CHART", "value": "CHART"},
+                            ],
+                            value="CHART",
+                            size="sm",
+                        ),
+                    ]
+                ),
+                dbc.Col(
+                    children=[
                         dbc.Button(
                             "Search",
                             color="primary",
@@ -97,23 +112,66 @@ layout = dbc.Container(
         State("db_end-date-picker", "date"),
         State("db_report-ticker", "value"),
         State("db_instrument-type", "value"),
+        State("db_report-type", "value"),
     ],
 )
-def on_search(n, start_date, end_date, ticker, instrument_type):
+def on_search(n, start_date, end_date, ticker, instrument_type, report_type):
     df = get_report(start_date, end_date, ticker, instrument_type)
 
     if not df.empty:
-        fig = px.bar(
-            df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
-        )
-
         total = df["TOTAL_PRICE"].sum()
-        return [
-            html.Div(
-                dbc.Alert(id="total-message", children=f"Total : {total}"),
-            ),
-            dcc.Graph(id="graph", figure=fig),
-        ]
+        message = html.Div(
+            dbc.Alert(id="total-message", children=f"Total : {total}"),
+        )
+        # Populate data table
+        if report_type == "TABLE":
+            columns = [
+                {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
+                {"title": "OPEN DATE", "field": "DATE"},
+                {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
+                {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
+                {
+                    "title": "TOTAL PRICE",
+                    "field": "TOTAL_PRICE",
+                    "topCalc": "sum",
+                    "topCalcParams": {
+                        "precision": 2,
+                    },
+                },
+                {"title": "PRICE", "field": "PRICE"},
+                {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
+                {"title": "QTY", "field": "QTY"},
+                {"title": "SYMBOL", "field": "SYMBOL"},
+                {
+                    "title": "STATUS",
+                    "field": "STATUS",
+                    "headerFilter": "input",
+                    "topCalc": "count",
+                },
+            ]
+            dt = (
+                dash_tabulator.DashTabulator(
+                    id="report-table",
+                    columns=columns,
+                    data=df.to_dict("records"),
+                    downloadButtonType={
+                        "css": "btn btn-secondary mb-3",
+                        "text": "Export",
+                        "type": "csv",
+                    },
+                ),
+            )
+            content = html.Div(children=dt)
+        else:
+            # Populate chart
+            fig = px.bar(
+                df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"  
+            )
+            content = dcc.Graph(id="graph", figure=fig)
+        return (
+            message,
+            content,
+        )
     else:
         return html.Div(
             dbc.Alert(id="total-message", children="No records"),

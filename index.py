@@ -4,15 +4,14 @@ from dash.dependencies import Input, Output
 import os
 
 from app import app
-from view import income_finder, oauth, portfolio, report, dashboard, analysis
+from view import income_finder, oauth, portfolio, dashboard, analysis
 
 navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link", class_name="nav-link")),
         dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-2-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-3-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Dashboard", href="/dashboard", id="page-4-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Report", href="/dashboard", id="page-3-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-4-link", class_name="nav-link")),
     ],
     brand="MITRA",
     brand_href="#",

@@ -14,7 +14,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
     children=[
         dbc.Col(
             children=[
-                dbc.Label("TICKER", size="sm"),
+                dbc.Label("TICKER"),
             ],
             width=1,
         ),
