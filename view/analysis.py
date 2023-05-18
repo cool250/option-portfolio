@@ -1,6 +1,6 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import dcc, html, dash_table
+from dash import dcc, html, MATCH, ALL
 from dash.dependencies import Input, Output, State
 import dash_tabulator
 from opstrat import multi_plotter
@@ -8,7 +8,7 @@ from broker.quotes import Quotes
 
 import plotly.express as px
 
-from app import app
+from app import app, cache
 
 TICKER_LOOKUP_ROW = dbc.Row(
     children=[
@@ -169,8 +169,7 @@ layout = dbc.Container(
         STRATEGY_LIST,
         html.P(),
         STRATEGY_CHART,
-        # dcc.Store stores the intermediate value
-        dcc.Store(id="cache_data"),
+        html.Div(id="dummy-div"),
     ],
 )
 
@@ -203,7 +202,6 @@ def on_lookup_click(n, ticker):
 
 
 @app.callback(
-    Output("cache_data", "data"),
     Output("a_content", "children"),
     Output("analysis-btn", "style"),
     [Input("add-btn", "n_clicks")],
@@ -213,10 +211,9 @@ def on_lookup_click(n, ticker):
         State("a_premium", "value"),
         State("a_lot", "value"),
         State("a_strike", "value"),
-        State("cache_data", "data"),
     ],
 )
-def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
+def on_add_click(n, op_type, tr_type, op_pr, contract, strike):
     """_summary_
 
     Args:
@@ -232,20 +229,22 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
         _type_: _description_
     """
     if n is None:
-        return [], None, dict(display="none")
+        cache.clear()
+        return None, dict(display="none")
     else:
         contract_obj = {
             # "key": n,
             "op_type": op_type,
             "tr_type": tr_type,
-            "op_pr": float(op_pr),
-            "contract": int(contract),
-            "strike": int(strike),
+            "op_pr": op_pr,
+            "contract": contract,
+            "strike": strike,
         }
-        cache_obj = cache_data
+        cache_obj = cache.get("strategy_list")
         if not cache_obj:
             cache_obj = []
         cache_obj.append(contract_obj)
+        cache.set("strategy_list", cache_obj)
         # Display the strategies selected
         df = pd.DataFrame.from_dict(cache_obj)
 
@@ -263,19 +262,15 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike, cache_data):
                 data=df.to_dict("records"),
             ),
         )
-        return cache_obj, dt, dict()
+        return dt, dict()
 
 
 @app.callback(
     Output("graph_div", "children"),
-    [Input("analysis-btn", "n_clicks"),],
-    [
-        State("cache_data", "data"),
-        State("a_spot", "children"),
-
-    ],
+    [Input("analysis-btn", "n_clicks"), Input("dummy-div", "children")],
+    State("a_spot", "children"),
 )
-def on_analyze_click(n, cache_data, spot_price):
+def on_analyze_click(n, dummy, spot_price):
     """_summary_
 
     Args:
@@ -289,6 +284,20 @@ def on_analyze_click(n, cache_data, spot_price):
     if n is None:
         return None
     else:
+        cache_data = cache.get("strategy_list")
         spot = float(spot_price)
         fig = multi_plotter(spot=spot, op_list=cache_data)
         return dcc.Graph(figure=fig)
+
+
+# dash_tabulator can register a callback on dataChanged
+# to receive a dict of the row values
+@app.callback(
+    Output("dummy-div", "children"),
+    Input("analysis-table", "dataChanged"),
+)
+def display_output(table):
+    if table:
+        # Update the cache object with datatable updates
+        cache.set("strategy_list", table)
+        return None

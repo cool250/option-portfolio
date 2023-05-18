@@ -3,6 +3,7 @@ import logging
 import dash
 import dash_auth
 import dash_bootstrap_components as dbc
+from flask_caching import Cache
 
 logging.basicConfig(filename="app.log",
                     level=logging.DEBUG, format='%(asctime)s %(funcName)s %(message)s')
@@ -15,8 +16,17 @@ VALID_USERNAME_PASSWORD_PAIRS = [
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.COSMO],
-    suppress_callback_exceptions=True
+    suppress_callback_exceptions=True,
+    prevent_initial_callbacks="initial_duplicate",
 )
+
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory',
+    'CACHE_THRESHOLD': 50  # should be equal to maximum number of active users
+})
+
+
 
 app.title = 'Options Tracker'
 # auth = dash_auth.BasicAuth(

@@ -64,10 +64,10 @@ def multi_plotter(
         check_optype(op_type)
         check_trtype(tr_type)
 
-        strike = op["strike"]
-        op_pr = op["op_pr"]
+        strike = float(op["strike"])
+        op_pr = float(op["op_pr"])
         try:
-            contract = op["contract"]
+            contract = float(op["contract"])
         except:
             contract = 1
         y_list.append(payoff_calculator(x, op_type, strike, op_pr, tr_type, contract))
