@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 from flask_caching import Cache
 
 logging.basicConfig(filename="app.log",
-                    level=logging.DEBUG, format='%(asctime)s %(funcName)s %(message)s')
+                    level=logging.DEBUG, format='%(asctime)s - %(name)s - %(message)s')
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = [

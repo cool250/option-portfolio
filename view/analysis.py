@@ -1,12 +1,13 @@
 import dash_bootstrap_components as dbc
 import pandas as pd
-from dash import dcc, html, MATCH, ALL
+from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_tabulator
 from opstrat import multi_plotter
 from broker.quotes import Quotes
+from broker.options import Options
+from service import option_analysis
 
-import plotly.express as px
 
 from app import app, cache
 
@@ -24,6 +25,23 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     type="text",
                     id="a_ticker",
                     placeholder="",
+                    size="sm",
+                ),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Label("Weeks", size="sm"),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
+                dbc.Select(
+                    value="",
+                    id="a_weeks",
+                    placeholder="Select",
                     size="sm",
                 ),
             ],
@@ -176,6 +194,7 @@ layout = dbc.Container(
 
 @app.callback(
     Output("a_spot", "children"),
+    Output("a_weeks", "options"),
     Output("table_row", "style"),
     [Input("lookup-btn", "n_clicks")],
     [
@@ -194,11 +213,14 @@ def on_lookup_click(n, ticker):
         dict: Style to make strategy entry row visible
     """
     if n is None:
-        return None, dict(display="none")
+        return None, None, dict(display="none")
     else:
-        quotes = Quotes()
-        res = quotes.get_quotes(ticker)
-        return res["mark"], dict()
+
+        # quotes = Quotes()
+        # res = quotes.get_quotes(ticker)
+        # mark = res["mark"]
+        mark, weeks = option_analysis.get_ticker_details(ticker=ticker)
+        return mark, weeks, dict()
 
 
 @app.callback(
