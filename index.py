@@ -4,14 +4,15 @@ from dash.dependencies import Input, Output
 import os
 
 from app import app
-from view import income_finder, oauth, portfolio, dashboard, analysis
+from view import income_finder, oauth, portfolio, analysis, report, home
 
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-2-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Report", href="/dashboard", id="page-3-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-4-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Home", href="/home", id="page-1-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-2-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-4-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),
     ],
     brand="MITRA",
     brand_href="#",
@@ -25,7 +26,9 @@ app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname in ["/", "/income_finder"]:
+    if pathname in ["/", "/home"]:
+        return home.layout
+    elif pathname == "/income_finder":
         return income_finder.layout
     elif pathname == "/portfolio":
         return portfolio.layout
@@ -34,7 +37,7 @@ def render_page_content(pathname):
     elif pathname == "/oauth":
         return oauth.layout
     elif pathname == "/dashboard":
-        return dashboard.layout
+        return report.layout
     elif pathname == "/analysis":
         return analysis.layout
     # If the user tries to reach a different page, return a 404 message
