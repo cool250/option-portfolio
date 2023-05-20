@@ -85,14 +85,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-
-            # # starting date of current year
-            # starting_day_of_current_year = dt.now().date().replace(month=1, day=1).strftime("%Y-%m-%d")
             
-            # #if close date is earlier than Jan 1st replace it to remove last year's closing records
-            # if start_date < starting_day_of_current_year:
-            #     start_date = starting_day_of_current_year
-
             # Filter records based on closing date search input
             df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
 
