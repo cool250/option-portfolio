@@ -32,7 +32,7 @@ TABLE_MAPPING = {
     "percentage_otm": "OTM",
 }
 
-def income_finder(ticker, **kwargs):
+def income_finder(ticker: str, **kwargs) -> pd.DataFrame:
     """
     Get option chain for a given ticker
     """
@@ -149,12 +149,12 @@ def income_finder(ticker, **kwargs):
     return df
 
 
-def filter_strikes(option):
+def filter_strikes(option: Option) -> bool:
     """
     Filter out strikes not matching filter criteria in screener
     """
 
-    def moneyness_flag(option):
+    def moneyness_flag():
         return (
             (option.type == PUT_CALL.PUT.value)
             and (
@@ -170,10 +170,10 @@ def filter_strikes(option):
             )
         )
 
-    def premium_flag(option):
+    def premium_flag():
         return option.mark > option.desired_premium * option.stock_price / 100
 
-    def delta_flag(option):
+    def delta_flag():
         """
         Since UI is taking positive deltas, need to convert to negative deltas for puts
         """
@@ -188,14 +188,14 @@ def filter_strikes(option):
         )
 
     try:
-        if premium_flag(option) and moneyness_flag(option) and delta_flag(option):
+        if premium_flag() and moneyness_flag() and delta_flag():
             return True
         else:
             return False
     except:
         return False
 
-def watchlist_income(watch_list, params):
+def watchlist_income(watch_list: list, params: dict)->pd.DataFrame:
     df = pd.DataFrame()
 
     # Get Option chain for watch list

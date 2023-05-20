@@ -150,7 +150,7 @@ TOP_COLUMN = dbc.Form(
                     width=4,
                 ),
             ],
-            
+            className="p-3",  
         ),
     ],
     className="p-3 bg-light border",
@@ -253,6 +253,7 @@ def on_button_click(
                 "paginationSize": 20,
                 "responsiveLayout": "true",
                 "movableRows": "true",
+                "groupBy": "TICKER",
             }
 
             # # add groupBy option to the Tabulator component to group at Ticker level

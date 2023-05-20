@@ -4,8 +4,6 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import dash_tabulator
 from opstrat import multi_plotter
-from broker.quotes import Quotes
-from broker.options import Options
 from service import option_analysis
 
 
@@ -32,6 +30,12 @@ TICKER_LOOKUP_ROW = dbc.Row(
         ),
         dbc.Col(
             children=[
+                html.Div(id="a_spot"),
+            ],
+            width=1,
+        ),
+        dbc.Col(
+            children=[
                 dbc.Label("Weeks", size="sm"),
             ],
             width=1,
@@ -44,12 +48,6 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     placeholder="Select",
                     size="sm",
                 ),
-            ],
-            width=1,
-        ),
-        dbc.Col(
-            children=[
-                html.Div(id="a_spot"),
             ],
             width=1,
         ),
