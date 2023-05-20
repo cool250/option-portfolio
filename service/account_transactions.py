@@ -31,58 +31,6 @@ params = {
 }
 
 
-def get_transactions(
-    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
-):
-    """[Calls the TD transactions API class ]
-
-    Args:
-        start_date ([str], optional): [Include Transcations after the start date]. Defaults to None.
-        end_date ([str], optional): [Include Transcations before the end date]. Defaults to None.
-        symbol ([str], optional): [description]. Defaults to None.
-        instrument_type ([str], optional): [description]. Defaults to None.
-        tran_type ([str], optional): [description]. Defaults to None.
-
-    Returns:
-        df: Transactions for given search criteria
-    """
-
-    # In case start date or end date is not passed, use to initiliaze default
-    to_date = dt.now()
-
-    if not end_date:
-        end_date = to_date.strftime("%Y-%m-%d")
-
-    if not start_date:
-        from_date = to_date - timedelta(days=default_start_duration)
-        start_date = from_date.strftime("%Y-%m-%d")
-    else:
-        # Try to use 45 days in advance to get all options expiring before entered start date 
-        start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
-
-    transaction = Transaction()
-    df = transaction.get_transactionsDF(
-        ACCOUNT_NUMBER,
-        transaction_type="TRADE",
-        symbol=symbol,
-        start_date=start_date,
-        end_date=end_date,
-    )
-
-    if not df.empty:
-
-        # Change df['transactionDate'] string to remove timestamp
-        df["transactionDate"] = pd.to_datetime(
-            df["transactionDate"], format="%Y-%m-%dT%H:%M:%S%z"
-        ).dt.strftime("%Y-%m-%d")
-
-        # Change df['optionExpirationDate'] string to remove timestamp
-        df["transactionItem.instrument.optionExpirationDate"] = pd.to_datetime(
-            df["transactionItem.instrument.optionExpirationDate"], format="%Y-%m-%dT%H:%M:%S%z"
-        ).dt.strftime("%Y-%m-%d")
-    return df
-
-
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
     
     """
@@ -101,28 +49,49 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 
     # In case start date or end date is not passed, use to initialize default
     today = dt.now()
-
-    if not end_date:
-        end_date = today.strftime("%Y-%m-%d")
-
     if not start_date:
-        from_date = today - timedelta(days=default_start_duration)
-        start_date = from_date.strftime("%Y-%m-%d")
+        start_date = today.strftime("%Y-%m-%d")
+    
+    # Try to use 45 days in advance to get all options expiring before entered start date 
+    # The API takes trade open date as start date not trade closing
+    search_start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
+    
+    if not end_date:
+        # Used to filter for trade ending dates 45 days out as default
+        end_date = (today + timedelta(days=45)).strftime("%Y-%m-%d")
 
-    df = get_transactions(start_date, end_date, symbol, instrument_type)
+    transaction = Transaction()
+    df = transaction.get_transactionsDF(
+        ACCOUNT_NUMBER,
+        transaction_type="TRADE",
+        symbol=symbol,
+        start_date=search_start_date,
+        end_date=end_date,
+    )
+
+    if not df.empty:
+        # Change df['transactionDate'] string to remove timestamp
+        df["transactionDate"] = pd.to_datetime(
+            df["transactionDate"], format="%Y-%m-%dT%H:%M:%S%z"
+        ).dt.strftime("%Y-%m-%d")
+
+        # Change df['optionExpirationDate'] string to remove timestamp
+        df["transactionItem.instrument.optionExpirationDate"] = pd.to_datetime(
+            df["transactionItem.instrument.optionExpirationDate"], format="%Y-%m-%dT%H:%M:%S%z"
+        ).dt.strftime("%Y-%m-%d")
  
     # Processing for Options
     if not df.empty:
         df = df.rename(columns=params)
-        if instrument_type == "PUT" or instrument_type == "CALL" or instrument_type == "CALL":
+        if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
 
-            # starting date of current year
-            starting_day_of_current_year = dt.now().date().replace(month=1, day=1).strftime("%Y-%m-%d")
+            # # starting date of current year
+            # starting_day_of_current_year = dt.now().date().replace(month=1, day=1).strftime("%Y-%m-%d")
             
-            #if close date is earlier than Jan 1st replace it to remove last year's closing records
-            if start_date < starting_day_of_current_year:
-                start_date = starting_day_of_current_year
+            # #if close date is earlier than Jan 1st replace it to remove last year's closing records
+            # if start_date < starting_day_of_current_year:
+            #     start_date = starting_day_of_current_year
 
             # Filter records based on closing date search input
             df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
