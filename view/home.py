@@ -40,7 +40,7 @@ def show_chart(df, title):
         )
         fig.update_layout(
             margin=dict(l=20, r=20, t=20, b=20),
-            height=400,
+            height=350,
             paper_bgcolor="rgb(248, 248, 255)",
             plot_bgcolor="rgb(248, 248, 255)",
             bargap=0.6,
