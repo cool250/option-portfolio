@@ -54,6 +54,7 @@ TOP_COLUMN = dbc.Form(
                             options=[
                                 {"label": "CALL", "value": "CALL"},
                                 {"label": "PUT", "value": "PUT"},
+                                {"label": "ALL", "value": "ALL"},
                             ],
                             value="PUT",
                             size="sm",
@@ -166,6 +167,13 @@ def on_search(n, start_date, end_date, ticker, instrument_type, report_type):
             # Populate chart
             fig = px.bar(
                 df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"  
+            )
+            fig.update_layout(
+                margin=dict(l=20, r=20, t=20, b=20),
+                height=400,
+                paper_bgcolor="rgb(248, 248, 255)",
+                plot_bgcolor="rgb(248, 248, 255)",
+                bargap=0.1,
             )
             content = dcc.Graph(id="graph", figure=fig)
         return (

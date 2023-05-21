@@ -146,10 +146,6 @@ def populate_option(
     option.percentage_otm = formatter_percent(
         (option.stock_price - option.strike_price) / option.stock_price
     )
-    # option.desired_premium = float(params["premium"])
-    # option.desired_moneyness = float(params["moneyness"])
-    # option.desired_min_delta = float(params["min_delta"])
-    # option.desired_max_delta = float(params["max_delta"])
     return option
 
 

@@ -31,7 +31,7 @@ params = {
 }
 
 
-def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
+def get_report(oe_start_date=None, oe_end_date=None, symbol=None, instrument_type=None):
     
     """
     This method is called from Reports screen.
@@ -49,16 +49,16 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 
     # In case start date or end date is not passed, use to initialize default
     today = dt.now()
-    if not start_date:
-        start_date = today.strftime("%Y-%m-%d")
+    if not oe_start_date:
+        oe_start_date = today.strftime("%Y-%m-%d")
     
     # Try to use 45 days in advance to get all options expiring before entered start date 
     # The API takes trade open date as start date not trade closing
-    search_start_date = (dt.strptime(start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
+    search_start_date = (dt.strptime(oe_start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
     
-    if not end_date:
+    if not oe_end_date:
         # Used to filter for trade ending dates 45 days out as default
-        end_date = (today + timedelta(days=45)).strftime("%Y-%m-%d")
+        oe_end_date = (today + timedelta(days=45)).strftime("%Y-%m-%d")
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(
@@ -66,7 +66,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         transaction_type="TRADE",
         symbol=symbol,
         start_date=search_start_date,
-        end_date=end_date,
+        end_date=oe_end_date,
     )
 
     if not df.empty:
@@ -87,12 +87,21 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
             df = parse_option_response(df, instrument_type)
             
             # Filter records based on closing date search input
-            df = df[(df['CLOSE_DATE'] >= start_date) & (df['CLOSE_DATE'] <= end_date)]
+            df = df[(df['CLOSE_DATE'] >= oe_start_date) & (df['CLOSE_DATE'] <= oe_end_date)]
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
             df = parse_equity_response(df, instrument_type)
-            df = df[(df['DATE'] >= start_date)]
+            df = df[(df['DATE'] >= oe_start_date)]
+        
+        else:
+            df_puts = parse_option_response(df, "PUT")
+            df_calls = parse_option_response(df, "CALL")
+            df = pd.concat([df_puts, df_calls])
+
+             # Filter records based on closing date search input
+            df = df[(df['CLOSE_DATE'] >= oe_start_date) & (df['CLOSE_DATE'] <= oe_end_date)]
+
 
     return df
 

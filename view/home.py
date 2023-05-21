@@ -5,38 +5,45 @@ from app import app
 from service.account_transactions import get_report
 import pandas as pd
 
+from utils.functions import formatter_currency_with_cents
+
 
 SEARCH_RESULT = html.Div(id="home_content")
+
 
 def on_search():
     df_puts = get_report(instrument_type="PUT")
     df_calls = get_report(instrument_type="CALL")
     return dbc.Container(
-    [
-        dbc.Row(html.H4(children="PUTS")),
-        dbc.Row(show_chart(df_puts)),
-        html.P(),
-        dbc.Row(html.H4(children="CALLS")),
-        dbc.Row(show_chart(df_calls)),
-    ],
-    fluid=True,
-)
+        dbc.Row(
+            [
+                dbc.Col(show_chart(df_puts, title="PUTS")),
+                dbc.Col(show_chart(df_calls, title="CALLS")),
+            ]
+        ),
+    )
 
-def show_chart(df):
+
+def show_chart(df, title):
     if not df.empty:
         total = df["TOTAL_PRICE"].sum()
         message = html.Div(
-            dbc.Alert(children=f"Total : {total}"),
+            dbc.Alert(children=f"Total {title}: {formatter_currency_with_cents(total)}"),
         )
         # Populate chart
         fig = px.bar(
-            df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE",
+            df,
+            x="CLOSE_DATE",
+            y="TOTAL_PRICE",
+            color="TICKER",
+            text="TOTAL_PRICE",
         )
         fig.update_layout(
             margin=dict(l=20, r=20, t=20, b=20),
-            width=800,
             height=400,
-            paper_bgcolor="LightSteelBlue",
+            paper_bgcolor="rgb(248, 248, 255)",
+            plot_bgcolor="rgb(248, 248, 255)",
+            bargap=0.6,
         )
         content = dcc.Graph(figure=fig)
         return (
@@ -47,5 +54,6 @@ def show_chart(df):
         return html.Div(
             dbc.Alert(children="No records"),
         )
+
 
 layout = on_search()
