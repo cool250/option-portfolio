@@ -102,8 +102,9 @@ def multi_plotter(
 
         # Edit the layout
         fig.update_layout(
-            title="Options Payoff", xaxis_title="Strike Price", yaxis_title="Premium"
+            title="Options Payoff", xaxis_title="Strike Price", yaxis_title="Premium", width=800, height=500, legend=dict(orientation="h",)
         )
+        fig.update_yaxes(automargin=True)
         return fig
 
     fig = plotly_plot()

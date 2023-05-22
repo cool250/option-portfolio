@@ -8,152 +8,149 @@ from service.chart_helper import update_graph
 from service.search_income import watchlist_income
 from utils.constants import screener_list
 
-TOP_COLUMN = dbc.Form(
-    [
-        dbc.Row(
-            [
-                dbc.Col(
-                    children=[
-                        dbc.Label("Choose one", size="sm"),
-                        dbc.Select(
-                            options=[
-                                {"label": "PUT", "value": "PUT"},
-                                {"label": "CALL", "value": "CALL"},
-                            ],
-                            value="PUT",
-                            id="contractType",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Choose one", size="sm"),
-                        dbc.Select(
-                            options=[
-                                {"label": "SINGLE", "value": "SINGLE"},
-                                {"label": "VERTICAL", "value": "VERTICAL"},
-                            ],
-                            value="SINGLE",
-                            id="tran_type",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("WatchList", size="sm"),
-                        dbc.Select(
-                            options=[{"label": i, "value": i} for i in screener_list],
-                            value="",
-                            id="ticker_list",
-                            placeholder="Select",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Ticker", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="ticker",
-                            placeholder=" Enter Ticker",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Premium %", size="sm"),
-                        dbc.Input(
-                            type="text", id="premium", placeholder="1", size="sm"
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("OTM %", size="sm"),
-                        dbc.Input(
-                            type="text", id="moneyness", placeholder="2", size="sm"
-                        ),
-                    ],
-                    width=2,
-                ),
-            ],
-            className="p-3",
-        ),
-        dbc.Row(
-            [
-                dbc.Col(
-                    children=[
-                        dbc.Label("Min Days", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="min_expiration_days",
-                            placeholder="15",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Max Days", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="max_expiration_days",
-                            placeholder="45",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Min Delta", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="min_delta",
-                            placeholder="0.25",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Label("Max Delta", size="sm"),
-                        dbc.Input(
-                            type="text",
-                            id="max_delta",
-                            placeholder="0.35",
-                            size="sm",
-                        ),
-                    ],
-                    width=2,
-                ),
-                dbc.Col(
-                    children=[
-                        dbc.Button(
-                            "Search",
-                            color="primary",
-                            id="income-btn",
-                            className="mt-4",
-                        ),
-                    ],
-                    width=4,
-                ),
-            ],
-            className="p-3",  
-        ),
-    ],
-    className="p-3 bg-light border",
+TOP_COLUMN = (
+    html.Div(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Choose one", size="sm"),
+                            dbc.Select(
+                                options=[
+                                    {"label": "PUT", "value": "PUT"},
+                                    {"label": "CALL", "value": "CALL"},
+                                ],
+                                value="PUT",
+                                id="contractType",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("WatchList", size="sm"),
+                            dbc.Select(
+                                options=[
+                                    {"label": i, "value": i} for i in screener_list
+                                ],
+                                value="",
+                                id="ticker_list",
+                                placeholder="Select",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Ticker", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="ticker",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Premium %", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="premium",
+                                placeholder="1",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        children=[
+                            dbc.Label("OTM %", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="moneyness",
+                                placeholder="2",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Min Days", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="min_expiration_days",
+                                placeholder="15",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Max Days", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="max_expiration_days",
+                                placeholder="45",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Min Delta", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="min_delta",
+                                placeholder="0.25",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Max Delta", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="max_delta",
+                                placeholder="0.35",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Button(
+                                "Search",
+                                color="primary",
+                                id="income-btn",
+                                className="mt-4",
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    ),
 )
 SEARCH_RESULT = html.Div(
     [
@@ -176,9 +173,12 @@ SEARCH_RESULT = html.Div(
 
 layout = dbc.Container(
     [
-        dbc.Row(TOP_COLUMN),
-        html.P(),
-        dbc.Row(SEARCH_RESULT),
+        dbc.Row(
+            [
+                dbc.Col(TOP_COLUMN, width=2, className="p-2 bg-light border"),
+                dbc.Col(SEARCH_RESULT),
+            ]
+        )
     ],
     fluid=True,
 )
@@ -193,7 +193,6 @@ layout = dbc.Container(
     [Input("income-btn", "n_clicks")],
     [
         State("contractType", "value"),
-        State("tran_type", "value"),
         State("min_expiration_days", "value"),
         State("max_expiration_days", "value"),
         State("min_delta", "value"),
@@ -207,7 +206,6 @@ layout = dbc.Container(
 def on_button_click(
     n,
     contractType,
-    tran_type,
     min_expiration_days,
     max_expiration_days,
     min_delta,
@@ -223,7 +221,6 @@ def on_button_click(
         params = {}
 
         params["contractType"] = contractType
-        params["tran_type"] = tran_type
         if min_expiration_days:
             params["min_expiration_days"] = int(min_expiration_days)
         if max_expiration_days:

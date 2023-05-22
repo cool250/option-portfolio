@@ -9,7 +9,7 @@ from view import income_finder, oauth, portfolio, analysis, report, home
 navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Home", href="/home", id="page-1-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-2-link", class_name="nav-link")),
+        dbc.NavItem(dbc.NavLink("Scanner", href="/income_finder", id="page-2-link", class_name="nav-link")),
         dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link")),
         dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-4-link", class_name="nav-link")),
         dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),

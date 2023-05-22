@@ -157,8 +157,6 @@ def parse_option_response(df, instrument_type):
 
     final_df = calculate_final_payoff(oa_df)
     final_df = final_df.sort_values(by=['DATE'])
-
-
     return final_df
 
 
