@@ -32,9 +32,9 @@ class AccountPositions:
         self.params_stocks = {
             "quantity": "QTY",
             "underlying": "TICKER",
-            "mark": "TICKER PRICE",
-            "averagePrice": "AVG PRICE",
-            "total": "TOTAL",
+            "mark": "CURRENT PRICE",
+            "averagePrice": "AVG COST",
+            "net": "PROFIT/LOSS",
             "maintenanceRequirement": "MARGIN",
         }
 
@@ -140,7 +140,7 @@ class AccountPositions:
         df = self.__get_stock_pricing(res_equity)
         if not df.empty:
             df = df.drop(["option_type", "instrument_type", "symbol"], axis=1)
-            df["total"] = (df["quantity"] * df["averagePrice"]).apply(
+            df["net"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
             df = df.rename(columns=self.params_stocks)

@@ -17,6 +17,7 @@ layout = dbc.Container(
                     dbc.Col(
                         [
                             html.Div(id="put-detail"),
+                            html.P(),
                             html.Div(id="puts_table"),
                             
                         ]
@@ -41,6 +42,7 @@ layout = dbc.Container(
                     dbc.Col(
                         [
                             html.Div(id="stock-detail"),
+                            html.P(),
                             html.Div(id="stocks_table"),
                         ]
                     )
@@ -72,9 +74,9 @@ def on_button_click(n):
     cash_required = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
     stock_value = formatter_currency(
-        (df_stocks["TICKER PRICE"] * df_stocks["QTY"]).sum()
+        (df_stocks["CURRENT PRICE"] * df_stocks["QTY"]).sum()
     )
-    stock_cost = formatter_currency((df_stocks["AVG PRICE"] * df_stocks["QTY"]).sum())
+    stock_cost = formatter_currency((df_stocks["AVG COST"] * df_stocks["QTY"]).sum())
     stocks_maintenance = formatter_currency(df_stocks["MARGIN"].sum())
 
     calls_dt = (
