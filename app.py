@@ -1,9 +1,10 @@
 import logging
 
 import dash
-import dash_auth
 import dash_bootstrap_components as dbc
 from flask_caching import Cache
+import plotly.io as pio
+pio.templates.default = "simple_white"
 
 logging.basicConfig(filename="app.log",
                     level=logging.DEBUG, format='%(asctime)s - %(name)s - %(message)s')

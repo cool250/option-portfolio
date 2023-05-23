@@ -38,12 +38,10 @@ def show_payoff_chart(df, title):
             y="TOTAL_PRICE",
             color="TICKER",
             text="TOTAL_PRICE",
-            title=f"Total {title}: {formatter_currency_with_cents(total)}"
+            title=f"Total {title}: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
             height=350,
-            paper_bgcolor="rgb(248, 248, 255)",
-            plot_bgcolor="rgb(248, 248, 255)",
             bargap=0.6,
         )
         content = dcc.Graph(figure=fig)
@@ -70,8 +68,6 @@ def show_capital_need(df):
         fig.update_layout(
             height=350,
             width=640,
-            paper_bgcolor="rgb(248, 248, 255)",
-            plot_bgcolor="rgb(248, 248, 255)",
             bargap=0.6,
         )
         content = dcc.Graph(figure=fig)
