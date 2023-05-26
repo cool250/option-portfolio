@@ -41,7 +41,6 @@ def show_payoff_chart(df, title):
             title=f"Total {title}: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
-            height=350,
             bargap=0.6,
         )
         content = dcc.Graph(figure=fig)
@@ -54,7 +53,7 @@ def show_payoff_chart(df, title):
 
 def show_capital_need(df):
     if not df.empty:
-        df["TOTAL_COST"] = df["STRIKE_PRICE"].astype(int) * df["QTY"] * 100
+        df["TOTAL_COST"] = df["STRIKE_PRICE"].astype(float) * df["QTY"] * 100
         total = df["TOTAL_COST"].sum()
         # Populate chart
         fig = px.bar(
@@ -66,8 +65,6 @@ def show_capital_need(df):
             title=f"Total Capital for Puts: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
-            height=350,
-            width=640,
             bargap=0.6,
         )
         content = dcc.Graph(figure=fig)

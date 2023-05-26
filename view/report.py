@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from app import app
 from service.account_transactions import get_report
+from utils.functions import formatter_currency_with_cents
 
 TOP_COLUMN = dbc.Form(
     [
@@ -107,22 +108,22 @@ layout = dbc.Container(
     Output("dashboard_content", "children"),
     [
         Input("chart-btn", "n_clicks"),
+        Input("db_report-ticker", "value"),
+        Input("db_instrument-type", "value"),
+        Input("db_report-type", "value"),
     ],
     [
         State("db_start-date-picker", "date"),
         State("db_end-date-picker", "date"),
-        State("db_report-ticker", "value"),
-        State("db_instrument-type", "value"),
-        State("db_report-type", "value"),
     ],
 )
-def on_search(n, start_date, end_date, ticker, instrument_type, report_type):
+def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
     df = get_report(start_date, end_date, ticker, instrument_type)
 
     if not df.empty:
         total = df["TOTAL_PRICE"].sum()
         message = html.Div(
-            dbc.Alert(id="total-message", children=f"Total : {total}"),
+            dbc.Alert(id="total-message", children=f"{formatter_currency_with_cents(total)}"),
         )
         # Populate data table
         if report_type == "TABLE":
@@ -168,11 +169,8 @@ def on_search(n, start_date, end_date, ticker, instrument_type, report_type):
             fig = px.bar(
                 df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"  
             )
-            fig.update_layout(
-                margin=dict(l=20, r=20, t=20, b=20),
+            fig.update_layout(           
                 height=400,
-                paper_bgcolor="rgb(248, 248, 255)",
-                plot_bgcolor="rgb(248, 248, 255)",
                 bargap=0.1,
             )
             content = dcc.Graph(id="graph", figure=fig)
