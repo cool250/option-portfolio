@@ -48,10 +48,16 @@ class Quotes(Base):
         self._data = self._api_response(url=url, params=data, verify=True)
 
         # return the response of the get request.
-        return self._data[instruments]
+        return self._data
+    
+    def get_quotes_flatten(self, instruments=None):
+        quotes_str = self.get_quotes(instruments=instruments)
+        quotes = []
+        for i in instruments:
+            quotes.append(quotes_str[i])
+        return quotes
         
     def get_quotesDF(self, instruments=None):
         '''get transaction information as Dataframe'''
-        return pd.json_normalize(self.get_quotes(instruments=instruments))
-
+        return pd.json_normalize(self.get_quotes_flatten(instruments=instruments))
 

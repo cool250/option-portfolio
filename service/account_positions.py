@@ -19,7 +19,7 @@ class AccountPositions:
             "symbol": "SYMBOL",
             "underlyingPrice": "TICKER PRICE",
             "strikePrice": "STRIKE PRICE",
-            "lastPrice": "CURRENT PRICE",
+            "mark": "CURRENT PRICE",
             "intrinsic": "INTRINSIC",
             "extrinsic": "EXTRINSIC",
             "ITM": "ITM",
@@ -49,7 +49,7 @@ class AccountPositions:
 
         def addmoneyness(row):
             intrinsic = round(max(row["strikePrice"] - row["underlyingPrice"], 0), 2)
-            extrinsic = round(row["lastPrice"] - intrinsic, 2)
+            extrinsic = round(row["mark"] - intrinsic, 2)
             itm = np.where(row["strikePrice"] > row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
@@ -99,7 +99,7 @@ class AccountPositions:
 
         def addmoneyness(row):
             intrinsic = round(max(row["underlyingPrice"] - row["strikePrice"], 0), 2)
-            extrinsic = round(row["lastPrice"] - intrinsic, 2)
+            extrinsic = round(row["mark"] - intrinsic, 2)
             itm = np.where(row["strikePrice"] < row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
@@ -162,42 +162,26 @@ class AccountPositions:
         """
         Get pricing info or the symbol via Quotes
         """
-
-        def get_quotes(row):
-            """
-            Invoke quotes for passed symbol
-            """
-
-            quotes = Quotes()
-            res = quotes.get_quotes(row["symbol"])
-            return res
-
-        # Invoke getQuotesForSymbol for each symbol
-        res = df.apply(get_quotes, axis=1, result_type="expand")
-
-        res = res[
-            ["underlyingPrice", "strikePrice", "lastPrice", "theta", "daysToExpiration"]
+    
+        quotes = Quotes()
+        instruments = df["symbol"]
+        res = quotes.get_quotesDF(instruments)
+        res_filter = res[
+            ["symbol","underlyingPrice", "strikePrice", "mark", "theta", "daysToExpiration"]
         ]
-        res["theta"] = res["theta"].apply(formatter_number_2_digits)
-        df = df.join(res)
-        return df
+        res_filter.loc[:,"theta"] = res_filter["theta"].apply(formatter_number_2_digits)
+        merged_df = pd.merge(df, res_filter, on='symbol')
+        return merged_df
 
     def __get_stock_pricing(self, df):
         """
         Get pricing info or the symbol via Quotes
         """
+        quotes = Quotes()
+        instruments = df["symbol"]
+        res = quotes.get_quotesDF(instruments)
+        res_filter = res[['mark','symbol']]
+        merged_df = pd.merge(df, res_filter, on='symbol')
+        return merged_df
+    
 
-        def get_quotes(row):
-            """
-            Invoke quotes for passed symbol
-            """
-
-            quotes = Quotes()
-            res = quotes.get_quotes(row["symbol"])
-            return res["mark"]
-
-        # Invoke getQuotesForSymbol for each symbol
-        res = pd.DataFrame()
-        res["mark"] = df.apply(get_quotes, axis=1)
-        df = df.join(res)
-        return df
