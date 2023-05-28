@@ -234,9 +234,11 @@ def on_button_click(
         if moneyness:
             params["moneyness"] = moneyness
 
-        # Convert single ticker to list for consistency with ticker list
+        # Convert ticker to list for consistency with ticker list
+        # Ticker can take comma seperated values
         if ticker:
-            tickers = [ticker]
+            tickers = ticker.split(',')
+            tickers = [item.strip() for item in tickers] # strip any whitespace
         elif ticker_list:
             tickers = screener_list.get(ticker_list)
         else:

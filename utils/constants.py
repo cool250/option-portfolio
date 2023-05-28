@@ -55,5 +55,5 @@ screener_list["ETF"] = [
     "SLV",
     "SPY",
 ]
-screener_list["Favorites"] = ["SPY", "QQQ"]
+screener_list["Favorites"] = ["SPY", "QQQ","IWM"]
 
