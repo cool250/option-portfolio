@@ -34,7 +34,7 @@ class AccountPositions:
             "underlying": "TICKER",
             "mark": "CURRENT PRICE",
             "averagePrice": "AVG COST",
-            "net": "PROFIT/LOSS",
+            # "NET": "PROFIT/LOSS",
             "maintenanceRequirement": "MARGIN",
         }
 
@@ -75,10 +75,7 @@ class AccountPositions:
         df["RETURNS"] = (
             (
                 (
-                    (df["CURRENT PRICE"]
-                    * 365
-                    * df["QTY"]
-                    * 100)
+                    (df["CURRENT PRICE"] * 365 * df["QTY"] * 100)
                     / (df["MARGIN"] * df["DAYS"])
                 )
             )
@@ -113,7 +110,8 @@ class AccountPositions:
         df = df.join(res_df)
 
         if not df.empty:
-            df = df.drop(["option_type", "instrument_type"], axis=1)
+            #  Retain only the columns needed and rename
+            df = df[self.params_options.keys()]
             df = df.rename(columns=self.params_options)
 
         return df
@@ -131,8 +129,10 @@ class AccountPositions:
         df = res[is_equity]
 
         if not df.empty:
-            df = df.drop(["option_type", "instrument_type", "symbol", "underlyingPrice", "strikePrice", "theta", "daysToExpiration"], axis=1)
-            df["net"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
+            #  Retain only the columns needed and rename
+            df = df[self.params_stocks.keys()]
+            # TODO: get an error "value is trying to be set on a copy of a slice from a DataFrame" when this line is before dropping columns
+            df["NET"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
             df = df.rename(columns=self.params_stocks)
@@ -151,18 +151,27 @@ class AccountPositions:
             # Populate pricing for all tickers
             self.res = self.__get_pricing(position_df)
         return self.res
-    
+
     def __get_pricing(self, df):
         """
         Get pricing info or the symbol via Quotes
         """
-    
+
         quotes = Quotes()
         instruments = df["symbol"]
         res = quotes.get_quotesDF(instruments)
         res_filter = res[
-            ["symbol","underlyingPrice", "strikePrice", "mark", "theta", "daysToExpiration"]
+            [
+                "symbol",
+                "underlyingPrice",
+                "strikePrice",
+                "mark",
+                "theta",
+                "daysToExpiration",
+            ]
         ]
-        res_filter.loc[:,"theta"] = res_filter["theta"].apply(formatter_number_2_digits)
-        merged_df = pd.merge(df, res_filter, on='symbol')
+        res_filter.loc[:, "theta"] = res_filter["theta"].apply(
+            formatter_number_2_digits
+        )
+        merged_df = pd.merge(df, res_filter, on="symbol")
         return merged_df
