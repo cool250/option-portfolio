@@ -56,10 +56,7 @@ class AccountPositions:
         res = self.get_account_positions()
         # Filter for puts
         is_put = res["option_type"] == PUT_CALL.PUT.value
-        res_puts = res[is_put]
-
-        # Get Quotes for open puts
-        df = self.__get_option_pricing(res_puts)
+        df = res[is_put]
 
         res_df = pd.DataFrame()
         res_df[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -107,10 +104,7 @@ class AccountPositions:
 
         # Filter for calls
         is_call = res["option_type"] == PUT_CALL.CALL.value
-        res_calls = res[is_call]
-
-        # Get Quotes for open calls
-        df = self.__get_option_pricing(res_calls)
+        df = res[is_call]
 
         res_df = pd.DataFrame()
         res_df[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -132,14 +126,12 @@ class AccountPositions:
 
         res = self.get_account_positions()
 
-        # Filter for calls
+        # Filter for stocks
         is_equity = res["instrument_type"] == "EQUITY"
-        res_equity = res[is_equity]
+        df = res[is_equity]
 
-        # Get Quotes for open calls
-        df = self.__get_stock_pricing(res_equity)
         if not df.empty:
-            df = df.drop(["option_type", "instrument_type", "symbol"], axis=1)
+            df = df.drop(["option_type", "instrument_type", "symbol", "underlyingPrice", "strikePrice", "theta", "daysToExpiration"], axis=1)
             df["net"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
@@ -154,11 +146,13 @@ class AccountPositions:
         if self.res.empty:
             account = Account()
             logging.debug(" Getting positions")
-            self.res = account.get_positionsDF(account=ACCOUNT_NUMBER)
+            position_df = account.get_positionsDF(account=ACCOUNT_NUMBER)
 
+            # Populate pricing for all tickers
+            self.res = self.__get_pricing(position_df)
         return self.res
-
-    def __get_option_pricing(self, df):
+    
+    def __get_pricing(self, df):
         """
         Get pricing info or the symbol via Quotes
         """
@@ -172,16 +166,3 @@ class AccountPositions:
         res_filter.loc[:,"theta"] = res_filter["theta"].apply(formatter_number_2_digits)
         merged_df = pd.merge(df, res_filter, on='symbol')
         return merged_df
-
-    def __get_stock_pricing(self, df):
-        """
-        Get pricing info or the symbol via Quotes
-        """
-        quotes = Quotes()
-        instruments = df["symbol"]
-        res = quotes.get_quotesDF(instruments)
-        res_filter = res[['mark','symbol']]
-        merged_df = pd.merge(df, res_filter, on='symbol')
-        return merged_df
-    
-
