@@ -112,7 +112,7 @@ class AccountPositions:
         if not df.empty:
             #  Retain only the columns needed and rename
             df = df[self.params_options.keys()]
-            df = df.rename(columns=self.params_options)
+            df.rename(columns=self.params_options, inplace=True)
 
         return df
 
@@ -135,7 +135,7 @@ class AccountPositions:
             df["NET"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
-            df = df.rename(columns=self.params_stocks)
+            df.rename(columns=self.params_stocks, inplace=True)
         return df
 
     def get_account_positions(self):
