@@ -255,10 +255,6 @@ def on_button_click(
                 "groupBy": "TICKER",
             }
 
-            # # add groupBy option to the Tabulator component to group at Ticker level
-            # if is_group:
-            #     options["groupBy"] = "TICKER"
-
             dt = (
                 dash_tabulator.DashTabulator(
                     id="screener-table",

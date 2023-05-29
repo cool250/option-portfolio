@@ -65,10 +65,11 @@ class AccountPositions:
         df = df.join(res_df)
 
         if not df.empty:
-            df = df.drop(
-                ["option_type", "instrument_type", "intrinsic", "extrinsic"], axis=1
-            )
-            df = df.rename(columns=self.params_options)
+            #  Retain only the columns needed and rename
+            df = df[self.params_options.keys()]
+            df["theta"] = df["theta"] * df["quantity"] * 100
+            df["theta"] = df["theta"].apply(formatter_number_2_digits)
+            df.rename(columns=self.params_options, inplace=True)
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"].abs() * 100
@@ -112,6 +113,8 @@ class AccountPositions:
         if not df.empty:
             #  Retain only the columns needed and rename
             df = df[self.params_options.keys()]
+            df["theta"] = df["theta"] * df["quantity"] * 100
+            df["theta"] = df["theta"].apply(formatter_number_2_digits)
             df.rename(columns=self.params_options, inplace=True)
 
         return df
@@ -170,8 +173,5 @@ class AccountPositions:
                 "daysToExpiration",
             ]
         ]
-        res_filter.loc[:, "theta"] = res_filter["theta"].apply(
-            formatter_number_2_digits
-        )
         merged_df = pd.merge(df, res_filter, on="symbol")
         return merged_df
