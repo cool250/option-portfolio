@@ -22,7 +22,7 @@ layout = dbc.Container(
                     ],
                     id="payoff-modal",
                     centered=True,
-                    size="lg",
+                    size="xl",
                 ),
             ),
             dbc.Row(
@@ -112,7 +112,7 @@ def on_button_click(n):
     calls_dt = (
         dash_tabulator.DashTabulator(
             id="call-table",
-            columns=[{"id": i, "title": i, "field": i} for i in df_calls.columns],
+            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_calls.columns],
             data=df_calls.to_dict("records"),
             options=tabulator_options,
         ),
@@ -121,7 +121,7 @@ def on_button_click(n):
     stocks_dt = (
         dash_tabulator.DashTabulator(
             id="stock-table",
-            columns=[{"id": i, "title": i, "field": i} for i in df_stocks.columns],
+            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_stocks.columns],
             data=df_stocks.to_dict("records"),
             options=tabulator_options,
         ),
@@ -130,7 +130,7 @@ def on_button_click(n):
     puts_dt = (
         dash_tabulator.DashTabulator(
             id="put-table",
-            columns=[{"id": i, "title": i, "field": i} for i in df_puts.columns],
+            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_puts.columns],
             data=df_puts.to_dict("records"),
             options=tabulator_options,
         ),
@@ -195,7 +195,7 @@ def display_output(n, put_trades, call_trades):
             trade_dict["op_type"] = "c"
             trade_dict["op_pr"] = call_trade["PURCHASE PRICE"]
             trade_dict["strike"] = call_trade["STRIKE PRICE"]
-            if put_trade["QTY"] < 0:
+            if call_trade["QTY"] < 0:
                 trade_dict["contract"] = -call_trade["QTY"]
                 trade_dict["tr_type"] = "s"
             else:

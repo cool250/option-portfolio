@@ -1,6 +1,7 @@
 # multiplotter
 import numpy as np
 import plotly.graph_objects as go
+import pandas as pd
 
 from .helpers import payoff_calculator, check_optype, check_trtype
 
@@ -87,14 +88,21 @@ def multi_plotter(
                 + " "
                 + str(abb[op_list[i]["tr_type"]])
                 + " "
-                + str(abb[op_list[i]["op_type"]])
-                + " ST: "
                 + str(op_list[i]["strike"])
+                + " "
+                + str(abb[op_list[i]["op_type"]])
             )
             fig.add_trace(go.Scatter(x=x, y=y_list[i], name=label))
             y += np.array(y_list[i])
+        
+        df = pd.DataFrame({'x':x, 'y':y})
+        mask = df['y'] >= 0
+        df['PnL_above'] = np.where(mask, df['y'], 0)
+        df['PnL_below'] = np.where(mask, 0, df['y'])
+        fig.add_trace(go.Scatter(x=x, y=df['PnL_above'], fill='tozeroy', mode='none', fillcolor='green'))
+        fig.add_trace(go.Scatter(x=x, y=df['PnL_below'], fill='tozeroy', mode='none', fillcolor='red'))
 
-        fig.add_trace(go.Scatter(x=x, y=y, name="combined"))
+        # fig.add_trace(go.Scatter(x=x, y=y, name="combined",fill = 'tozeroy'))
         fig.add_vline(
             x=spot, line_dash="dash", line_width=3, line_color="blue", annotation_text="spot price"
         )
