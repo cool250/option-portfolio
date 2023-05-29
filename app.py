@@ -18,7 +18,6 @@ app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.COSMO],
     suppress_callback_exceptions=True,
-    prevent_initial_callbacks="initial_duplicate",
 )
 
 cache = Cache(app.server, config={

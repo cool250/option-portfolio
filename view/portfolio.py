@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 import dash_tabulator
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from app import app
 from opstrat.basic_multi import multi_plotter
@@ -12,16 +13,27 @@ layout = dbc.Container(
     dbc.Spinner(
         [
             dbc.Row(
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("Payoff"),
+                        dbc.ModalBody(
+                            id="payoff-chart",
+                        ),
+                    ],
+                    id="payoff-modal",
+                    centered=True,
+                    size="lg",
+                ),
+            ),
+            dbc.Row(
                 [
                     dbc.Col(
-                        children=[
-                            dbc.Button(
-                                "Payoff",
-                                color="primary",
-                                id="payoff-btn",
-                                className="mt-4",
-                            ),
-                        ],
+                        dbc.Button(
+                            "Payoff",
+                            color="primary",
+                            id="payoff-btn",
+                            className="mt-4",
+                        ),
                     ),
                 ],
             ),
@@ -83,7 +95,6 @@ layout = dbc.Container(
 )
 def on_button_click(n):
     positions = AccountPositions()
-
     df_puts = positions.get_put_positions()
     df_calls = positions.get_call_positions()
     df_stocks = positions.get_stock_positions()
@@ -109,13 +120,12 @@ def on_button_click(n):
 
     stocks_dt = (
         dash_tabulator.DashTabulator(
-            id="stocks-table",
+            id="stock-table",
             columns=[{"id": i, "title": i, "field": i} for i in df_stocks.columns],
             data=df_stocks.to_dict("records"),
             options=tabulator_options,
         ),
     )
-  
 
     puts_dt = (
         dash_tabulator.DashTabulator(
@@ -144,38 +154,61 @@ def on_button_click(n):
         ),
     )
 
+
 # dash_tabulator can register a callback on rowClicked
 # to receive a dict of the row values
 @app.callback(
-    Output("dummy-output", "children"),
+    [
+    Output("payoff-chart", "children"),
+    Output("payoff-modal", "is_open"),
+    ],
     Input("payoff-btn", "n_clicks"),
-    State("put-table", "multiRowsClicked"),
+    [State("put-table", "multiRowsClicked"), State("call-table", "multiRowsClicked")],
+    prevent_initial_call=True,
 )
-def display_output(n, put_trades):
+def display_output(n, put_trades, call_trades):
     spot_price = 0
     trades = []
-    if n is None or put_trades is None or len(put_trades) == 0:
-        return 0
+    if n is None or (len(call_trades) == 0 and len(put_trades) == 0):
+        raise PreventUpdate
     else:
         for put_trade in put_trades:
             trade_dict = {}
-            if spot_price == 0: # populate jsut once
-                spot_price = put_trade['TICKER PRICE']
-            trade_dict['op_type'] = 'p'
-            trade_dict['op_pr'] = put_trade['PURCHASE PRICE']
-            if put_trade['QTY']  < 0:
-                trade_dict['contract'] = -put_trade['QTY'] 
-                trade_dict['tr_type'] = 's'
+            if spot_price == 0:  # populate jsut once
+                spot_price = put_trade["TICKER PRICE"]
+            trade_dict["op_type"] = "p"
+            trade_dict["op_pr"] = put_trade["PURCHASE PRICE"]
+            trade_dict["strike"] = put_trade["STRIKE PRICE"]
+            if put_trade["QTY"] < 0:
+                trade_dict["contract"] = -put_trade["QTY"]
+                trade_dict["tr_type"] = "s"
             else:
-                trade_dict['contract'] = put_trade['QTY'] 
-                trade_dict['tr_type'] = 'b'
-            trade_dict['strike'] = put_trade['STRIKE PRICE']
+                trade_dict["contract"] = put_trade["QTY"]
+                trade_dict["tr_type"] = "b"
+
             trades.append(trade_dict)
-            
+
+        for call_trade in call_trades:
+            trade_dict = {}
+            if spot_price == 0:  # populate jsut once
+                spot_price = put_trade["TICKER PRICE"]
+            trade_dict["op_type"] = "c"
+            trade_dict["op_pr"] = call_trade["PURCHASE PRICE"]
+            trade_dict["strike"] = call_trade["STRIKE PRICE"]
+            if put_trade["QTY"] < 0:
+                trade_dict["contract"] = -call_trade["QTY"]
+                trade_dict["tr_type"] = "s"
+            else:
+                trade_dict["contract"] = call_trade["QTY"]
+                trade_dict["tr_type"] = "b"
+            trades.append(trade_dict)
+
+        # Plot the trades
         spot_price = float(spot_price)
         fig = multi_plotter(spot=spot_price, op_list=trades)
-        return dcc.Graph(figure=fig)
-
-
-
-
+        chart = html.Div(
+            [
+                dcc.Graph(figure=fig),
+            ]
+        )
+        return chart, True

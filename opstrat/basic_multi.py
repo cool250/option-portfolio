@@ -10,7 +10,7 @@ abb = {"c": "Call", "p": "Put", "e": "Equity", "b": "Long", "s": "Short"}
 def multi_plotter(
     spot,
     op_list,
-    spot_range=5,
+    spot_range=10,
 ):
     """
     Plots a basic option payoff diagram for a multiple options and resultant payoff diagram
@@ -96,15 +96,15 @@ def multi_plotter(
 
         fig.add_trace(go.Scatter(x=x, y=y, name="combined"))
         fig.add_vline(
-            x=spot, line_dash="dash", line_color="blue", annotation_text="spot price"
+            x=spot, line_dash="dash", line_width=3, line_color="blue", annotation_text="spot price"
         )
-        fig.add_hline(y=0, line_dash="dash", line_color="black")
-
+        fig.add_hline(y=0, line_dash="dash", line_width=3, line_color="black")
+        
         # Edit the layout
         fig.update_layout(
-            title="Options Payoff", xaxis_title="Strike Price", yaxis_title="Premium", width=800, height=500, legend=dict(orientation="h",)
+            title="Options Payoff", xaxis_title="Strike Price", yaxis_title="Premium"
         )
-        fig.update_yaxes(automargin=True)
+        # fig.update_yaxes(automargin=True)
         return fig
 
     fig = plotly_plot()
