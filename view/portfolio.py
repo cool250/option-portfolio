@@ -119,7 +119,7 @@ def on_button_click(n):
                 {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
-                {"title": "UNDERLYING PRICE", "field": "TICKER PRICE"},
+                {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
                 {"title": "MARK", "field": "MARK"},
                 {"title": "PURCHASE", "field": "PURCHASE PRICE"},
@@ -208,16 +208,17 @@ def display_output(n, put_trades, call_trades):
     def populate_selected_trades(trade, op_type):
         nonlocal spot_price
         nonlocal trades
-        trade_dict = {}
-        trade_dict["op_type"] = op_type
         if spot_price == 0:  # populate just once for underlying
              spot_price = trade["UNDERLYING PRICE"]
+
+        trade_dict = {}
+        trade_dict["op_type"] = op_type
         trade_dict["op_pr"] = trade["PURCHASE PRICE"]
         trade_dict["strike"] = trade["STRIKE PRICE"]
-        if trade["QTY"] < 0:
+        if trade["QTY"] < 0: # Sell 
             trade_dict["contract"] = -trade["QTY"]
             trade_dict["tr_type"] = "s"
-        else:
+        else: # Buy
             trade_dict["contract"] = trade["QTY"]
             trade_dict["tr_type"] = "b"
         trades.append(trade_dict)
@@ -233,7 +234,6 @@ def display_output(n, put_trades, call_trades):
             populate_selected_trades(trade, op_type="c")
 
         # Plot the trades
-        spot_price = float(spot_price)
         fig = multi_plotter(spot=spot_price, op_list=trades)
         chart = html.Div(
             [
