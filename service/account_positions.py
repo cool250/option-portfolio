@@ -17,7 +17,7 @@ class AccountPositions:
             "quantity": "QTY",
             "underlying": "TICKER",
             "symbol": "SYMBOL",
-            "underlyingPrice": "TICKER PRICE",
+            "underlyingPrice": "UNDERLYING PRICE",
             "strikePrice": "STRIKE PRICE",
             "mark": "MARK",
             # "intrinsic": "INTRINSIC",

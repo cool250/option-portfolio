@@ -99,8 +99,8 @@ def multi_plotter(
         mask = df['y'] >= 0
         df['PnL_above'] = np.where(mask, df['y'], 0)
         df['PnL_below'] = np.where(mask, 0, df['y'])
-        fig.add_trace(go.Scatter(x=x, y=df['PnL_above'], fill='tozeroy', mode='none', fillcolor='green'))
-        fig.add_trace(go.Scatter(x=x, y=df['PnL_below'], fill='tozeroy', mode='none', fillcolor='red'))
+        fig.add_trace(go.Scatter(x=x, y=df['PnL_above'], fill='tozeroy', mode='none', fillcolor='lightgreen', showlegend=False))
+        fig.add_trace(go.Scatter(x=x, y=df['PnL_below'], fill='tozeroy', mode='none', fillcolor='indianred', showlegend=False))
 
         # fig.add_trace(go.Scatter(x=x, y=y, name="combined",fill = 'tozeroy'))
         fig.add_vline(

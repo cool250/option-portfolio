@@ -143,7 +143,7 @@ def on_button_click(n):
                 {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
-                {"title": "UNDERLYING PRICE", "field": "TICKER PRICE"},
+                {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
                 {"title": "MARK", "field": "MARK"},
                 {"title": "PURCHASE", "field": "PURCHASE PRICE"},
@@ -204,39 +204,33 @@ def on_button_click(n):
 def display_output(n, put_trades, call_trades):
     spot_price = 0
     trades = []
+
+    def populate_selected_trades(trade, op_type):
+        nonlocal spot_price
+        nonlocal trades
+        trade_dict = {}
+        trade_dict["op_type"] = op_type
+        if spot_price == 0:  # populate just once for underlying
+             spot_price = trade["UNDERLYING PRICE"]
+        trade_dict["op_pr"] = trade["PURCHASE PRICE"]
+        trade_dict["strike"] = trade["STRIKE PRICE"]
+        if trade["QTY"] < 0:
+            trade_dict["contract"] = -trade["QTY"]
+            trade_dict["tr_type"] = "s"
+        else:
+            trade_dict["contract"] = trade["QTY"]
+            trade_dict["tr_type"] = "b"
+        trades.append(trade_dict)
+    
     if n is None or (len(call_trades) == 0 and len(put_trades) == 0):
         raise PreventUpdate
+    
     else:
-        for put_trade in put_trades:
-            trade_dict = {}
-            if spot_price == 0:  # populate jsut once
-                spot_price = put_trade["TICKER PRICE"]
-            trade_dict["op_type"] = "p"
-            trade_dict["op_pr"] = put_trade["PURCHASE PRICE"]
-            trade_dict["strike"] = put_trade["STRIKE PRICE"]
-            if put_trade["QTY"] < 0:
-                trade_dict["contract"] = -put_trade["QTY"]
-                trade_dict["tr_type"] = "s"
-            else:
-                trade_dict["contract"] = put_trade["QTY"]
-                trade_dict["tr_type"] = "b"
+        for trade in put_trades:
+            populate_selected_trades(trade, op_type="p")
 
-            trades.append(trade_dict)
-
-        for call_trade in call_trades:
-            trade_dict = {}
-            if spot_price == 0:  # populate jsut once
-                spot_price = call_trade["TICKER PRICE"]
-            trade_dict["op_type"] = "c"
-            trade_dict["op_pr"] = call_trade["PURCHASE PRICE"]
-            trade_dict["strike"] = call_trade["STRIKE PRICE"]
-            if call_trade["QTY"] < 0:
-                trade_dict["contract"] = -call_trade["QTY"]
-                trade_dict["tr_type"] = "s"
-            else:
-                trade_dict["contract"] = call_trade["QTY"]
-                trade_dict["tr_type"] = "b"
-            trades.append(trade_dict)
+        for trade in call_trades:
+            populate_selected_trades(trade, op_type="c")
 
         # Plot the trades
         spot_price = float(spot_price)
@@ -247,3 +241,4 @@ def display_output(n, put_trades, call_trades):
             ]
         )
         return chart, True
+
