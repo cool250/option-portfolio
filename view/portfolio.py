@@ -29,7 +29,7 @@ layout = dbc.Container(
                 [
                     dbc.Col(
                         dbc.Button(
-                            "Payoff",
+                            "Calculate Payoff",
                             color="primary",
                             id="payoff-btn",
                             className="mt-4",
@@ -109,30 +109,65 @@ def on_button_click(n):
     tabulator_options = {
         "selectable": "true",
     }
-    calls_dt = (
-        dash_tabulator.DashTabulator(
-            id="call-table",
-            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_calls.columns],
-            data=df_calls.to_dict("records"),
-            options=tabulator_options,
-        ),
-    )
-
-    stocks_dt = (
-        dash_tabulator.DashTabulator(
-            id="stock-table",
-            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_stocks.columns],
-            data=df_stocks.to_dict("records"),
-            options=tabulator_options,
-        ),
-    )
 
     puts_dt = (
         dash_tabulator.DashTabulator(
             id="put-table",
-            columns=[{"id": i, "title": i, "field": i, "headerFilter": "input"} for i in df_puts.columns],
             data=df_puts.to_dict("records"),
             options=tabulator_options,
+            columns = [
+                {"title": "QTY", "field": "QTY"},
+                {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
+                {"title": "SYMBOL", "field": "SYMBOL"},
+                {"title": "UNDERLYING PRICE", "field": "TICKER PRICE"},
+                {"title": "STRIKE", "field": "STRIKE PRICE"},
+                {"title": "MARK", "field": "MARK"},
+                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
+                {"title": "DAYS", "field": "DAYS"},
+                {"title": "ITM", "field": "ITM"},
+                {"title": "DELTA", "field": "DELTA"},
+                {"title": "RETURNS", "field": "RETURNS"},
+                {"title": "MARGIN", "field": "MARGIN", "visible":False},
+                {"title": "THETA", "field": "THETA", "visible":False },
+                {"title": "COST", "field": "COST", "visible":False},
+                
+            ]
+        ),
+    )
+    calls_dt = (
+        dash_tabulator.DashTabulator(
+            id="call-table",
+            data=df_calls.to_dict("records"),
+            options=tabulator_options,
+            columns = [
+                {"title": "QTY", "field": "QTY"},
+                {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
+                {"title": "SYMBOL", "field": "SYMBOL"},
+                {"title": "UNDERLYING PRICE", "field": "TICKER PRICE"},
+                {"title": "STRIKE", "field": "STRIKE PRICE"},
+                {"title": "MARK", "field": "MARK"},
+                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
+                {"title": "DAYS", "field": "DAYS"},
+                {"title": "ITM", "field": "ITM"},
+                {"title": "DELTA", "field": "DELTA"},
+                {"title": "MARGIN", "field": "MARGIN", "visible":False},
+                {"title": "THETA", "field": "THETA", "visible":False},
+            ]
+        ),
+    )
+    stocks_dt = (
+        dash_tabulator.DashTabulator(
+            id="stock-table",
+            data=df_stocks.to_dict("records"),
+            options=tabulator_options,
+            columns = [
+                {"title": "QTY", "field": "QTY"},
+                {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
+                {"title": "MARK", "field": "MARK"},
+                {"title": "AVG COST", "field": "AVG COST"},
+                {"title": "MARGIN", "field": "MARGIN"},
+                {"title": "NET", "field": "NET"},
+            ]
         ),
     )
 
@@ -191,7 +226,7 @@ def display_output(n, put_trades, call_trades):
         for call_trade in call_trades:
             trade_dict = {}
             if spot_price == 0:  # populate jsut once
-                spot_price = put_trade["TICKER PRICE"]
+                spot_price = call_trade["TICKER PRICE"]
             trade_dict["op_type"] = "c"
             trade_dict["op_pr"] = call_trade["PURCHASE PRICE"]
             trade_dict["strike"] = call_trade["STRIKE PRICE"]

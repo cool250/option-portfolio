@@ -19,11 +19,12 @@ class AccountPositions:
             "symbol": "SYMBOL",
             "underlyingPrice": "TICKER PRICE",
             "strikePrice": "STRIKE PRICE",
-            "mark": "CURRENT PRICE",
+            "mark": "MARK",
             # "intrinsic": "INTRINSIC",
             # "extrinsic": "EXTRINSIC",
             "ITM": "ITM",
             "theta": "THETA",
+            "delta": "DELTA",
             "averagePrice": "PURCHASE PRICE",
             "daysToExpiration": "DAYS",
             "maintenanceRequirement": "MARGIN",
@@ -69,6 +70,8 @@ class AccountPositions:
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
             df["theta"] = df["theta"].apply(formatter_number_2_digits)
+            df["delta"] = df["delta"] * df["quantity"] * 100
+            df["delta"] = df["delta"].apply(formatter_number_2_digits)
             df.rename(columns=self.params_options, inplace=True)
 
         # Add liquidity for Puts if assigned
@@ -76,7 +79,7 @@ class AccountPositions:
         df["RETURNS"] = (
             (
                 (
-                    (df["CURRENT PRICE"] * 365 * df["QTY"] * 100)
+                    (df["MARK"] * 365 * df["QTY"] * 100)
                     / (df["MARGIN"] * df["DAYS"])
                 )
             )
@@ -115,6 +118,8 @@ class AccountPositions:
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
             df["theta"] = df["theta"].apply(formatter_number_2_digits)
+            df["delta"] = df["delta"] * df["quantity"] * 100
+            df["delta"] = df["delta"].apply(formatter_number_2_digits)
             df.rename(columns=self.params_options, inplace=True)
 
         return df
@@ -145,10 +150,8 @@ class AccountPositions:
         """
         Get open positions for a given account
         """
-
         if self.res.empty:
             account = Account()
-            logging.debug(" Getting positions")
             position_df = account.get_positionsDF(account=ACCOUNT_NUMBER)
 
             # Populate pricing for all tickers
@@ -170,6 +173,7 @@ class AccountPositions:
                 "strikePrice",
                 "mark",
                 "theta",
+                "delta",
                 "daysToExpiration",
             ]
         ]
