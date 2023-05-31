@@ -16,7 +16,7 @@ VALID_USERNAME_PASSWORD_PAIRS = [
 
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.COSMO],
+    external_stylesheets=[dbc.themes.LUX],
     suppress_callback_exceptions=True,
 )
 

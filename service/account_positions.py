@@ -33,7 +33,7 @@ class AccountPositions:
         self.params_stocks = {
             "quantity": "QTY",
             "underlying": "TICKER",
-            "mark": "CURRENT PRICE",
+            "mark": "MARK",
             "averagePrice": "AVG COST",
             # "NET": "PROFIT/LOSS",
             "maintenanceRequirement": "MARGIN",

@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import dash_tabulator
 from opstrat import multi_plotter
 from service import option_analysis
@@ -15,7 +16,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
             children=[
                 dbc.Label("TICKER"),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -26,19 +27,19 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
                 html.Div(id="a_spot"),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
                 dbc.Label("Weeks", size="sm"),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -49,7 +50,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -59,7 +60,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     id="lookup-btn",
                 ),
             ],
-            width=1,
+            width=2,
         ),
     ],
     className="mt-4",
@@ -82,7 +83,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -98,7 +99,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -110,7 +111,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -122,7 +123,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -134,7 +135,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     size="sm",
                 ),
             ],
-            width=1,
+            width=2,
         ),
         dbc.Col(
             children=[
@@ -145,7 +146,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     className="mt-4",
                 ),
             ],
-            width=1,
+            width=2,
         ),
     ],
     style=dict(display="none"),
@@ -211,7 +212,7 @@ def on_lookup_click(n, ticker):
         dict: Style to make strategy entry row visible
     """
     if n is None:
-        return None, None, dict(display="none")
+        raise PreventUpdate
     else:
 
         # quotes = Quotes()
@@ -250,7 +251,7 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike):
     """
     if n is None:
         cache.clear()
-        return None, dict(display="none")
+        raise PreventUpdate
     else:
         contract_obj = {
             # "key": n,
@@ -302,7 +303,7 @@ def on_analyze_click(n, dummy, spot_price):
         _type_: _description_
     """
     if n is None:
-        return None
+        raise PreventUpdate
     else:
         cache_data = cache.get("strategy_list")
         spot = float(spot_price)

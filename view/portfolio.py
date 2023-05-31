@@ -100,9 +100,7 @@ def on_button_click(n):
     df_stocks = positions.get_stock_positions()
     cash_required = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
-    stock_value = formatter_currency(
-        (df_stocks["CURRENT PRICE"] * df_stocks["QTY"]).sum()
-    )
+    stock_value = formatter_currency((df_stocks["MARK"] * df_stocks["QTY"]).sum())
     stock_cost = formatter_currency((df_stocks["AVG COST"] * df_stocks["QTY"]).sum())
     stocks_maintenance = formatter_currency(df_stocks["MARGIN"].sum())
 
@@ -115,7 +113,7 @@ def on_button_click(n):
             id="put-table",
             data=df_puts.to_dict("records"),
             options=tabulator_options,
-            columns = [
+            columns=[
                 {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
@@ -127,11 +125,10 @@ def on_button_click(n):
                 {"title": "ITM", "field": "ITM"},
                 {"title": "DELTA", "field": "DELTA"},
                 {"title": "RETURNS", "field": "RETURNS"},
-                {"title": "MARGIN", "field": "MARGIN", "visible":False},
-                {"title": "THETA", "field": "THETA", "visible":False },
-                {"title": "COST", "field": "COST", "visible":False},
-                
-            ]
+                {"title": "MARGIN", "field": "MARGIN", "visible": False},
+                {"title": "THETA", "field": "THETA", "visible": False},
+                {"title": "COST", "field": "COST", "visible": False},
+            ],
         ),
     )
     calls_dt = (
@@ -139,7 +136,7 @@ def on_button_click(n):
             id="call-table",
             data=df_calls.to_dict("records"),
             options=tabulator_options,
-            columns = [
+            columns=[
                 {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
@@ -150,9 +147,9 @@ def on_button_click(n):
                 {"title": "DAYS", "field": "DAYS"},
                 {"title": "ITM", "field": "ITM"},
                 {"title": "DELTA", "field": "DELTA"},
-                {"title": "MARGIN", "field": "MARGIN", "visible":False},
-                {"title": "THETA", "field": "THETA", "visible":False},
-            ]
+                {"title": "MARGIN", "field": "MARGIN", "visible": False},
+                {"title": "THETA", "field": "THETA", "visible": False},
+            ],
         ),
     )
     stocks_dt = (
@@ -160,14 +157,14 @@ def on_button_click(n):
             id="stock-table",
             data=df_stocks.to_dict("records"),
             options=tabulator_options,
-            columns = [
+            columns=[
                 {"title": "QTY", "field": "QTY"},
                 {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
                 {"title": "MARK", "field": "MARK"},
                 {"title": "AVG COST", "field": "AVG COST"},
                 {"title": "MARGIN", "field": "MARGIN"},
                 {"title": "NET", "field": "NET"},
-            ]
+            ],
         ),
     )
 
@@ -194,14 +191,14 @@ def on_button_click(n):
 # to receive a dict of the row values
 @app.callback(
     [
-    Output("payoff-chart", "children"),
-    Output("payoff-modal", "is_open"),
+        Output("payoff-chart", "children"),
+        Output("payoff-modal", "is_open"),
     ],
     Input("payoff-btn", "n_clicks"),
-    [State("put-table", "multiRowsClicked"), State("call-table", "multiRowsClicked")],
+    [State("put-table", "multiRowsClicked"), State("call-table", "multiRowsClicked"), State("stock-table", "multiRowsClicked")],
     prevent_initial_call=True,
 )
-def display_output(n, put_trades, call_trades):
+def display_output(n, put_trades, call_trades, stock_trades):
     spot_price = 0
     trades = []
 
@@ -209,29 +206,38 @@ def display_output(n, put_trades, call_trades):
         nonlocal spot_price
         nonlocal trades
         if spot_price == 0:  # populate just once for underlying
-             spot_price = trade["UNDERLYING PRICE"]
+            spot_price = trade["UNDERLYING PRICE"]
 
         trade_dict = {}
         trade_dict["op_type"] = op_type
         trade_dict["op_pr"] = trade["PURCHASE PRICE"]
         trade_dict["strike"] = trade["STRIKE PRICE"]
-        if trade["QTY"] < 0: # Sell 
+        if trade["QTY"] < 0:  # Sell
             trade_dict["contract"] = -trade["QTY"]
             trade_dict["tr_type"] = "s"
-        else: # Buy
+        else:  # Buy
             trade_dict["contract"] = trade["QTY"]
             trade_dict["tr_type"] = "b"
         trades.append(trade_dict)
-    
+
     if n is None or (len(call_trades) == 0 and len(put_trades) == 0):
         raise PreventUpdate
-    
+
     else:
         for trade in put_trades:
             populate_selected_trades(trade, op_type="p")
 
         for trade in call_trades:
             populate_selected_trades(trade, op_type="c")
+
+        for trade in stock_trades:
+            trade_dict = {}
+            trade_dict["op_type"] = "e"
+            trade_dict["op_pr"] = 0
+            trade_dict["strike"] = trade["AVG COST"]
+            trade_dict["contract"] = trade["QTY"]/100
+            trade_dict["tr_type"] = "b"
+            trades.append(trade_dict)
 
         # Plot the trades
         fig = multi_plotter(spot=spot_price, op_list=trades)
@@ -241,4 +247,3 @@ def display_output(n, put_trades, call_trades):
             ]
         )
         return chart, True
-

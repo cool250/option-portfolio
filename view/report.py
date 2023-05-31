@@ -123,7 +123,7 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
     if not df.empty:
         total = df["TOTAL_PRICE"].sum()
         message = html.Div(
-            dbc.Alert(id="total-message", children=f"{formatter_currency_with_cents(total)}"),
+            dbc.Alert(id="total-message", children=f"{formatter_currency_with_cents(total)}", color="info"),
         )
         # Populate data table
         if report_type == "TABLE":
@@ -180,5 +180,5 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
         )
     else:
         return html.Div(
-            dbc.Alert(id="total-message", children="No records"),
+            dbc.Alert(id="total-message", children="No records",color="info"),
         )

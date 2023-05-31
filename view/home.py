@@ -1,5 +1,6 @@
 from dash import dcc, html, Output, Input
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 import plotly.express as px
 from app import app
 from service.account_transactions import get_report

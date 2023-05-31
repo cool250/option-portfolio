@@ -1,16 +1,24 @@
+body, .body {
+    letter-spacing: 0px;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    text-transform: uppercase;
+    letter-spacing: 0px;
+}
+
 .DateInput_input 
 {
     display: block;
     width: 100%;
-    height: calc(1.5em + 0.75rem + 2px);
+    height: calc(2.25em);
     padding: 0.375rem 0.75rem;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #7b8a8b;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
+    background-color: #f7f7f9;
+    border: 0 solid #ced4da;
+    border-radius: 0;
 }
 .content {
     margin-left: 2rem;
