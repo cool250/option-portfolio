@@ -85,7 +85,8 @@ TOP_COLUMN = dbc.Form(
                             className="mt-4",
                             size="md"
                         ),
-                    ]
+                    ],
+                    className="text-end",
                 ),
             ],
         ),

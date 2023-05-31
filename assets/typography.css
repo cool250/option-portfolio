@@ -1,6 +1,6 @@
 body, .body {
     letter-spacing: 0px;
-    font-family: Helvetica,sans-serif!important; 
+    font-family: Helvetica; 
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -17,7 +17,6 @@ body, .body {
     background-color: #f7f7f9;
     border-radius: 0;
 }
-
 
 .tabulator .tabulator-header .tabulator-col {
     background: #343a40;
