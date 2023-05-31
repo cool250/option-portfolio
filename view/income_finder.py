@@ -9,14 +9,14 @@ from service.chart_helper import update_graph
 from service.search_income import watchlist_income
 from utils.constants import screener_list
 
-TOP_COLUMN = (
+SIDE_COLUMN = (
     html.Div(
         [
             dbc.Row(
                 [
                     dbc.Col(
                         children=[
-                            dbc.Label("Choose one", size="sm"),
+                            dbc.Label("Instrument Type", size="sm"),
                             dbc.Select(
                                 options=[
                                     {"label": "PUT", "value": "PUT"},
@@ -24,6 +24,20 @@ TOP_COLUMN = (
                                 ],
                                 value="PUT",
                                 id="contractType",
+                                size="sm",
+                            ),
+                        ],
+                    ),
+                ]
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        children=[
+                            dbc.Label("Ticker", size="sm"),
+                            dbc.Input(
+                                type="text",
+                                id="ticker",
                                 size="sm",
                             ),
                         ],
@@ -42,16 +56,6 @@ TOP_COLUMN = (
                                 value="",
                                 id="ticker_list",
                                 placeholder="Select",
-                                size="sm",
-                            ),
-                        ],
-                    ),
-                    dbc.Col(
-                        children=[
-                            dbc.Label("Ticker", size="sm"),
-                            dbc.Input(
-                                type="text",
-                                id="ticker",
                                 size="sm",
                             ),
                         ],
@@ -149,6 +153,7 @@ TOP_COLUMN = (
                         ],
                     ),
                 ],
+                class_name="text-end",
             ),
         ],
     ),
@@ -176,9 +181,9 @@ layout = dbc.Container(
     [
         dbc.Row(
             [
-                dbc.Col(TOP_COLUMN, width=2, className="p-2 bg-light border"),
-                dbc.Col(SEARCH_RESULT),
-            ]
+                dbc.Col(SIDE_COLUMN, width=2, className="p-2 bg-light border"),
+                dbc.Col(SEARCH_RESULT, width=10),
+            ],
         )
     ],
     fluid=True,

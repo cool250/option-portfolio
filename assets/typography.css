@@ -1,5 +1,6 @@
 body, .body {
     letter-spacing: 0px;
+    font-family: Helvetica,sans-serif!important; 
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -9,19 +10,24 @@ body, .body {
 
 .DateInput_input 
 {
-    display: block;
-    width: 100%;
     height: calc(2.25em);
     padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
     font-weight: 400;
-    line-height: 1.5;
     background-color: #f7f7f9;
-    border: 0 solid #ced4da;
     border-radius: 0;
 }
-.content {
-    margin-left: 2rem;
-    margin-right: 2rem;
-    padding: 2rem 1rem;
+
+
+.tabulator .tabulator-header .tabulator-col {
+    background: #343a40;
+    color: #fff;
+}
+
+.nav-link {
+    font-size: 1rem;
+}
+
+ .navbar-brand {
+    font-size: 1.2rem;
 }

@@ -83,13 +83,14 @@ TOP_COLUMN = dbc.Form(
                             color="primary",
                             id="chart-btn",
                             className="mt-4",
+                            size="md"
                         ),
                     ]
                 ),
             ],
         ),
     ],
-    className="p-2 bg-light border",
+    className="p-2",
 )
 
 SEARCH_RESULT = html.Div(id="dashboard_content")
