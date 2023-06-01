@@ -19,12 +19,15 @@ body, .body {
 }
 
 .tabulator .tabulator-header .tabulator-col {
-    background: #343a40;
+    background: #808080;
     color: #fff;
 }
 
 .nav-link {
-    font-size: 1rem;
+    font-size: 1.1rem;
+}
+.nav-item {
+    margin-right: 0rem;
 }
 
  .navbar-brand {

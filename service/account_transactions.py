@@ -31,8 +31,9 @@ params = {
 }
 
 
-def get_report(oe_start_date=None, oe_end_date=None, symbol=None, instrument_type=None):
-    
+def get_report(
+    settle_date_start=None, settle_date_end=None, symbol=None, instrument_type=None
+):
     """
     This method is called from Reports screen.
     It will internally call get_transactions method.
@@ -49,16 +50,18 @@ def get_report(oe_start_date=None, oe_end_date=None, symbol=None, instrument_typ
 
     # In case start date or end date is not passed, use to initialize default
     today = dt.now()
-    if not oe_start_date:
-        oe_start_date = today.strftime("%Y-%m-%d")
-    
-    # Try to use 45 days in advance to get all options expiring before entered start date 
+    if not settle_date_start:
+        settle_date_start = today.strftime("%Y-%m-%d")
+
+    # Try to use 45 days in advance to get all options expiring before entered start date
     # The API takes trade open date as start date not trade closing
-    search_start_date = (dt.strptime(oe_start_date, "%Y-%m-%d") - timedelta(days=45)).strftime("%Y-%m-%d") 
-    
-    if not oe_end_date:
+    search_start_date = (
+        dt.strptime(settle_date_start, "%Y-%m-%d") - timedelta(days=45)
+    ).strftime("%Y-%m-%d")
+
+    if not settle_date_end:
         # Used to filter for trade ending dates 45 days out as default
-        oe_end_date = (today + timedelta(days=45)).strftime("%Y-%m-%d")
+        settle_date_end = (today + timedelta(days=45)).strftime("%Y-%m-%d")
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(
@@ -66,7 +69,7 @@ def get_report(oe_start_date=None, oe_end_date=None, symbol=None, instrument_typ
         transaction_type="TRADE",
         symbol=symbol,
         start_date=search_start_date,
-        end_date=oe_end_date,
+        end_date=settle_date_end,
     )
 
     if not df.empty:
@@ -77,31 +80,37 @@ def get_report(oe_start_date=None, oe_end_date=None, symbol=None, instrument_typ
 
         # Change df['optionExpirationDate'] string to remove timestamp
         df["transactionItem.instrument.optionExpirationDate"] = pd.to_datetime(
-            df["transactionItem.instrument.optionExpirationDate"], format="%Y-%m-%dT%H:%M:%S%z"
+            df["transactionItem.instrument.optionExpirationDate"],
+            format="%Y-%m-%dT%H:%M:%S%z",
         ).dt.strftime("%Y-%m-%d")
- 
+
     # Processing for Options
     if not df.empty:
         df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-            
+
             # Filter records based on closing date search input
-            df = df[(df['CLOSE_DATE'] >= oe_start_date) & (df['CLOSE_DATE'] <= oe_end_date)]
+            df = df[
+                (df["CLOSE_DATE"] >= settle_date_start)
+                & (df["CLOSE_DATE"] <= settle_date_end)
+            ]
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
             df = parse_equity_response(df, instrument_type)
-            df = df[(df['DATE'] >= oe_start_date)]
-        
+            df = df[(df["DATE"] >= settle_date_start)]
+
         else:
             df_puts = parse_option_response(df, "PUT")
             df_calls = parse_option_response(df, "CALL")
             df = pd.concat([df_puts, df_calls])
 
-             # Filter records based on closing date search input
-            df = df[(df['CLOSE_DATE'] >= oe_start_date) & (df['CLOSE_DATE'] <= oe_end_date)]
-
+            # Filter records based on closing date search input
+            df = df[
+                (df["CLOSE_DATE"] >= settle_date_start)
+                & (df["CLOSE_DATE"] <= settle_date_end)
+            ]
 
     return df
 
@@ -116,7 +125,7 @@ def parse_option_response(df, instrument_type):
 
     Returns:
         [df]: [Options transactions to be displayed on screen]
-    """    
+    """
     # Filter for either PUT or CALL option types
     df_options = df[df["OPTION_TYPE"] == instrument_type]
 
@@ -128,36 +137,69 @@ def parse_option_response(df, instrument_type):
     df_assigned_stocks = get_assigned_stock(df, instruction)
 
     # All opening positions
-    df_open = df_options[df_options["POSITION"] == 'OPENING']
-    
+    df_open = df_options[df_options["POSITION"] == "OPENING"]
 
+    aggregate_function = {
+        "DATE": "first",
+        "EXPIRY_DATE": "first",
+        "TICKER": "first",
+        "INSTRUCTION": "first",
+        "TOTAL_PRICE": "sum",
+        "PRICE": "mean",
+        "QTY": "sum",
+    }
     # Edge case - Combine orders which were split by broker into multiple orders while execution
-    df_open = df_open.groupby(['SYMBOL', 'DATE', 'EXPIRY_DATE', 'TICKER', 'INSTRUCTION'])\
-        .agg({'TOTAL_PRICE':'sum','PRICE':'mean', 'QTY':'sum'})
+    df_open = df_open.groupby(["SYMBOL"]).agg(aggregate_function)
     df_open = df_open.reset_index()
 
     # All Closing positions ( for rolled trades)
-    df_close = df_options [df_options["POSITION"] == 'CLOSING']
+    df_close = df_options[df_options["POSITION"] == "CLOSING"]
 
     # Combine orders which were split by broker into multiple orders while execution
-    df_close = df_close.groupby(['SYMBOL', 'DATE', 'EXPIRY_DATE', 'TICKER', 'INSTRUCTION'])\
-        .agg({'TOTAL_PRICE': 'sum', 'PRICE': 'mean', 'QTY': 'sum'})
+    df_close = df_close.groupby(["SYMBOL"]).agg(aggregate_function)
     df_close = df_close.reset_index()
 
-    # Merge opening and closing trades
-    result_df = pd.merge(df_open, df_close, how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=(None, "_C"))
-
-    # Merge assigned stock positions
-    oa_df = pd.merge(result_df, df_assigned_stocks, how="left", on=["QTY", "TICKER", "EXPIRY_DATE"],
-                     suffixes=(None, "_E"))
-
-    # RARE: Merge with stocks can produce duplicates is same Ticker has multiple lots with same expiry date and qty
-    # DATE_E added to account for earlier assignments and similar qty, ticker ( very rare )
-    oa_df.drop_duplicates(subset=["SYMBOL", "QTY", "TICKER", "DATE", "DATE_E"], keep='last', inplace=True)
+    oa_df = merge_openclose(df_open, df_close, df_assigned_stocks)
 
     final_df = calculate_final_payoff(oa_df)
-    final_df = final_df.sort_values(by=['DATE'])
+    final_df = final_df.sort_values(by=["DATE"])
     return final_df
+
+
+def merge_openclose(df_open, df_close, df_assigned_stocks):
+    """Merge opening and closing postions.
+    For rolled trades, corresponding df_close is present
+    For assigned stock, corresponding df_assigned_stocks is present
+    For Active or Expired trades no closing positions
+
+    Args:
+        df_open (_type_): _description_
+        df_close (_type_): _description_
+        df_assigned_stocks (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    # Merge opening and closing trades
+    result_df = pd.merge(
+        df_open,
+        df_close,
+        how="outer",
+        on=["SYMBOL", "QTY", "TICKER"],
+        suffixes=(None, "_C"),
+    )
+
+    # Merge assigned stock positions
+    oa_df = pd.merge(
+        result_df,
+        df_assigned_stocks,
+        how="left",
+        on=["QTY", "TICKER", "EXPIRY_DATE"],
+        suffixes=(None, "_E"),
+    )
+
+    return oa_df
 
 
 def parse_equity_response(df, instrument_type):
@@ -187,10 +229,14 @@ def get_assigned_stock(df, instruction):
     Returns:
 
     """
-    df_assigned_stocks = df[(df["TRAN_TYPE"] == "OA") & (df["INSTRUCTION"] == instruction)]
-    df_assigned_stocks.loc[:,'QTY'] = df_assigned_stocks.QTY / 100
-    df_assigned_stocks.loc[:,'TICKER'] = df_assigned_stocks.SYMBOL
-    df_assigned_stocks.loc[:,'EXPIRY_DATE'] = df_assigned_stocks["DATE"].apply(get_previous_bdate)
+    df_assigned_stocks = df[
+        (df["TRAN_TYPE"] == "OA") & (df["INSTRUCTION"] == instruction)
+    ]
+    df_assigned_stocks.loc[:, "QTY"] = df_assigned_stocks.QTY / 100
+    df_assigned_stocks.loc[:, "TICKER"] = df_assigned_stocks.SYMBOL
+    df_assigned_stocks.loc[:, "EXPIRY_DATE"] = df_assigned_stocks["DATE"].apply(
+        get_previous_bdate
+    )
 
     return df_assigned_stocks
 
@@ -199,24 +245,29 @@ def calculate_final_payoff(result_df):
     """Calculates the trade profit ( open trade - close trade)
 
     Args:
-        result_df (DataFrame): Input dataframe 
+        result_df (DataFrame): Input dataframe
 
     Returns:
         DataFrame:  DF with Total Price and Status for each trade
     """
 
-    result_df[["DATE", "CLOSE_DATE"]] = result_df.apply(get_date, axis=1, result_type="expand")
+    result_df[["DATE", "CLOSE_DATE"]] = result_df.apply(
+        get_date, axis=1, result_type="expand"
+    )
     result_df["PRICE"] = result_df["PRICE"].fillna(0)
     result_df["CLOSE_PRICE"] = result_df["PRICE_C"].fillna(0)
 
     # Handle assigned options by adding Close Price as Open price since profit = 0
-    result_df.CLOSE_PRICE = np.where((result_df.TRAN_TYPE == 'OA'),
-                                     result_df.PRICE, result_df.CLOSE_PRICE)
+    result_df.CLOSE_PRICE = np.where(
+        (result_df.TRAN_TYPE == "OA"), result_df.PRICE, result_df.CLOSE_PRICE
+    )
 
     result_df["TOTAL_PRICE"] = result_df.apply(get_net_total_price, axis=1)
     result_df["STATUS"] = result_df.apply(get_transaction_status, axis=1)
     # Add Close Date if missing and Strike price by parsing option symbol string
-    result_df[["CLOSE_DATE", "STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1, result_type="expand")
+    result_df[["CLOSE_DATE", "STRIKE_PRICE"]] = result_df.apply(
+        parse_option_string, axis=1, result_type="expand"
+    )
 
     return result_df
 
@@ -252,7 +303,7 @@ def get_transaction_status(row):
         row ([df row]): [Single row of DF to whch the function is applied]
 
     Returns:
-        Trade Status:Assigned, Rolled, Expired or Active status 
+        Trade Status:Assigned, Rolled, Expired or Active status
     """
     if row.CLOSE_PRICE == row.PRICE:
         return "Assigned"
@@ -290,16 +341,16 @@ def parse_option_string(row):
 
 
 def get_date(row):
-    """ Return dates for opening trade and Closing Trade for the Option Trade
+    """Return dates for opening trade and Closing Trade for the Option Trade
     If Open Trade date is not pulled in the search criteria, the corresponding close trade is displayed
-    on its own as independent Open Trade so swap with Open date for such trades 
+    on its own as independent Open Trade so swap with Open date for such trades
 
     Args:
         row ([df row]): [Single row of DF to whch the function is applied]
 
     Returns:
         [type]: [description]
-    """    
+    """
 
     open_date = row["DATE"]
     close_date = row["DATE_C"]
@@ -321,8 +372,7 @@ def get_previous_bdate(date):
     Returns:
         _type_: _description_
     """
-    previous_business_date = (dt.strptime(date, "%Y-%m-%d") - CustomBusinessDay(1, calendar=cal)).strftime("%Y-%m-%d")
+    previous_business_date = (
+        dt.strptime(date, "%Y-%m-%d") - CustomBusinessDay(1, calendar=cal)
+    ).strftime("%Y-%m-%d")
     return previous_business_date
-
-
-

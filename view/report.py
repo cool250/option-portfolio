@@ -57,7 +57,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "PUT", "value": "PUT"},
                                 {"label": "ALL", "value": "ALL"},
                             ],
-                            value="PUT",
+                            value="ALL",
                             size="sm",
                         ),
                     ],
@@ -71,7 +71,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "TABLE", "value": "TABLE"},
                                 {"label": "CHART", "value": "CHART"},
                             ],
-                            value="CHART",
+                            value="TABLE",
                             size="sm",
                         ),
                     ]
@@ -142,7 +142,7 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
                         "precision": 2,
                     },
                 },
-                {"title": "PRICE", "field": "PRICE"},
+                {"title": "OPEN PRICE", "field": "PRICE"},
                 {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
                 {"title": "QTY", "field": "QTY"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
@@ -158,11 +158,12 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
                     id="report-table",
                     columns=columns,
                     data=df.to_dict("records"),
-                    downloadButtonType={
-                        "css": "btn btn-secondary mb-3",
-                        "text": "Export",
-                        "type": "csv",
-                    },
+                    # Disable for now - do not remove code
+                    # downloadButtonType={
+                    #     "css": "btn btn-primary mb-3",
+                    #     "text": "Export",
+                    #     "type": "csv",
+                    # },
                 ),
             )
             content = html.Div(children=dt)

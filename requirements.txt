@@ -9,6 +9,7 @@ cycler
 dash
 dash-auth
 dash-bootstrap-components
+dash-bootstrap-templates
 dash-renderer
 dash-table
 dash-tabulator
@@ -45,3 +46,4 @@ Werkzeug
 redis
 dash-pivottable
 scipy
+
