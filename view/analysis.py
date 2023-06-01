@@ -9,6 +9,7 @@ from service import option_analysis
 
 
 from app import app, cache
+from utils.functions import formatter_number_2_digits
 
 TICKER_LOOKUP_ROW = dbc.Row(
     children=[
@@ -58,6 +59,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     "Lookup",
                     color="primary",
                     id="lookup-btn",
+
                 ),
             ],
             width=2,
@@ -219,6 +221,7 @@ def on_lookup_click(n, ticker):
         # res = quotes.get_quotes(ticker)
         # mark = res["mark"]
         mark, weeks = option_analysis.get_ticker_details(ticker=ticker)
+        mark=formatter_number_2_digits(mark)
         return mark, weeks, dict()
 
 

@@ -39,7 +39,7 @@ def show_payoff_chart(df, title):
             y="TOTAL_PRICE",
             color="TICKER",
             text="TOTAL_PRICE",
-            title=f"Total {title}: {formatter_currency_with_cents(total)}",
+            title=f"{title}: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
             bargap=0.6,
@@ -63,7 +63,7 @@ def show_capital_need(df):
             y="TOTAL_COST",
             color="TICKER",
             text="TOTAL_COST",
-            title=f"Total Capital for Puts: {formatter_currency_with_cents(total)}",
+            title=f"Capital for Puts: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
             bargap=0.6,
