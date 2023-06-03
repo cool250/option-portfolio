@@ -20,7 +20,7 @@ class APIResponses(unittest.TestCase):
 
     def test_position(self):
         account = Account()
-        res = account.get_positions(account=ACCOUNT_NUMBER)
+        res = account.get_portfolio(account=ACCOUNT_NUMBER)
         assert res[0] is not None
 
     def test_history(self):

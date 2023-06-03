@@ -39,6 +39,14 @@ layout = dbc.Container(
                 class_name="text-end",
             ),
             html.P(),
+            dbc.Row(html.H4(children="BALANCE")),
+            html.Hr(className="my-2"),
+            dbc.Row(
+                dbc.Col(
+                    html.Div(id="balance-detail"),
+                )
+            ),
+            html.P(),
             dbc.Row(html.H4(children="PUTS")),
             html.Hr(className="my-2"),
             dbc.Row(
@@ -87,6 +95,7 @@ layout = dbc.Container(
         Output("puts_table", "children"),
         Output("calls_table", "children"),
         Output("stocks_table", "children"),
+        Output("balance-detail", "children"),
         Output("put-detail", "children"),
         Output("stock-detail", "children"),
     ],
@@ -95,11 +104,12 @@ layout = dbc.Container(
     ],
 )
 def on_button_click(n):
-    positions = AccountPositions()
-    df_puts = positions.get_put_positions()
-    df_calls = positions.get_call_positions()
-    df_stocks = positions.get_stock_positions()
-    cash_required = formatter_currency(df_puts["COST"].sum())
+    account = AccountPositions()
+    balance = account.get_account(field="balances")
+    df_puts = account.get_put_positions()
+    df_calls = account.get_call_positions()
+    df_stocks = account.get_stock_positions()
+    puts_cash = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
     stock_value = formatter_currency((df_stocks["MARK"] * df_stocks["QTY"]).sum())
     stock_cost = formatter_currency((df_stocks["AVG COST"] * df_stocks["QTY"]).sum())
@@ -175,7 +185,13 @@ def on_button_click(n):
         stocks_dt,
         html.Div(
             [
-                f" Put Exposure : {cash_required} Maintenance: {puts_maintenance}",
+                f" Cash Balance : {balance.marginBalance}",
+                html.Br(),
+            ]
+        ),
+        html.Div(
+            [
+                f" Put Exposure : {puts_cash} Maintenance: {puts_maintenance}",
                 html.Br(),
             ]
         ),
@@ -196,7 +212,11 @@ def on_button_click(n):
         Output("payoff-modal", "is_open"),
     ],
     Input("payoff-btn", "n_clicks"),
-    [State("put-table", "multiRowsClicked"), State("call-table", "multiRowsClicked"), State("stock-table", "multiRowsClicked")],
+    [
+        State("put-table", "multiRowsClicked"),
+        State("call-table", "multiRowsClicked"),
+        State("stock-table", "multiRowsClicked"),
+    ],
     prevent_initial_call=True,
 )
 def display_output(n, put_trades, call_trades, stock_trades):
@@ -236,7 +256,7 @@ def display_output(n, put_trades, call_trades, stock_trades):
             trade_dict["op_type"] = "e"
             trade_dict["op_pr"] = 0
             trade_dict["strike"] = trade["AVG COST"]
-            trade_dict["contract"] = trade["QTY"]/100
+            trade_dict["contract"] = trade["QTY"] / 100
             trade_dict["tr_type"] = "b"
             trades.append(trade_dict)
 

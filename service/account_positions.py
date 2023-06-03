@@ -1,4 +1,3 @@
-import logging
 
 import numpy as np
 import pandas as pd
@@ -7,8 +6,7 @@ from broker.account import Account
 from broker.config import ACCOUNT_NUMBER
 from broker.quotes import Quotes
 from utils.enums import PUT_CALL
-from utils.functions import formatter_number_2_digits, formatter_percent
-
+from utils.functions import formatter_number_2_digits, formatter_percent, convert_to_df
 
 class AccountPositions:
     def __init__(self):
@@ -40,7 +38,8 @@ class AccountPositions:
         }
 
         # Get All Open Positions
-        self.res = pd.DataFrame()
+        self.securities_account = None
+        self.positions = pd.DataFrame()
 
     def get_put_positions(self):
         """
@@ -54,7 +53,7 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] > row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.get_account_positions()
+        res = self.get_account()
         # Filter for puts
         is_put = res["option_type"] == PUT_CALL.PUT.value
         df = res[is_put]
@@ -101,7 +100,7 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] < row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.get_account_positions()
+        res = self.get_account()
 
         # Filter for calls
         is_call = res["option_type"] == PUT_CALL.CALL.value
@@ -130,7 +129,7 @@ class AccountPositions:
         for the symbol via Qouotes
         """
 
-        res = self.get_account_positions()
+        res = self.get_account()
 
         # Filter for stocks
         is_equity = res["instrument_type"] == "EQUITY"
@@ -146,18 +145,22 @@ class AccountPositions:
             df.rename(columns=self.params_stocks, inplace=True)
         return df
 
-    def get_account_positions(self):
+    def get_account(self, field='positions'):
         """
         Get open positions for a given account
         """
-        if self.res.empty:
+        if self.securities_account is None:
             account = Account()
-            position_df = account.get_positionsDF(account=ACCOUNT_NUMBER)
-
+            self.securities_account = account.get_portfolio(account=ACCOUNT_NUMBER)
+            position_df = convert_to_df(self.securities_account.positions)
+            
             # Populate pricing for all tickers
-            self.res = self.__get_pricing(position_df)
-        return self.res
-
+            self.positions = self.__get_pricing(position_df)
+        if field == 'balances':
+            return self.securities_account.balance
+        else:
+            return self.positions
+    
     def __get_pricing(self, df):
         """
         Get pricing info or the symbol via Quotes

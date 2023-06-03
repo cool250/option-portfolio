@@ -1,5 +1,4 @@
 class Position:
-
 	def __init__(self, quantity, symbol, instrument_type, underlying, option_type, averagePrice, maintenanceRequirement):
 		self.quantity = quantity
 		self.symbol = symbol
@@ -8,4 +7,16 @@ class Position:
 		self.option_type = option_type
 		self.averagePrice = averagePrice
 		self.maintenanceRequirement = maintenanceRequirement
+
+class Balance:
+	def __init__(self, marginBalance=0, maintenanceRequirement=0):
+		self.marginBalance = marginBalance
+		self.maintenanceRequirement = maintenanceRequirement
+
+class SecuritiesAccount:
+	def __init__(self, balance, positions,):
+		self.positions = positions
+		self.balance = balance
+
+		
 

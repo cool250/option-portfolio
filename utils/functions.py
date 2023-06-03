@@ -1,6 +1,6 @@
 import re
 from datetime import datetime as dt
-
+import pandas as pd
 
 # Define Formatters
 def formatter_currency(x):
@@ -32,6 +32,8 @@ def formatter_number_2_digits(x):
 def date_from_milliseconds(x):
     return dt.fromtimestamp(x / 1000.0).strftime("%Y-%m-%d")
 
+def convert_to_df(list_obj):
+    return pd.DataFrame([vars(s) for s in list_obj])
 
 def parse_option_symbol(symbol):
     # Regex to parse option string
