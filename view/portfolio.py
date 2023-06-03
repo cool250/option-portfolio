@@ -185,7 +185,7 @@ def on_button_click(n):
         stocks_dt,
         html.Div(
             [
-                f" Cash Balance : {balance.marginBalance}",
+                f" Cash Balance : {balance.marginBalance} Maintenance Requirements: {balance.maintenanceRequirement}",
                 html.Br(),
             ]
         ),
