@@ -28,61 +28,50 @@ layout = dbc.Container(
             dbc.Row(
                 [
                     dbc.Col(
+                        [
+                            dbc.Row(html.H4(children="BALANCE")),
+                            html.Hr(className="my-2"),
+                            dbc.Row(
+                                html.Div(id="balance-detail"),
+                            ),
+                        ]
+                    ),
+                    dbc.Col(
                         dbc.Button(
                             "Calculate Payoff",
                             color="primary",
                             id="payoff-btn",
                             className="mt-4",
                         ),
+                        class_name="text-end",
                     ),
                 ],
-                class_name="text-end",
-            ),
-            html.P(),
-            dbc.Row(html.H4(children="BALANCE")),
-            html.Hr(className="my-2"),
-            dbc.Row(
-                dbc.Col(
-                    html.Div(id="balance-detail"),
-                )
             ),
             html.P(),
             dbc.Row(html.H4(children="PUTS")),
             html.Hr(className="my-2"),
             dbc.Row(
                 [
-                    dbc.Col(
-                        [
-                            html.Div(id="dummy-output"),
-                            html.Div(id="put-detail"),
-                            html.P(),
-                            html.Div(id="puts_table"),
-                        ]
-                    )
+                    html.Div(id="dummy-output"),
+                    html.Div(id="put-detail"),
+                    html.P(),
+                    html.Div(id="puts_table"),
                 ]
             ),
             html.P(),
             dbc.Row(html.H4(children="CALLS")),
             html.Hr(className="my-2"),
             dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(id="calls_table"),
-                    )
-                ]
+                html.Div(id="calls_table"),
             ),
             html.P(),
             dbc.Row(html.H4(children="STOCKS")),
             html.Hr(className="my-2"),
             dbc.Row(
                 [
-                    dbc.Col(
-                        [
-                            html.Div(id="stock-detail"),
-                            html.P(),
-                            html.Div(id="stocks_table"),
-                        ]
-                    )
+                    html.Div(id="stock-detail"),
+                    html.P(),
+                    html.Div(id="stocks_table"),
                 ]
             ),
         ],
