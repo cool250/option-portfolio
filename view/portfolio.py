@@ -55,7 +55,6 @@ layout = dbc.Container(
                 [
                     html.Div(id="dummy-output"),
                     html.Div(id="put-detail"),
-                    html.P(),
                     html.Div(id="puts_table"),
                 ]
             ),
@@ -65,7 +64,6 @@ layout = dbc.Container(
             dbc.Row(
                 [
                     html.Div(id="call-detail"),
-                    html.P(),
                     html.Div(id="calls_table"),
                 ]
             ),
@@ -75,7 +73,6 @@ layout = dbc.Container(
             dbc.Row(
                 [
                     html.Div(id="stock-detail"),
-                    html.P(),
                     html.Div(id="stocks_table"),
                 ]
             ),
@@ -187,20 +184,17 @@ def on_button_click(n):
         ),
         html.Div(
             [
-                f" Put Exposure : {puts_cash} Maintenance: {puts_maintenance}",
-                html.Br(),
+                dbc.Alert(children=f" Put Exposure : {puts_cash} Maintenance: {puts_maintenance}", color="info"),
             ]
         ),
         html.Div(
             [
-                f" Maintenance: {calls_maintenance}",
-                html.Br(),
+                dbc.Alert(children=f" Maintenance: {calls_maintenance}", color="info"),
             ]
         ),
         html.Div(
             [
-                f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}",
-                html.Br(),
+                dbc.Alert(children=f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}", color="info"),
             ]
         ),
     )
