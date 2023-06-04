@@ -109,7 +109,7 @@ def multi_plotter(
         fig.add_hline(y=0, line_dash="dash", line_width=3, line_color="black")
         
         # Edit the layout
-        fig.update_layout(xaxis_title="Strike Price", yaxis_title="Premium")
+        fig.update_layout(xaxis_title="Stock Price", yaxis_title="Premium")
         return fig
 
     fig = plotly_plot()
