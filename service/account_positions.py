@@ -132,7 +132,8 @@ class AccountPositions:
         res = self.get_account()
 
         # Filter for stocks
-        is_equity = res["instrument_type"] == "EQUITY"
+        options = ['EQUITY', 'MUTUAL_FUND']
+        is_equity = res["instrument_type"].isin(options)
         df = res[is_equity]
 
         if not df.empty:
@@ -180,5 +181,7 @@ class AccountPositions:
                 "daysToExpiration",
             ]
         ]
+        # For Money Market Funds
+        res_filter['mark'] = res_filter['mark'].fillna(1)
         merged_df = pd.merge(df, res_filter, on="symbol")
         return merged_df

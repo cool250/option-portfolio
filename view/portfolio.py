@@ -35,7 +35,7 @@ layout = dbc.Container(
                                 html.Div(id="balance-detail"),
                             ),
                         ],
-                        width=10
+                        width=10,
                     ),
                     dbc.Col(
                         dbc.Button(
@@ -63,7 +63,11 @@ layout = dbc.Container(
             dbc.Row(html.H4(children="CALLS")),
             html.Hr(className="my-2"),
             dbc.Row(
-                html.Div(id="calls_table"),
+                [
+                    html.Div(id="call-detail"),
+                    html.P(),
+                    html.Div(id="calls_table"),
+                ]
             ),
             html.P(),
             dbc.Row(html.H4(children="STOCKS")),
@@ -87,6 +91,7 @@ layout = dbc.Container(
         Output("stocks_table", "children"),
         Output("balance-detail", "children"),
         Output("put-detail", "children"),
+        Output("call-detail", "children"),
         Output("stock-detail", "children"),
     ],
     [
@@ -101,6 +106,7 @@ def on_button_click(n):
     df_stocks = account.get_stock_positions()
     puts_cash = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
+    calls_maintenance = formatter_currency(df_calls["MARGIN"].sum())
     stock_value = formatter_currency((df_stocks["MARK"] * df_stocks["QTY"]).sum())
     stock_cost = formatter_currency((df_stocks["AVG COST"] * df_stocks["QTY"]).sum())
     stocks_maintenance = formatter_currency(df_stocks["MARGIN"].sum())
@@ -182,6 +188,12 @@ def on_button_click(n):
         html.Div(
             [
                 f" Put Exposure : {puts_cash} Maintenance: {puts_maintenance}",
+                html.Br(),
+            ]
+        ),
+        html.Div(
+            [
+                f" Maintenance: {calls_maintenance}",
                 html.Br(),
             ]
         ),
