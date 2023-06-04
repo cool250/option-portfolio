@@ -90,6 +90,7 @@ class Account(Base):
         balance = Balance()
         balance.marginBalance =  self._balanceskey["marginBalance"]
         balance.maintenanceRequirement = self._balanceskey["maintenanceRequirement"]
+        balance.accountValue = self._balanceskey["liquidationValue"]
         return balance
 
     

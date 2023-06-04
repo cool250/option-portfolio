@@ -9,9 +9,10 @@ class Position:
 		self.maintenanceRequirement = maintenanceRequirement
 
 class Balance:
-	def __init__(self, marginBalance=0, maintenanceRequirement=0):
+	def __init__(self, marginBalance=0, maintenanceRequirement=0, liquidationValue=0):
 		self.marginBalance = marginBalance
 		self.maintenanceRequirement = maintenanceRequirement
+		self.accountValue = liquidationValue
 
 class SecuritiesAccount:
 	def __init__(self, balance, positions,):

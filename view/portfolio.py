@@ -34,7 +34,8 @@ layout = dbc.Container(
                             dbc.Row(
                                 html.Div(id="balance-detail"),
                             ),
-                        ]
+                        ],
+                        width=10
                     ),
                     dbc.Col(
                         dbc.Button(
@@ -174,7 +175,7 @@ def on_button_click(n):
         stocks_dt,
         html.Div(
             [
-                f" Cash Balance : {balance.marginBalance} Maintenance Requirements: {balance.maintenanceRequirement}",
+                f" Account Value : {formatter_currency(balance.accountValue)} Cash Balance : {formatter_currency(balance.marginBalance)} Maintenance Requirements: {formatter_currency(balance.maintenanceRequirement)}",
                 html.Br(),
             ]
         ),
