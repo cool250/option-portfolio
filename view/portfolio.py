@@ -101,6 +101,9 @@ def on_button_click(n):
     df_puts = account.get_put_positions()
     df_calls = account.get_call_positions()
     df_stocks = account.get_stock_positions()
+    puts_count = df_puts.shape[0]
+    calls_count = df_calls.shape[0]
+    stocks_count = df_stocks.shape[0]
     puts_cash = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
     calls_maintenance = formatter_currency(df_calls["MARGIN"].sum())
@@ -178,23 +181,23 @@ def on_button_click(n):
         stocks_dt,
         html.Div(
             [
-                f" Account Value : {formatter_currency(balance.accountValue)} Cash Balance : {formatter_currency(balance.marginBalance)} Maintenance Requirements: {formatter_currency(balance.maintenanceRequirement)}",
+                f" Account Value:{formatter_currency(balance.accountValue)}  Cash Balance:{formatter_currency(balance.marginBalance)}  Maintenance:{formatter_currency(balance.maintenanceRequirement)}",
                 html.Br(),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f" Put Exposure : {puts_cash} Maintenance: {puts_maintenance}", color="info"),
+                dbc.Alert(children=f"Total:{puts_count}  Exposure:{puts_cash} Maintenance:{puts_maintenance}", color="info"),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f" Maintenance: {calls_maintenance}", color="info"),
+                dbc.Alert(children=f"Total:{calls_count} Maintenance:{calls_maintenance}", color="info"),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f" Stock Value : {stock_value}  Stock Cost : {stock_cost}  Maintenance: {stocks_maintenance}", color="info"),
+                dbc.Alert(children=f"Total:{stocks_count}  Value:{stock_value}   Cost:{stock_cost}  Maintenance:{stocks_maintenance}", color="info"),
             ]
         ),
     )

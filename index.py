@@ -14,7 +14,7 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-4-link", class_name="nav-link")),
         dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),
     ],
-    brand="MITRA",
+    brand="Option Guru",
     brand_href="#",
     color="primary",
     dark=True,
