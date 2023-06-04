@@ -148,7 +148,13 @@ class AccountPositions:
 
     def get_account(self, field='positions'):
         """
-        Get open positions for a given account
+        Get open positions and balances for a given account
+        
+        Args:
+            field (str, optional): positions or balances. Defaults to 'positions'.
+
+        Returns:
+            _type_: _description_
         """
         if self.securities_account is None:
             account = Account()
@@ -182,6 +188,6 @@ class AccountPositions:
             ]
         ]
         # For Money Market Funds
-        res_filter['mark'] = res_filter['mark'].fillna(1)
+        res_filter.loc[:,'mark'] = res_filter['mark'].fillna(1)
         merged_df = pd.merge(df, res_filter, on="symbol")
         return merged_df
