@@ -7,7 +7,7 @@ from dash.exceptions import PreventUpdate
 from app import app
 from opstrat.basic_multi import multi_plotter
 from service.account_positions import AccountPositions
-from utils.functions import formatter_currency
+from utils.functions import formatter_currency, formatter_number_2_digits
 
 layout = dbc.Container(
     dbc.Spinner(
@@ -246,7 +246,7 @@ def display_output(n, put_trades, call_trades, stock_trades):
             trade_dict["op_type"] = "e"
             trade_dict["op_pr"] = 0
             trade_dict["strike"] = trade["AVG COST"]
-            trade_dict["contract"] = trade["QTY"] / 100
+            trade_dict["contract"] = int(trade["QTY"] / 100)
             trade_dict["tr_type"] = "b"
             trades.append(trade_dict)
 

@@ -51,4 +51,4 @@ def on_button_click(n, url_str):
     if n is not None:
         base = Base()
         base.login(url_str)
-    return ""
+    return "Success"
