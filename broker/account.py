@@ -88,7 +88,7 @@ class Account(Base):
     
     def get_balances(self):
         balance = Balance()
-        balance.marginBalance =  self._balanceskey["marginBalance"]
+        balance.marginBalance =  self._balanceskey["cashBalance"]
         balance.maintenanceRequirement = self._balanceskey["maintenanceRequirement"]
         balance.accountValue = self._balanceskey["liquidationValue"]
         return balance
