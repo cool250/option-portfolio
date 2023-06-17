@@ -8,26 +8,30 @@ import pandas as pd
 
 from utils.functions import formatter_currency_with_cents
 
+layout = html.Div(id="home_content")
 
-SEARCH_RESULT = html.Div(id="home_content")
-
-
-def on_page_load():
-    df_puts = get_report(instrument_type="PUT")
-    df_calls = get_report(instrument_type="CALL")
-    return dbc.Container(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(show_payoff_chart(df_puts, title="PUTS")),
-                    dbc.Col(show_payoff_chart(df_calls, title="CALLS")),
-                ]
-            ),
-            html.P(),
-            dbc.Row(show_capital_need(df_puts)),
-        ]
-    )
-
+@app.callback(
+    Output("home_content", "children"),
+    Input("url", "href"),
+)
+def on_page_load(href):
+    if href is None:
+        raise PreventUpdate
+    else:
+        df_puts = get_report(instrument_type="PUT")
+        df_calls = get_report(instrument_type="CALL")
+        return dbc.Container(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(show_payoff_chart(df_puts, title="PUTS")),
+                        dbc.Col(show_payoff_chart(df_calls, title="CALLS")),
+                    ]
+                ),
+                html.P(),
+                dbc.Row(show_capital_need(df_puts)),
+            ]
+        )
 
 def show_payoff_chart(df, title):
     if not df.empty:
@@ -74,4 +78,3 @@ def show_capital_need(df):
         return html.Div(
             dbc.Alert(children="No records"),
         )
-layout = on_page_load()
