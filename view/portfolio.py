@@ -149,6 +149,7 @@ def on_button_click(n):
                 {"title": "SYMBOL", "field": "SYMBOL"},
                 {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
+                {"title": "EXTRINSIC", "field": "EXTRINSIC"},
                 {"title": "MARK", "field": "MARK"},
                 {"title": "PURCHASE", "field": "PURCHASE PRICE"},
                 {"title": "DAYS", "field": "DAYS"},

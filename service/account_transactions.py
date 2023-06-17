@@ -92,8 +92,8 @@ def get_report(
 
             # Filter records based on closing date search input
             df = df[
-                (df["CLOSE_DATE"] >= settle_date_start)
-                & (df["CLOSE_DATE"] <= settle_date_end)
+                (df["CLOSE_DATE"] > settle_date_start)
+                & (df["CLOSE_DATE"] < settle_date_end)
             ]
 
         elif instrument_type == "EQUITY":
