@@ -615,17 +615,18 @@ class Base:
         )
 
         # if there was an error go through the full authentication
-        if response.status_code == 401:
-            raise APIException("Not Authorized")
+        if response.status_code != 200:
+            raise APIException("API Error")
 
         response_dict = response.json()
         logging.debug (response_dict)
+        return response_dict
 
-        if response_dict.get("error") is not None:
-            return response_dict  # if no fault code or list is returned, then return the API response
-        else:
-            logging.error(f'API Error{response_dict["error"]}')
+        # if response_dict.get("error") is not None:
+        #     return response_dict  # if no fault code or list is returned, then return the API response
+        # else:
+        #     logging.error(f'API Error{response_dict["error"]}')
             
-            # if there is a fault code, raise an API exception
-            raise APIException(error_message=response_dict["error"])
+        #     # if there is a fault code, raise an API exception
+        #     raise APIException(error_message=response_dict["error"])
 
