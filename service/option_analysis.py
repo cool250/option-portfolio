@@ -15,7 +15,7 @@ params = {
 }
 
 
-def get_ticker_details(ticker: str)-> list|str:
+def get_ticker_details(ticker: str):
     startDate = dt.now() + timedelta(days=params["min_expiration_days"])
     endDate = dt.now() + timedelta(days=params["max_expiration_days"])
     options = Options()
