@@ -5,7 +5,7 @@ import urllib.parse
 import requests
 
 from utils.exceptions import APIException
-from utils.store import Store, Store_Factory
+from utils.store import Store_Factory
 
 from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
 
@@ -613,19 +613,19 @@ class Base:
         response = requests.get(
             url=url, headers=self.merged_headers, params=params, verify=verify
         )
+
+        # if there was an error go through the full authentication
+        if response.status_code == 401:
+            raise APIException("Not Authorized")
+
         response_dict = response.json()
         logging.debug (response_dict)
 
-        try:
-            response_dict[
-                "error"
-            ]  # see if there is a fault message in the API response
-
-        except (KeyError, TypeError) as e:
+        if response_dict.get("error") is not None:
             return response_dict  # if no fault code or list is returned, then return the API response
-
-        logging.error(f'API Error{response_dict["error"]}')
-    
-        # if there is a fault code, raise an API exception
-        # raise APIException(error_message=response_dict["error"])
+        else:
+            logging.error(f'API Error{response_dict["error"]}')
+            
+            # if there is a fault code, raise an API exception
+            raise APIException(error_message=response_dict["error"])
 
