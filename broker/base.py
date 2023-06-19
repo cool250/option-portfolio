@@ -206,14 +206,6 @@ class Base:
             "loggedin": False,
         }
 
-        # # Grab the current directory of the client file, that way we can store the JSON file in the same folder.
-        # if self.config["json_path"] is not None:
-        #     file_path = self.config["json_path"]
-        # else:
-        #     dir_path = os.path.dirname(os.path.realpath(__file__))
-        #     filename = "TDAmeritradeState.json"
-        #     file_path = os.path.join(dir_path, filename)
-
         # if the state is initalized
         if action == "init":
             self.state = initialized_state
@@ -269,16 +261,6 @@ class Base:
 
         # set the newly created 'authorization_url' key to the newly created url
         self.state["authorization_url"] = url
-
-        # # aks the user to go to the URL provided, they will be prompted to authenticate themsevles.
-        # print(
-        #     "Please go to URL provided authorize your account: {}".format(
-        #         self.state["authorization_url"]
-        #     )
-        # )
-
-        # # ask the user to take the final URL after authentication and paste here so we can parse.
-        # my_response = input("Paste the full URL redirect here: ")
 
         logging.info(f'setting TD response {url_str}')
         my_response = url_str

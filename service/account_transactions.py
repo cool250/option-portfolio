@@ -194,7 +194,7 @@ def merge_openclose(df_open, df_close, df_assigned_stocks):
     oa_df = pd.merge(
         result_df,
         df_assigned_stocks,
-        how="left",
+        how="outer",
         on=["QTY", "TICKER", "EXPIRY_DATE"],
         suffixes=(None, "_E"),
     )
