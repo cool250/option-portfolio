@@ -131,6 +131,7 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
         if report_type == "TABLE":
             columns = [
                 {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
+                {"title": "TYPE", "field": "INSTRUCTION"},
                 {"title": "OPEN DATE", "field": "DATE"},
                 {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
                 {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},

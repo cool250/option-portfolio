@@ -129,7 +129,7 @@ def parse_option_response(df, instrument_type):
     # Filter for either PUT or CALL option types
     df_options = df[df["OPTION_TYPE"] == instrument_type]
 
-    # Get equities to remove option income for option assignments
+    # Get assigned equities to remove option income for option assignments
     if instrument_type == "PUT":
         instruction = "BUY"
     else:
@@ -166,7 +166,7 @@ def parse_option_response(df, instrument_type):
     return final_df
 
 
-def merge_openclose(df_open, df_close, df_assigned_stocks):
+def merge_openclose(df_open, df_close, df_assigned):
     """Merge opening and closing postions.
     For rolled trades, corresponding df_close is present
     For assigned stock, corresponding df_assigned_stocks is present
@@ -182,7 +182,7 @@ def merge_openclose(df_open, df_close, df_assigned_stocks):
     """
 
     # Merge opening and closing trades
-    result_df = pd.merge(
+    df_options = pd.merge(
         df_open,
         df_close,
         how="outer",
@@ -190,33 +190,55 @@ def merge_openclose(df_open, df_close, df_assigned_stocks):
         suffixes=(None, "_C"),
     )
 
+    df_adjusted_assigned = process_early_assignment(df_options, df_assigned)
+
     # Merge assigned stock positions
     oa_df = pd.merge(
-        result_df,
-        df_assigned_stocks,
-        how="outer",
-        on=["QTY", "TICKER", "EXPIRY_DATE"],
+        df_options,
+        df_adjusted_assigned,
+        how="left",
+        on=["SYMBOL"],
         suffixes=(None, "_E"),
     )
 
     return oa_df
 
 
-def parse_equity_response(df, instrument_type):
-    """[Parse Equity Response coming from transactions API]
+def process_early_assignment(df_options, df_assigned):
+    """Handle expiry dates of early assignment
 
     Args:
-        df ([df]): [Filtered Options transaction]
-        instrument_type: Equities, Options, etc.
+        df_options (_type_): _description_
+        df_assigned (_type_): _description_
 
     Returns:
-        [df]: [Equity transactions to be displayed on screen]
+        _type_: _description_
     """
+    # All option trades that don't have any closing option trades
+    df_option_openonly = df_options[df_options["PRICE_C"].isna()]
 
-    # Filter for either Equity transactions
-    df_equities = df[df["TYPE"] == instrument_type]
+    # Add timestamp and sort for merge asof operation using closest timestamp
+    df_option_openonly["EXPIRY_DATE_TS"] = pd.to_datetime(
+        df_option_openonly["EXPIRY_DATE"]
+    )
+    df_assigned["EXPIRY_DATE_TS"] = pd.to_datetime(df_assigned["EXPIRY_DATE"])
 
-    return df_equities
+    df_option_openonly = df_option_openonly.sort_values(by=["EXPIRY_DATE_TS"])
+    df_assigned = df_assigned.sort_values(by=["EXPIRY_DATE_TS"])
+
+    # Adjust stock assignments date to match opening expiration date for early assignments if needed
+    df_adjusted_assigned = pd.merge_asof(
+        df_assigned,
+        df_option_openonly,
+        on="EXPIRY_DATE_TS",
+        by=["QTY", "TICKER"],
+        allow_exact_matches=True,
+        direction="forward",
+        tolerance=pd.Timedelta("30days"),
+        suffixes=("_A", None),
+    )
+
+    return df_adjusted_assigned
 
 
 def get_assigned_stock(df, instruction):
@@ -308,7 +330,7 @@ def get_transaction_status(row):
     if row.CLOSE_PRICE == row.PRICE:
         return "Assigned"
     elif row.CLOSE_PRICE > 0:
-        return "Rolled"
+        return "Closed"
     elif row.CLOSE_PRICE == 0 and row.EXPIRY_DATE < dt.now().strftime("%Y-%m-%d"):
         return "Expired"
     else:
@@ -353,7 +375,12 @@ def get_date(row):
     """
 
     open_date = row["DATE"]
-    close_date = row["DATE_C"]
+    if pd.notna(row["DATE_C"]):
+        close_date = row["DATE_C"]
+    elif pd.notna(row["DATE_A"]):
+        close_date = row["DATE_A"]
+    else:
+        close_date = None
 
     if pd.isna(open_date):
         # Open date is before Search and transaction not pulled or other mismatch
@@ -376,3 +403,20 @@ def get_previous_bdate(date):
         dt.strptime(date, "%Y-%m-%d") - CustomBusinessDay(1, calendar=cal)
     ).strftime("%Y-%m-%d")
     return previous_business_date
+
+
+def parse_equity_response(df, instrument_type):
+    """[Parse Equity Response coming from transactions API]
+
+    Args:
+        df ([df]): [Filtered Options transaction]
+        instrument_type: Equities, Options, etc.
+
+    Returns:
+        [df]: [Equity transactions to be displayed on screen]
+    """
+
+    # Filter for either Equity transactions
+    df_equities = df[df["TYPE"] == instrument_type]
+
+    return df_equities
