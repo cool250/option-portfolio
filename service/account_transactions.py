@@ -4,7 +4,6 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 from pandas.tseries.offsets import CustomBusinessDay
-import logging
 
 from broker.config import ACCOUNT_NUMBER
 from broker.transactions import Transaction
@@ -14,7 +13,7 @@ from utils.ustradingcalendar import USTradingCalendar
 default_start_duration = 180
 cal = USTradingCalendar()
 
-# Mapping column for UI display
+# Mapping column for easier handling
 params = {
     "transactionDate": "DATE",
     "netAmount": "TOTAL_PRICE",
@@ -73,20 +72,19 @@ def get_report(
     )
 
     if not df.empty:
+        df = df.rename(columns=params)
+
         # Change df['transactionDate'] string to remove timestamp
-        df["transactionDate"] = pd.to_datetime(
-            df["transactionDate"], format="%Y-%m-%dT%H:%M:%S%z"
+        df["DATE"] = pd.to_datetime(
+            df["DATE"], format="%Y-%m-%dT%H:%M:%S%z"
         ).dt.strftime("%Y-%m-%d")
 
         # Change df['optionExpirationDate'] string to remove timestamp
-        df["transactionItem.instrument.optionExpirationDate"] = pd.to_datetime(
-            df["transactionItem.instrument.optionExpirationDate"],
+        df["EXPIRY_DATE"] = pd.to_datetime(
+            df["EXPIRY_DATE"],
             format="%Y-%m-%dT%H:%M:%S%z",
         ).dt.strftime("%Y-%m-%d")
 
-    # Processing for Options
-    if not df.empty:
-        df = df.rename(columns=params)
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
 
@@ -192,7 +190,7 @@ def merge_openclose(df_open, df_close, df_assigned):
 
     df_adjusted_assigned = process_early_assignment(df_options, df_assigned)
 
-    # Merge assigned stock positions
+    # Merge assigned stock positions using options symbol
     oa_df = pd.merge(
         df_options,
         df_adjusted_assigned,
@@ -227,6 +225,7 @@ def process_early_assignment(df_options, df_assigned):
     df_assigned = df_assigned.sort_values(by=["EXPIRY_DATE_TS"])
 
     # Adjust stock assignments date to match opening expiration date for early assignments if needed
+    # Do not add suffix to options df for merge later
     df_adjusted_assigned = pd.merge_asof(
         df_assigned,
         df_option_openonly,
@@ -353,7 +352,7 @@ def parse_option_string(row):
 
     option_symbol = row["SYMBOL"]
     close_date = row["CLOSE_DATE"]
-    if not pd.isna(option_symbol):
+    if pd.notna(option_symbol):
         expiration_date, strike_price = parse_option_symbol(option_symbol)
 
     # If transaction was not explicitly closed, close date is same as option expiry date
