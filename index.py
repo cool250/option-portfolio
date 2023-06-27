@@ -1,7 +1,8 @@
+import os
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
-import os
+
 
 from app import app
 from view import income_finder, oauth, portfolio, analysis, report, home

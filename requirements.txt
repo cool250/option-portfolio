@@ -34,6 +34,7 @@ plotly
 pyparsing
 python-dateutil
 pytz
+pylint
 regex
 requests
 retrying

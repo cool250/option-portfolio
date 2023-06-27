@@ -17,3 +17,6 @@ clean:
 
 format:
 	black *.py
+
+lint:
+	pylint index.py
