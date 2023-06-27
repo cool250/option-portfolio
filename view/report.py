@@ -110,11 +110,11 @@ layout = dbc.Container(
     Output("dashboard_content", "children"),
     [
         Input("chart-btn", "n_clicks"),
-        Input("db_report-ticker", "value"),
-        Input("db_instrument-type", "value"),
-        Input("db_report-type", "value"),
     ],
     [
+        State("db_report-ticker", "value"),
+        State("db_instrument-type", "value"),
+        State("db_report-type", "value"),
         State("db_start-date-picker", "date"),
         State("db_end-date-picker", "date"),
     ],

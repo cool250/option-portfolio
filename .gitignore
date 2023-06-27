@@ -5,3 +5,4 @@ app.log
 .idea/
 TestClient.py
 .vscode/
+venv/
