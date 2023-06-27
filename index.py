@@ -8,11 +8,32 @@ from view import income_finder, oauth, portfolio, analysis, report, home
 
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Home", href="/home", id="page-1-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Scanner", href="/income_finder", id="page-2-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-4-link", class_name="nav-link")),
-        dbc.NavItem(dbc.NavLink("Analysis", href="/analysis", id="page-5-link", class_name="nav-link")),
+        dbc.NavItem(
+            dbc.NavLink("Home", href="/home", id="page-1-link", class_name="nav-link")
+        ),
+        dbc.NavItem(
+            dbc.NavLink(
+                "Scanner",
+                href="/income_finder",
+                id="page-2-link",
+                class_name="nav-link",
+            )
+        ),
+        dbc.NavItem(
+            dbc.NavLink(
+                "Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link"
+            )
+        ),
+        dbc.NavItem(
+            dbc.NavLink(
+                "Report", href="/report", id="page-4-link", class_name="nav-link"
+            )
+        ),
+        dbc.NavItem(
+            dbc.NavLink(
+                "Analysis", href="/analysis", id="page-5-link", class_name="nav-link"
+            )
+        ),
     ],
     brand="Option Guru",
     brand_href="#",
@@ -23,6 +44,7 @@ navbar = dbc.NavbarSimple(
 content = html.Div(id="page-content", className="p-3")
 
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
+
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
@@ -49,7 +71,8 @@ def render_page_content(pathname):
         ]
     )
 
-port = int(os.environ.get('PORT', 8080)) 
+
+port = int(os.environ.get("PORT", 8080))
 # Adding Host
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, port=port)

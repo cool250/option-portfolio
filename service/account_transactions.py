@@ -188,9 +188,10 @@ def merge_openclose(df_open, df_close, df_assigned):
         suffixes=(None, "_C"),
     )
 
-    df_adjusted_assigned = process_early_assignment(df_options, df_assigned)
+    # Match transactions where assignment happened earlier than option expiry date
+    df_adjusted_assigned = handle_early_assignment(df_options, df_assigned)
 
-    # Merge assigned stock positions using options symbol
+    # Merge assigned stock positions using options symbol. Earlier merge added option symbol for assigned df
     oa_df = pd.merge(
         df_options,
         df_adjusted_assigned,
@@ -202,8 +203,8 @@ def merge_openclose(df_open, df_close, df_assigned):
     return oa_df
 
 
-def process_early_assignment(df_options, df_assigned):
-    """Handle expiry dates of early assignment
+def handle_early_assignment(df_options, df_assigned):
+    """Handle expiry dates of early assignment to match open trade expiry date
 
     Args:
         df_options (_type_): _description_
@@ -215,20 +216,22 @@ def process_early_assignment(df_options, df_assigned):
     # All option trades that don't have any closing option trades
     df_option_openonly = df_options[df_options["PRICE_C"].isna()]
 
-    # Add timestamp and sort for merge asof operation using closest timestamp
-    df_option_openonly["EXPIRY_DATE_TS"] = pd.to_datetime(
-        df_option_openonly["EXPIRY_DATE"]
-    )
-    df_assigned["EXPIRY_DATE_TS"] = pd.to_datetime(df_assigned["EXPIRY_DATE"])
+    # Create a copy to avoid pandas warning when adding new column later to filtered Dataframes
+    df_option_copied = df_option_openonly.copy()
+    df_assigned_copied = df_assigned.copy()
 
-    df_option_openonly = df_option_openonly.sort_values(by=["EXPIRY_DATE_TS"])
-    df_assigned = df_assigned.sort_values(by=["EXPIRY_DATE_TS"])
+    # Add timestamp and sort for merge asof operation using closest timestamp
+    df_option_copied["EXPIRY_DATE_TS"] = pd.to_datetime(df_option_copied["EXPIRY_DATE"])
+    df_assigned_copied["EXPIRY_DATE_TS"] = pd.to_datetime(df_assigned["EXPIRY_DATE"])
+
+    df_option_copied = df_option_copied.sort_values(by=["EXPIRY_DATE_TS"])
+    df_assigned_copied = df_assigned_copied.sort_values(by=["EXPIRY_DATE_TS"])
 
     # Adjust stock assignments date to match opening expiration date for early assignments if needed
     # Do not add suffix to options df for merge later
     df_adjusted_assigned = pd.merge_asof(
-        df_assigned,
-        df_option_openonly,
+        df_assigned_copied,
+        df_option_copied,
         on="EXPIRY_DATE_TS",
         by=["QTY", "TICKER"],
         allow_exact_matches=True,
