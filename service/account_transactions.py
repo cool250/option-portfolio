@@ -124,19 +124,20 @@ def parse_option_response(df, instrument_type):
     Returns:
         [df]: [Options transactions to be displayed on screen]
     """
-    # Filter for either PUT or CALL option types
+    # PUT or CALL option types
     df_options = df[df["OPTION_TYPE"] == instrument_type]
 
     # Get assigned equities to remove option income for option assignments
+    # For short Put option assigment - OA is of type "BUY", short call - OA is of type "SELL"
     if instrument_type == "PUT":
         instruction = "BUY"
     else:
         instruction = "SELL"
+
+    # Stock transactions due to corresponding options Assignment
     df_assigned_stocks = get_assigned_stock(df, instruction)
 
-    # All opening positions
-    df_open = df_options[df_options["POSITION"] == "OPENING"]
-
+    # Aggregate function to combine orders which might have been split by broker into multiple orders while execution
     aggregate_function = {
         "DATE": "first",
         "EXPIRY_DATE": "first",
@@ -146,19 +147,26 @@ def parse_option_response(df, instrument_type):
         "PRICE": "mean",
         "QTY": "sum",
     }
-    # Edge case - Combine orders which were split by broker into multiple orders while execution
+
+    # All opening positions
+    df_open = df_options[df_options["POSITION"] == "OPENING"]
+
+    # Combine open orders if needed
     df_open = df_open.groupby(["SYMBOL"]).agg(aggregate_function)
     df_open = df_open.reset_index()
 
     # All Closing positions ( for rolled trades)
     df_close = df_options[df_options["POSITION"] == "CLOSING"]
 
-    # Combine orders which were split by broker into multiple orders while execution
+    # Combine closed orders if needed
     df_close = df_close.groupby(["SYMBOL"]).agg(aggregate_function)
     df_close = df_close.reset_index()
 
+    # Merge option opening transaction with stock assignment or closing transaction
+    # For expired transaction there is no corresponding closing or assignment.
     oa_df = merge_openclose(df_open, df_close, df_assigned_stocks)
 
+    # Calculate profits by subtracting closing costs from opening 
     final_df = calculate_final_payoff(oa_df)
     final_df = final_df.sort_values(by=["DATE"])
     return final_df
