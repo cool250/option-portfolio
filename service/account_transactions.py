@@ -85,30 +85,27 @@ def get_report(
             format="%Y-%m-%dT%H:%M:%S%z",
         ).dt.strftime("%Y-%m-%d")
 
+        # Lambda function to filter records based on closing date search input
+        filter_date = lambda df: df[
+            (df["CLOSE_DATE"] > settle_date_start)
+            & (df["CLOSE_DATE"] < settle_date_end)
+        ]
+
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-
-            # Filter records based on closing date search input
-            df = df[
-                (df["CLOSE_DATE"] > settle_date_start)
-                & (df["CLOSE_DATE"] < settle_date_end)
-            ]
+            df = filter_date(df)
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
             df = parse_equity_response(df, instrument_type)
             df = df[(df["DATE"] >= settle_date_start)]
 
+        # For all options parse puts and calls independently and concat
         else:
             df_puts = parse_option_response(df, "PUT")
             df_calls = parse_option_response(df, "CALL")
             df = pd.concat([df_puts, df_calls])
-
-            # Filter records based on closing date search input
-            df = df[
-                (df["CLOSE_DATE"] >= settle_date_start)
-                & (df["CLOSE_DATE"] <= settle_date_end)
-            ]
+            df = filter_date(df)
 
     return df
 
@@ -166,7 +163,7 @@ def parse_option_response(df, instrument_type):
     # For expired transaction there is no corresponding closing or assignment.
     oa_df = merge_openclose(df_open, df_close, df_assigned_stocks)
 
-    # Calculate profits by subtracting closing costs from opening 
+    # Calculate profits by subtracting closing costs from opening
     final_df = calculate_final_payoff(oa_df)
     final_df = final_df.sort_values(by=["DATE"])
     return final_df
