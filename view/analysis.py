@@ -59,7 +59,7 @@ TICKER_LOOKUP_ROW = dbc.Row(
                     "Lookup",
                     color="primary",
                     id="lookup-btn",
-
+                    size="md",
                 ),
             ],
             width=2,
@@ -146,13 +146,14 @@ STRATEGY_ENTRY_ROW = dbc.Row(
                     color="primary",
                     id="add-btn",
                     className="mt-4",
+                    size="md"
                 ),
             ],
             width=2,
         ),
     ],
     style=dict(display="none"),
-    id="table_row",
+    id="strategy_entry_row",
     className="mt-4",
 )
 STRATEGY_LIST = dbc.Row(
@@ -169,11 +170,13 @@ STRATEGY_LIST = dbc.Row(
                     color="primary",
                     id="analysis-btn",
                     className="mt-4",
-                    style=dict(display="none"),
+                    size="md"
                 ),
             ]
         ),
     ],
+    id="strategy_list_row",
+    style=dict(display="none"),
     className="mt-4",
 )
 
@@ -196,7 +199,7 @@ layout = dbc.Container(
 @app.callback(
     Output("a_spot", "children"),
     Output("a_weeks", "options"),
-    Output("table_row", "style"),
+    Output("strategy_entry_row", "style"),
     [Input("lookup-btn", "n_clicks")],
     [
         State("a_ticker", "value"),
@@ -227,7 +230,7 @@ def on_lookup_click(n, ticker):
 
 @app.callback(
     Output("a_content", "children"),
-    Output("analysis-btn", "style"),
+    Output("strategy_list_row", "style"),
     [Input("add-btn", "n_clicks")],
     [
         State("a_contractType", "value"),

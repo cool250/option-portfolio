@@ -240,7 +240,7 @@ def handle_early_assignment(df_options, df_assigned):
         on="EXPIRY_DATE_TS",
         by=["QTY", "TICKER"],
         allow_exact_matches=True,
-        direction="forward",
+        direction="nearest",
         tolerance=pd.Timedelta("30days"),
         suffixes=("_A", None),
     )
