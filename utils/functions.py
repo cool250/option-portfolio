@@ -28,6 +28,8 @@ def formatter_number(x):
 def formatter_number_2_digits(x):
     return "{:,.2f}".format(x) if x >= 0 else "({:,.2f})".format(abs(x))
 
+def change_date_format(date_to_convert):
+    return dt.strptime(date_to_convert, '%Y-%m-%d').strftime('%m/%d/%y')
 
 def date_from_milliseconds(x):
     return dt.fromtimestamp(x / 1000.0).strftime("%Y-%m-%d")

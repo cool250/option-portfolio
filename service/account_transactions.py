@@ -7,11 +7,13 @@ from pandas.tseries.offsets import CustomBusinessDay
 
 from broker.config import ACCOUNT_NUMBER
 from broker.transactions import Transaction
-from utils.functions import parse_option_symbol
+from utils.functions import parse_option_symbol, change_date_format
 from utils.ustradingcalendar import USTradingCalendar
 
 default_start_duration = 180
 cal = USTradingCalendar()
+
+api_date_format = "%Y-%m-%d"
 
 # Mapping column for easier handling
 params = {
@@ -31,7 +33,7 @@ params = {
 
 
 def get_report(
-    settle_date_start=None, settle_date_end=None, symbol=None, instrument_type=None
+    start_close_date=None, end_close_date=None, symbol=None, instrument_type=None
 ):
     """
     This method is called from Reports screen.
@@ -49,18 +51,18 @@ def get_report(
 
     # In case start date or end date is not passed, use to initialize default
     today = dt.now()
-    if not settle_date_start:
-        settle_date_start = today.strftime("%Y-%m-%d")
+    if not start_close_date:
+        start_close_date = today.strftime(api_date_format)
 
     # Try to use 45 days in advance to get all options expiring before entered start date
     # The API takes trade open date as start date not trade closing
     search_start_date = (
-        dt.strptime(settle_date_start, "%Y-%m-%d") - timedelta(days=45)
-    ).strftime("%Y-%m-%d")
+        dt.strptime(start_close_date, api_date_format) - timedelta(days=45)
+    ).strftime(api_date_format)
 
-    if not settle_date_end:
+    if not end_close_date:
         # Used to filter for trade ending dates 45 days out as default
-        settle_date_end = (today + timedelta(days=45)).strftime("%Y-%m-%d")
+        end_close_date = (today + timedelta(days=45)).strftime(api_date_format)
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(
@@ -68,7 +70,7 @@ def get_report(
         transaction_type="TRADE",
         symbol=symbol,
         start_date=search_start_date,
-        end_date=settle_date_end,
+        end_date=end_close_date,
     )
 
     if not df.empty:
@@ -87,8 +89,8 @@ def get_report(
 
         # Lambda function to filter records based on closing date search input
         filter_date = lambda df: df[
-            (df["CLOSE_DATE"] > settle_date_start)
-            & (df["CLOSE_DATE"] < settle_date_end)
+            (df["CLOSE_DATE"] > start_close_date)
+            & (df["CLOSE_DATE"] < end_close_date)
         ]
 
         if instrument_type == "PUT" or instrument_type == "CALL":
@@ -98,7 +100,7 @@ def get_report(
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
             df = parse_equity_response(df, instrument_type)
-            df = df[(df["DATE"] >= settle_date_start)]
+            df = df[(df["DATE"] >= start_close_date)]
 
         # For all options parse puts and calls independently and concat
         else:
@@ -106,6 +108,9 @@ def get_report(
             df_calls = parse_option_response(df, "CALL")
             df = pd.concat([df_puts, df_calls])
             df = filter_date(df)
+
+    df["DATE"] = df["DATE"].apply(change_date_format)
+    df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
 
     return df
 
