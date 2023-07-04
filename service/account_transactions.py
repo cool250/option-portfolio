@@ -89,8 +89,8 @@ def get_report(
 
         # Lambda function to filter records based on closing date search input
         filter_date = lambda df: df[
-            (df["CLOSE_DATE"] > start_close_date)
-            & (df["CLOSE_DATE"] < end_close_date)
+            (df["CLOSE_DATE"] >= start_close_date)
+            & (df["CLOSE_DATE"] <= end_close_date)
         ]
 
         if instrument_type == "PUT" or instrument_type == "CALL":
