@@ -13,6 +13,7 @@ from utils.ustradingcalendar import USTradingCalendar
 default_start_duration = 180
 cal = USTradingCalendar()
 
+# date format needed by TD API
 api_date_format = "%Y-%m-%d"
 
 # Mapping column for easier handling
@@ -54,7 +55,7 @@ def get_report(
     if not start_close_date:
         start_close_date = today.strftime(api_date_format)
 
-    # Try to use 45 days in advance to get all options expiring before entered start date
+    # Modify start date to use 45 days in advance to get all options expiring before entered start date
     # The API takes trade open date as start date not trade closing
     search_start_date = (
         dt.strptime(start_close_date, api_date_format) - timedelta(days=45)
@@ -109,6 +110,7 @@ def get_report(
             df = pd.concat([df_puts, df_calls])
             df = filter_date(df)
 
+    # Change open and close date format to mm/dd/yy to match TD reports for reconcile later
     df["DATE"] = df["DATE"].apply(change_date_format)
     df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
 
