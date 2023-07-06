@@ -1,12 +1,10 @@
-import logging
-from dash import Dash, dcc, html, Input, Output, State
+from dash import dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
-import plotly.graph_objects as go
 from app import app
 from service.account_transactions import get_report
-from utils.functions import formatter_currency_with_cents
+from utils.functions import change_date_format, formatter_currency_with_cents
 
 TOP_COLUMN = dbc.Form(
     [
@@ -129,6 +127,9 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
         )
         # Populate data table
         if report_type == "TABLE":
+            # Change open and close date format to mm/dd/yy to match TD reports for reconcile later
+            df["DATE"] = df["DATE"].apply(change_date_format)
+            df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
             columns = [
                 {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
                 {"title": "TYPE", "field": "INSTRUCTION"},

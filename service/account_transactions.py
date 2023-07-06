@@ -7,7 +7,7 @@ from pandas.tseries.offsets import CustomBusinessDay
 
 from broker.config import ACCOUNT_NUMBER
 from broker.transactions import Transaction
-from utils.functions import parse_option_symbol, change_date_format
+from utils.functions import parse_option_symbol
 from utils.ustradingcalendar import USTradingCalendar
 
 default_start_duration = 180
@@ -96,7 +96,8 @@ def get_report(
 
         if instrument_type == "PUT" or instrument_type == "CALL":
             df = parse_option_response(df, instrument_type)
-            df = filter_date(df)
+            if not df.empty:
+                df = filter_date(df)
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
@@ -108,11 +109,8 @@ def get_report(
             df_puts = parse_option_response(df, "PUT")
             df_calls = parse_option_response(df, "CALL")
             df = pd.concat([df_puts, df_calls])
-            df = filter_date(df)
-
-    # Change open and close date format to mm/dd/yy to match TD reports for reconcile later
-    df["DATE"] = df["DATE"].apply(change_date_format)
-    df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
+            if not df.empty:
+                df = filter_date(df)
 
     return df
 
@@ -170,10 +168,13 @@ def parse_option_response(df, instrument_type):
     # For expired transaction there is no corresponding closing or assignment.
     oa_df = merge_openclose(df_open, df_close, df_assigned_stocks)
 
-    # Calculate profits by subtracting closing costs from opening
-    final_df = calculate_final_payoff(oa_df)
-    final_df = final_df.sort_values(by=["DATE"])
-    return final_df
+    if oa_df.empty:
+        return oa_df 
+    else:
+        # Calculate profits by subtracting closing costs from opening
+        final_df = calculate_final_payoff(oa_df)
+        final_df = final_df.sort_values(by=["DATE"])
+        return final_df
 
 
 def merge_openclose(df_open, df_close, df_assigned):
