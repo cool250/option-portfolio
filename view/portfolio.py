@@ -107,8 +107,11 @@ def on_button_click(n):
     puts_cash = formatter_currency(df_puts["COST"].sum())
     puts_maintenance = formatter_currency(df_puts["MARGIN"].sum())
     calls_maintenance = formatter_currency(df_calls["MARGIN"].sum())
-    stock_value = formatter_currency((df_stocks["MARK"] * df_stocks["QTY"]).sum())
-    stock_cost = formatter_currency((df_stocks["AVG COST"] * df_stocks["QTY"]).sum())
+    stock_value = (df_stocks["MARK"] * df_stocks["QTY"]).sum()
+    format_stock_value = formatter_currency(stock_value)
+    stock_cost = (df_stocks["AVG COST"] * df_stocks["QTY"]).sum()
+    format_stock_cost = formatter_currency(stock_cost)
+    stock_profit = formatter_currency(stock_value - stock_cost)
     stocks_maintenance = formatter_currency(df_stocks["MARGIN"].sum())
 
     tabulator_options = {
@@ -198,7 +201,7 @@ def on_button_click(n):
         ),
         html.Div(
             [
-                dbc.Alert(children=f"Total:{stocks_count}  Value:{stock_value}   Cost:{stock_cost}  Maintenance:{stocks_maintenance}", color="info"),
+                dbc.Alert(children=f"Total:{stocks_count}  Value:{format_stock_value}   Cost:{format_stock_cost}  P/L: {stock_profit} Maintenance:{stocks_maintenance}", color="info"),
             ]
         ),
     )
