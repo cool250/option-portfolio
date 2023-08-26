@@ -4,6 +4,9 @@ import dash
 import dash_bootstrap_components as dbc
 from flask_caching import Cache
 from dash_bootstrap_templates import load_figure_template
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv()) # read local .env file
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")

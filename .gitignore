@@ -6,3 +6,5 @@ app.log
 TestClient.py
 .vscode/
 venv/
+.DS_Store
+.env
