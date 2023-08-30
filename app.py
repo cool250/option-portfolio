@@ -2,9 +2,9 @@ import logging
 
 import dash
 import dash_bootstrap_components as dbc
-from flask_caching import Cache
 from dash_bootstrap_templates import load_figure_template
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
+from flask_caching import Cache
 
 load_dotenv(find_dotenv()) # read local .env file
 

@@ -13,6 +13,7 @@ dash-bootstrap-templates
 dash-renderer
 dash-table
 dash-tabulator
+python-dotenv
 Flask
 Flask-Caching
 Flask-Compress

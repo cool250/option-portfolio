@@ -1,10 +1,9 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
-from dash import html, dcc
+from app import app
+from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-
-from app import app
 from opstrat.basic_multi import multi_plotter
 from service.account_positions import AccountPositions
 from utils.functions import formatter_currency, formatter_number_2_digits

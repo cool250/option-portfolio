@@ -1,11 +1,10 @@
-from dash import dcc, html, Output, Input
 import dash_bootstrap_components as dbc
-from dash.exceptions import PreventUpdate
+import pandas as pd
 import plotly.express as px
 from app import app
+from dash import Input, Output, dcc, html
+from dash.exceptions import PreventUpdate
 from service.account_transactions import get_report
-import pandas as pd
-
 from utils.functions import formatter_currency_with_cents
 
 layout = html.Div(id="home_content")

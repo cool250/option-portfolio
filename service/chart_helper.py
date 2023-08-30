@@ -4,10 +4,9 @@ from datetime import timedelta
 from statistics import mean
 
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
 from broker.history import History
 from broker.search import Search
+from plotly.subplots import make_subplots
 from utils.functions import formatter_number_2_digits
 
 PERIOD = 30

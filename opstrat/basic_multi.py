@@ -1,9 +1,9 @@
 # multiplotter
 import numpy as np
-import plotly.graph_objects as go
 import pandas as pd
+import plotly.graph_objects as go
 
-from .helpers import payoff_calculator, check_optype, check_trtype
+from .helpers import check_optype, check_trtype, payoff_calculator
 
 abb = {"c": "Call", "p": "Put", "e": "Equity", "b": "Long", "s": "Short"}
 

@@ -1,12 +1,13 @@
 
 import numpy as np
 import pandas as pd
-
 from broker.account import Account
 from broker.config import ACCOUNT_NUMBER
 from broker.quotes import Quotes
 from utils.enums import PUT_CALL
-from utils.functions import formatter_number_2_digits, formatter_percent, convert_to_df
+from utils.functions import (convert_to_df, formatter_number_2_digits,
+                             formatter_percent)
+
 
 class AccountPositions:
     def __init__(self):

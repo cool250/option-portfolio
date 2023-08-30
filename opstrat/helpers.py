@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def check_optype(op_type):
     if (op_type not in ['p','c', 'e']):
         raise ValueError("Input 'p' for put 'c' for call and e for stock!")

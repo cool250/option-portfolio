@@ -2,11 +2,10 @@ import logging
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import html
-from dash.dependencies import Input, Output, State
-
 from app import app
 from broker.base import Base
+from dash import html
+from dash.dependencies import Input, Output, State
 
 layout = dbc.Container(
     [

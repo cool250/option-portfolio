@@ -1,8 +1,12 @@
-import json, dbm
+import dbm
+import json
+from abc import ABC, abstractmethod
+
 import redis
+
 from utils.config import Config
 from utils.exceptions import HaltCallbackException
-from abc import ABC, abstractmethod
+
 
 class Store_Factory:
     def get_store():

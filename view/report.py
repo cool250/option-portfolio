@@ -1,8 +1,8 @@
-from dash import dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
 from app import app
+from dash import Input, Output, State, dcc, html
 from service.account_transactions import get_report
 from utils.functions import change_date_format, formatter_currency_with_cents
 

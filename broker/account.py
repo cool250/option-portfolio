@@ -1,7 +1,5 @@
-import pandas as pd
-
 from .base import Base
-from .domain_objects import Position, Balance, SecuritiesAccount
+from .domain_objects import Balance, Position, SecuritiesAccount
 from .urls import GET_ACCOUNT, GET_ACCOUNTS
 
 

@@ -1,16 +1,14 @@
+import multiprocessing
 from datetime import datetime as dt
 from datetime import timedelta
-import pandas as pd
 
+import pandas as pd
 from broker.option import Option
 from broker.option_chain import OptionChain
 from broker.options import Options
-from utils.enums import PUT_CALL
-from utils.functions import formatter_percent, formatter_currency_with_cents
-import multiprocessing
-
-import pandas as pd
 from joblib import Parallel, delayed
+from utils.enums import PUT_CALL
+from utils.functions import formatter_currency_with_cents, formatter_percent
 
 num_cores = multiprocessing.cpu_count()
 

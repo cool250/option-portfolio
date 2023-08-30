@@ -1,11 +1,11 @@
 import os
+
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
 
-
 from app import app
-from view import income_finder, oauth, portfolio, analysis, report, home
+from view import analysis, home, income_finder, oauth, portfolio, report
 
 navbar = dbc.NavbarSimple(
     children=[
