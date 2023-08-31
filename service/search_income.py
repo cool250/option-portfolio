@@ -3,10 +3,11 @@ from datetime import datetime as dt
 from datetime import timedelta
 
 import pandas as pd
+from joblib import Parallel, delayed
+
 from broker.option import Option
 from broker.option_chain import OptionChain
 from broker.options import Options
-from joblib import Parallel, delayed
 from utils.enums import PUT_CALL
 from utils.functions import formatter_currency_with_cents, formatter_percent
 

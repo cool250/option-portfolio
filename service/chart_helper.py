@@ -4,16 +4,16 @@ from datetime import timedelta
 from statistics import mean
 
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
 from broker.history import History
 from broker.search import Search
-from plotly.subplots import make_subplots
 from utils.functions import formatter_number_2_digits
 
 PERIOD = 30
 
 
 def update_graph(ticker):
-
     endDate = dt.now()
     startDate = endDate - timedelta(days=120)
 
@@ -37,7 +37,6 @@ def update_graph(ticker):
     eps = company[ticker]["fundamental"]["epsTTM"]
 
     description = company[ticker]["description"]
-
 
     low_period = min(df.low.tail(PERIOD))
     high_period = max(df.high.tail(PERIOD))
@@ -69,7 +68,6 @@ def update_graph(ticker):
         row=1,
         col=1,
     )
-
 
     # shape defined programatically
     fig.add_shape(
@@ -111,14 +109,16 @@ def update_graph(ticker):
         yref="y1",
     )
 
-
     # Update yaxis properties to show chart titles
     fig.update_yaxes(title_text="STOCK PRICE", showgrid=False, row=1, col=1)
     fig.update_yaxes(title_text="VOLUME", showgrid=False, row=2, col=1)
 
     fig.update(layout_xaxis_rangeslider_visible=False)
     fig.update_layout(
-        height=800, title=ticker, template="plotly_white", showlegend=False,
+        height=800,
+        title=ticker,
+        template="plotly_white",
+        showlegend=False,
     )
 
     info_text = f" EPS:{eps} PE:{pe_ratio} 30D Avg close: {mean_period} "

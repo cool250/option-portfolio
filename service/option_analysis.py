@@ -10,8 +10,7 @@ params = {
     "max_expiration_days": 45,
     "range": "OTM",
     "strategy": "SINGLE",
-    "contractType" : "PUT"
-
+    "contractType": "PUT",
 }
 
 
@@ -42,6 +41,6 @@ def get_ticker_details(ticker: str):
     # Get expiration weeks
     expiration_week_dict = res[mapKey]
     expiration_week = [key for key in expiration_week_dict]
-    weeks_choice =[{"label": i, "value": i} for i in expiration_week]
+    weeks_choice = [{"label": i, "value": i} for i in expiration_week]
 
     return current_stock_price, weeks_choice

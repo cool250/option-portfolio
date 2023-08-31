@@ -1,10 +1,11 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import pandas as pd
-from app import app, cache
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+
+from app import app, cache
 from opstrat import multi_plotter
 from service import option_analysis
 from utils.functions import formatter_number_2_digits

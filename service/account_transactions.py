@@ -3,9 +3,10 @@ from datetime import timedelta
 
 import numpy as np
 import pandas as pd
+from pandas.tseries.offsets import CustomBusinessDay
+
 from broker.config import ACCOUNT_NUMBER
 from broker.transactions import Transaction
-from pandas.tseries.offsets import CustomBusinessDay
 from utils.functions import parse_option_symbol
 from utils.ustradingcalendar import USTradingCalendar
 
@@ -168,7 +169,7 @@ def parse_option_response(df, instrument_type):
     oa_df = merge_openclose(df_open, df_close, df_assigned_stocks)
 
     if oa_df.empty:
-        return oa_df 
+        return oa_df
     else:
         # Calculate profits by subtracting closing costs from opening
         final_df = calculate_final_payoff(oa_df)

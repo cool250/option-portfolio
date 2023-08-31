@@ -4,7 +4,6 @@ app.log
 *.pyc
 .idea/
 TestClient.py
-.vscode/
 venv/
 .DS_Store
 .env
