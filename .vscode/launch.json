@@ -8,9 +8,8 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "index.py",
+            "program": "src/index.py",
             "console": "integratedTerminal",
-            "justMyCode": true
         }
     ]
 }
