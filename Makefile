@@ -3,7 +3,7 @@ PYTHON = $(VENV)/bin/python3
 PIP = $(VENV)/bin/pip
 
 run: install
-	$(PYTHON) index.py
+	$(PYTHON) src/index.py
 
 
 install: requirements.txt
@@ -16,7 +16,7 @@ clean:
 	rm -rf $(VENV)
 
 format:
-	black *.py
+	black src/*.py
 
 lint:
-	pylint index.py
+	pylint src/index.py

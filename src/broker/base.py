@@ -11,7 +11,6 @@ from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
 
 
 class Base:
-
     # Cache store
     store = Store_Factory.get_store()
 
@@ -25,24 +24,24 @@ class Base:
 
     def __init__(self, **kwargs):
         """
-            Initializes the session with default values and any user-provided overrides.
+        Initializes the session with default values and any user-provided overrides.
 
-            The following arguments MUST be specified at runtime or else initalization
-            will fail.
+        The following arguments MUST be specified at runtime or else initalization
+        will fail.
 
-            NAME: consumer_id
-            DESC: The Consumer ID assigned to you during the App registration. This can
-                  be found at the app registration portal.
+        NAME: consumer_id
+        DESC: The Consumer ID assigned to you during the App registration. This can
+              be found at the app registration portal.
 
-            NAME: account_number
-            DESC: This is the account number for your main TD Ameritrade Account.
+        NAME: account_number
+        DESC: This is the account number for your main TD Ameritrade Account.
 
-            NAME: account_password
-            DESC: This is the account password for your main TD Ameritrade Account.
+        NAME: account_password
+        DESC: This is the account password for your main TD Ameritrade Account.
 
-            NAME: redirect_uri
-            DESC: This is the redirect URL that you specified when you created your
-                  TD Ameritrade Application.
+        NAME: redirect_uri
+        DESC: This is the redirect URL that you specified when you created your
+              TD Ameritrade Application.
 
         """
 
@@ -93,7 +92,6 @@ class Base:
 
         # loop through the key word arguments.
         for key in kwargs:
-
             # there may be a chance an unknown argument was pass through. Print a warning if this is the case.
             if key not in self.config:
                 print("WARNING: The argument, {} is an unkown argument.".format(key))
@@ -122,9 +120,9 @@ class Base:
 
     def __repr__(self):
         """
-            Defines the string representation of our TD Ameritrade Class instance.
+        Defines the string representation of our TD Ameritrade Class instance.
 
-            RTYPE: String
+        RTYPE: String
         """
 
         # grab the logged in state.
@@ -134,20 +132,22 @@ class Base:
             logged_in_state = "False"
 
         # define the string representation
-        str_representation = "<TDAmeritrade Client (logged_in = {}, authorized = {})>".format(
-            logged_in_state, self.authstate
+        str_representation = (
+            "<TDAmeritrade Client (logged_in = {}, authorized = {})>".format(
+                logged_in_state, self.authstate
+            )
         )
 
         return str_representation
 
     def headers(self, mode=None):
-        """ 
-            Returns a dictionary of default HTTP headers for calls to TD Ameritrade API,
-            in the headers we defined the Authorization and access token.
+        """
+        Returns a dictionary of default HTTP headers for calls to TD Ameritrade API,
+        in the headers we defined the Authorization and access token.
 
-            NAME: mode            
-            DESC: Defines the content-type for the headers dictionary.
-            TYPE: String
+        NAME: mode
+        DESC: Defines the content-type for the headers dictionary.
+        TYPE: String
         """
 
         # grab the access token
@@ -163,13 +163,13 @@ class Base:
 
     def api_endpoint(self, url):
         """
-            Convert relative endpoint (e.g., 'quotes') to full API endpoint.
+        Convert relative endpoint (e.g., 'quotes') to full API endpoint.
 
-            NAME: url
-            DESC: The URL that needs conversion to a full endpoint URL.
-            TYPE: String
+        NAME: url
+        DESC: The URL that needs conversion to a full endpoint URL.
+        TYPE: String
 
-            RTYPE: String
+        RTYPE: String
         """
 
         # if they pass through a valid url then, just use that.
@@ -183,15 +183,15 @@ class Base:
 
     def state_manager(self, action):
         """
-            Manages the self.state dictionary. Initalize State will set
-            the properties to their default value. Save will save the 
-            current state if 'cache_state' is set to TRUE.
+        Manages the self.state dictionary. Initalize State will set
+        the properties to their default value. Save will save the
+        current state if 'cache_state' is set to TRUE.
 
-            NAME: action
-            DESC: action argument must of one of the following:
-                    'init' -- Initalize State.
-                    'save' -- Save the current state.
-            TYPE: String            
+        NAME: action
+        DESC: action argument must of one of the following:
+                'init' -- Initalize State.
+                'save' -- Save the current state.
+        TYPE: String
         """
 
         # define the initalized state, these are the default values.
@@ -212,8 +212,8 @@ class Base:
 
             # if they allowed for caching get from cache
             if self.config["cache_state"]:
-                current_auth_state = Base.store.get_dict("auth_state") 
-                if current_auth_state: # If data available in cache
+                current_auth_state = Base.store.get_dict("auth_state")
+                if current_auth_state:  # If data available in cache
                     self.state.update(current_auth_state)
 
         # if they want to save it and have allowed for caching then read from cache
@@ -224,20 +224,18 @@ class Base:
 
     def login(self, url_str):
         """
-            Ask the user to authenticate  themselves via the TD Ameritrade Authentication Portal. This will
-            create a URL, display it for the User to go to and request that they paste the final URL into
-            command window.
+        Ask the user to authenticate  themselves via the TD Ameritrade Authentication Portal. This will
+        create a URL, display it for the User to go to and request that they paste the final URL into
+        command window.
 
-            Once the user is authenticated the API key is valide for 90 days, so refresh tokens may be used
-            from this point, up to the 90 days.
+        Once the user is authenticated the API key is valide for 90 days, so refresh tokens may be used
+        from this point, up to the 90 days.
         """
 
         # if caching is enabled then attempt silent authentication.
         if self.config["cache_state"]:
-
             # if it was successful, the user is authenticated.
             if self.silent_sso():
-
                 # update the authentication state
                 self.authstate = "Authenticated"
 
@@ -262,7 +260,7 @@ class Base:
         # set the newly created 'authorization_url' key to the newly created url
         self.state["authorization_url"] = url
 
-        logging.info(f'setting TD response {url_str}')
+        logging.info(f"setting TD response {url_str}")
         my_response = url_str
 
         # store the redirect URL
@@ -273,7 +271,7 @@ class Base:
 
     def logout(self):
         """
-            Clears the current TD Ameritrade Connection state.
+        Clears the current TD Ameritrade Connection state.
         """
 
         # change state to initalized so they will have to either get a
@@ -282,9 +280,9 @@ class Base:
 
     def grab_access_token(self):
         """
-            Access token handler for AuthCode Workflow. This takes the
-            authorization code parsed from the auth endpoint to call the
-            token endpoint and obtain an access token.
+        Access token handler for AuthCode Workflow. This takes the
+        authorization code parsed from the auth endpoint to call the
+        token endpoint and obtain an access token.
         """
 
         # Parse the URL
@@ -319,11 +317,11 @@ class Base:
 
     def silent_sso(self):
         """
-            Attempt a silent authentication, by checking whether current access token
-            is valid and/or attempting to refresh it. Returns True if we have successfully
-            stored a valid access token.
+        Attempt a silent authentication, by checking whether current access token
+        is valid and/or attempting to refresh it. Returns True if we have successfully
+        stored a valid access token.
 
-            RTYPE: Boolean
+        RTYPE: Boolean
         """
 
         # if the current access token is not expired then we are still authenticated.
@@ -343,9 +341,9 @@ class Base:
 
     def token_refresh(self):
         """
-            Refreshes the current access token.
+        Refreshes the current access token.
 
-            RTYPE: Boolean
+        RTYPE: Boolean
         """
 
         # build the parameters of our request
@@ -367,10 +365,14 @@ class Base:
             logging.error("Validation was unsuccessful.")
             return False
         elif response.status_code == 500:
-            logging.error("The TD Server is experiencing an error, please try again later.")
+            logging.error(
+                "The TD Server is experiencing an error, please try again later."
+            )
             return False
         elif response.status_code == 403:
-            logging.error("You don't have access to this resource, cannot authenticate.")
+            logging.error(
+                "You don't have access to this resource, cannot authenticate."
+            )
             return False
         elif response.status_code == 503:
             logging.error("The TD Server can't respond, please try again later.")
@@ -383,16 +385,16 @@ class Base:
 
     def token_save(self, response):
         """
-            Parses an access token from the response of a POST request and saves it
-            in the state dictionary for future use. Additionally, it will store the
-            expiration time and the refresh token.
+        Parses an access token from the response of a POST request and saves it
+        in the state dictionary for future use. Additionally, it will store the
+        expiration time and the refresh token.
 
-            NAME: response
-            DESC: A response object recieved from the `token_refresh` or `grab_access_token`
-                  methods.
-            TYPE: requests.Response
+        NAME: response
+        DESC: A response object recieved from the `token_refresh` or `grab_access_token`
+              methods.
+        TYPE: requests.Response
 
-            RTYPE: Boolean
+        RTYPE: Boolean
         """
 
         # parse the data.
@@ -422,22 +424,21 @@ class Base:
 
     def token_seconds(self, token_type="access_token"):
         """
-            Return the number of seconds until the current access token or refresh token
-            will expire. The default value is access token because this is the most commonly used
-            token during requests.
+        Return the number of seconds until the current access token or refresh token
+        will expire. The default value is access token because this is the most commonly used
+        token during requests.
 
-            NAME: token_type
-            DESC: The type of token you would like to determine lifespan for. Possible values are:
-                  'access_token'
-                  'refresh_token'
-            TYPE: String
+        NAME: token_type
+        DESC: The type of token you would like to determine lifespan for. Possible values are:
+              'access_token'
+              'refresh_token'
+        TYPE: String
 
-            RTYPE: Boolean
+        RTYPE: Boolean
         """
 
         # if needed check the access token.
         if token_type == "access_token":
-
             # if the time to expiration is less than or equal to 0, return 0.
             if (
                 not self.state["access_token"]
@@ -450,7 +451,6 @@ class Base:
 
         # if needed check the refresh token.
         elif token_type == "refresh_token":
-
             # if the time to expiration is less than or equal to 0, return 0.
             if (
                 not self.state["refresh_token"]
@@ -465,14 +465,14 @@ class Base:
 
     def token_validation(self, nseconds=5):
         """
-            Verify the current access token is valid for at least N seconds, and
-            if not then attempt to refresh it. Can be used to assure a valid token
-            before making a call to the TD Ameritrade API.
+        Verify the current access token is valid for at least N seconds, and
+        if not then attempt to refresh it. Can be used to assure a valid token
+        before making a call to the TD Ameritrade API.
 
-            PARA: nseconds
-            TYPE: integer
-            DESC: The minimum number of seconds the token has to be valid for before
-                  attempting to get a refresh token.
+        PARA: nseconds
+        TYPE: integer
+        DESC: The minimum number of seconds the token has to be valid for before
+              attempting to get a refresh token.
         """
         if (
             self.token_seconds(token_type="access_token") < nseconds
@@ -484,46 +484,46 @@ class Base:
         self, endpoint=None, parameter_name=None, parameter_argument=None
     ):
         """
-            This will validate an argument for the specified endpoint and raise an error if the argument
-            is not valid. Can take both a list of arguments or a single argument.
+        This will validate an argument for the specified endpoint and raise an error if the argument
+        is not valid. Can take both a list of arguments or a single argument.
 
-            NAME: endpoint
-            DESC: This is the endpoint name, and should line up exactly with the TD Ameritrade Client library.
-            TYPE: String
+        NAME: endpoint
+        DESC: This is the endpoint name, and should line up exactly with the TD Ameritrade Client library.
+        TYPE: String
 
-            NAME: parameter_name
-            DESC: An endpoint can have a parameter that needs to be passed through, this represents the name of
-                  that parameter.
-            TYPE: String
+        NAME: parameter_name
+        DESC: An endpoint can have a parameter that needs to be passed through, this represents the name of
+              that parameter.
+        TYPE: String
 
-            NAME: parameter_argument
-            DESC: The arguments being validated for the particular parameter name. This can either be a single value
-                  or a list of values.
-            TYPE: List<Strings> OR String
-
-
-            EXAMPLES:
-
-            WITH NO LIST:
-            ------------------------------------------------------------
-            api_endpoint = 'search_instruments'
-            para_name = 'projection'
-            para_args = 'fundamental'
-
-            self.validate_arguments(endpoint = api_endpoint, 
-                                    parameter_name = para_name, 
-                                    parameter_argument = para_args)
+        NAME: parameter_argument
+        DESC: The arguments being validated for the particular parameter name. This can either be a single value
+              or a list of values.
+        TYPE: List<Strings> OR String
 
 
-            WITH LIST:
-            ------------------------------------------------------------
-            api_endpoint = 'get_market_hours'
-            para_name = 'markets'
-            para_args = ['FOREX', 'EQUITY']
+        EXAMPLES:
 
-            self.validate_arguments(endpoint = api_endpoint, 
-                                    parameter_name = para_name, 
-                                    parameter_argument = para_args)
+        WITH NO LIST:
+        ------------------------------------------------------------
+        api_endpoint = 'search_instruments'
+        para_name = 'projection'
+        para_args = 'fundamental'
+
+        self.validate_arguments(endpoint = api_endpoint,
+                                parameter_name = para_name,
+                                parameter_argument = para_args)
+
+
+        WITH LIST:
+        ------------------------------------------------------------
+        api_endpoint = 'get_market_hours'
+        para_name = 'markets'
+        para_args = ['FOREX', 'EQUITY']
+
+        self.validate_arguments(endpoint = api_endpoint,
+                                parameter_name = para_name,
+                                parameter_argument = para_args)
 
         """
 
@@ -535,7 +535,6 @@ class Base:
 
         # if it's a list then see if it matches any of the possible values.
         if type(parameter_argument) is list:
-
             # build the validation result list.
             validation_result = [
                 argument not in parameter_possible_arguments
@@ -567,24 +566,23 @@ class Base:
 
     def prepare_arguments_list(self, parameter_list=None):
         """
-            Some endpoints can take multiple values for a parameter, this
-            method takes that list and creates a valid string that can be 
-            used in an API request. The list can have either one index or
-            multiple indexes.
+        Some endpoints can take multiple values for a parameter, this
+        method takes that list and creates a valid string that can be
+        used in an API request. The list can have either one index or
+        multiple indexes.
 
-            NAME: parameter_list
-            DESC: A list of paramater values assigned to an argument.
-            TYPE: List
+        NAME: parameter_list
+        DESC: A list of paramater values assigned to an argument.
+        TYPE: List
 
-            EXAMPLE:
+        EXAMPLE:
 
-            SessionObject.prepare_arguments_list(parameter_list = ['MSFT', 'SQ'])
+        SessionObject.prepare_arguments_list(parameter_list = ['MSFT', 'SQ'])
 
         """
 
         # validate it's a list.
         if type(parameter_list) is list:
-
             # specify the delimeter and join the list.
             delimeter = ","
             parameter_list = delimeter.join(parameter_list)
@@ -601,14 +599,13 @@ class Base:
             raise APIException("API Error")
 
         response_dict = response.json()
-        logging.debug (response_dict)
+        logging.debug(response_dict)
         return response_dict
 
         # if response_dict.get("error") is not None:
         #     return response_dict  # if no fault code or list is returned, then return the API response
         # else:
         #     logging.error(f'API Error{response_dict["error"]}')
-            
+
         #     # if there is a fault code, raise an API exception
         #     raise APIException(error_message=response_dict["error"])
-

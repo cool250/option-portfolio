@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 
@@ -77,12 +76,7 @@ class AccountPositions:
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"].abs() * 100
         df["RETURNS"] = (
-            (
-                (
-                    (df["MARK"] * 365 * df["QTY"] * 100)
-                    / (df["MARGIN"] * df["DAYS"])
-                )
-            )
+            (((df["MARK"] * 365 * df["QTY"] * 100) / (df["MARGIN"] * df["DAYS"])))
             .abs()
             .apply(formatter_percent)
         )
@@ -133,24 +127,25 @@ class AccountPositions:
         res = self.get_account()
 
         # Filter for stocks
-        options = ['EQUITY', 'MUTUAL_FUND']
+        options = ["EQUITY", "MUTUAL_FUND"]
         is_equity = res["instrument_type"].isin(options)
         df = res[is_equity]
 
         if not df.empty:
             #  Retain only the columns needed and rename
             df = df[self.params_stocks.keys()]
-            # TODO: get an error "value is trying to be set on a copy of a slice from a DataFrame" when this line is before dropping columns
+            # TODO: get an error "value is trying to be set on a copy of a slice
+            # from a DataFrame" when this line is before dropping columns
             df["NET"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
             df.rename(columns=self.params_stocks, inplace=True)
         return df
 
-    def get_account(self, field='positions'):
+    def get_account(self, field="positions"):
         """
         Get open positions and balances for a given account
-        
+
         Args:
             field (str, optional): positions or balances. Defaults to 'positions'.
 
@@ -161,14 +156,14 @@ class AccountPositions:
             account = Account()
             self.securities_account = account.get_portfolio(account=ACCOUNT_NUMBER)
             position_df = convert_to_df(self.securities_account.positions)
-            
+
             # Populate pricing for all tickers
             self.positions = self.__get_pricing(position_df)
-        if field == 'balances':
+        if field == "balances":
             return self.securities_account.balance
         else:
             return self.positions
-    
+
     def __get_pricing(self, df):
         """
         Get pricing info or the symbol via Quotes
@@ -189,6 +184,6 @@ class AccountPositions:
             ]
         ]
         # For Money Market Funds
-        res_filter.loc[:,'mark'] = res_filter['mark'].fillna(1)
+        res_filter.loc[:, "mark"] = res_filter["mark"].fillna(1)
         merged_df = pd.merge(df, res_filter, on="symbol")
         return merged_df

@@ -1,21 +1,6 @@
-import logging
-
 import dash
 import dash_bootstrap_components as dbc
-from dash_bootstrap_templates import load_figure_template
-from dotenv import find_dotenv, load_dotenv
 from flask_caching import Cache
-
-load_dotenv(find_dotenv()) # read local .env file
-
-# loads the "lux" template and sets it as the default
-load_figure_template("bootstrap")
-
-logging.basicConfig(
-    filename="app.log",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(message)s",
-)
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = [["hello", "nishant"]]

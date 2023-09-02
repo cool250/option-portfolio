@@ -1,11 +1,9 @@
-import logging
-
-import dash
 import dash_bootstrap_components as dbc
-from app import app
-from broker.base import Base
 from dash import html
 from dash.dependencies import Input, Output, State
+
+from app import app
+from broker.base import Base
 
 layout = dbc.Container(
     [
@@ -50,4 +48,4 @@ def on_button_click(n, url_str):
     if n is not None:
         base = Base()
         base.login(url_str)
-    return "Success"
+        return "Success"

@@ -73,7 +73,6 @@ def multi_plotter(
             contract = 1
         y_list.append(payoff_calculator(x, op_type, strike, op_pr, tr_type, contract))
 
-
     def plotly_plot():
         fig = go.Figure()
         y = 0
@@ -94,20 +93,42 @@ def multi_plotter(
             )
             fig.add_trace(go.Scatter(x=x, y=y_list[i], name=label))
             y += np.array(y_list[i])
-        
+
         # To provide a different color fill for profit and loss scenario
-        df = pd.DataFrame({'x':x, 'y':y})
-        mask = df['y'] >= 0
-        df['PnL_above'] = np.where(mask, df['y'], 0)
-        df['PnL_below'] = np.where(mask, 0, df['y'])
-        fig.add_trace(go.Scatter(x=x, y=df['PnL_above'], fill='tozeroy', mode='none', fillcolor='lightgreen', showlegend=False))
-        fig.add_trace(go.Scatter(x=x, y=df['PnL_below'], fill='tozeroy', mode='none', fillcolor='indianred', showlegend=False))
+        df = pd.DataFrame({"x": x, "y": y})
+        mask = df["y"] >= 0
+        df["PnL_above"] = np.where(mask, df["y"], 0)
+        df["PnL_below"] = np.where(mask, 0, df["y"])
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=df["PnL_above"],
+                fill="tozeroy",
+                mode="none",
+                fillcolor="lightgreen",
+                showlegend=False,
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=x,
+                y=df["PnL_below"],
+                fill="tozeroy",
+                mode="none",
+                fillcolor="indianred",
+                showlegend=False,
+            )
+        )
 
         fig.add_vline(
-            x=spot, line_dash="dash", line_width=3, line_color="blue", annotation_text="spot price"
+            x=spot,
+            line_dash="dash",
+            line_width=3,
+            line_color="blue",
+            annotation_text="spot price",
         )
         fig.add_hline(y=0, line_dash="dash", line_width=3, line_color="black")
-        
+
         # Edit the layout
         fig.update_layout(xaxis_title="Stock Price", yaxis_title="Premium")
         return fig

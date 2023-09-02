@@ -1,11 +1,25 @@
+import logging
 import os
 
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from dash_bootstrap_templates import load_figure_template
+from dotenv import find_dotenv, load_dotenv
 
 from app import app
 from view import analysis, home, income_finder, oauth, portfolio, report
+
+load_dotenv(find_dotenv())  # read local .env file
+
+# loads the "lux" template and sets it as the default
+load_figure_template("bootstrap")
+
+logging.basicConfig(
+    filename="app.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(message)s",
+)
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -44,6 +58,7 @@ navbar = dbc.NavbarSimple(
 
 content = html.Div(id="page-content", className="p-3")
 
+
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 
@@ -73,7 +88,7 @@ def render_page_content(pathname):
     )
 
 
-port = int(os.environ.get("PORT", 8080))
+port = int(os.environ.get("SERVER_PORT", 80))
 # Adding Host
 if __name__ == "__main__":
-    app.run(port=port)
+    app.run(debug=True, port=port)
