@@ -1,13 +1,14 @@
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
-from app import app
 from dash import Input, Output, dcc, html
 from dash.exceptions import PreventUpdate
+
+from app import app
 from service.account_transactions import get_report
 from utils.functions import formatter_currency_with_cents
 
 layout = html.Div(id="home_content")
+
 
 @app.callback(
     Output("home_content", "children"),
@@ -31,6 +32,7 @@ def on_page_load(href):
                 dbc.Row(show_capital_need(df_puts)),
             ]
         )
+
 
 def show_payoff_chart(df, title):
     if not df.empty:

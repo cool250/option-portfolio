@@ -1,5 +1,4 @@
 import pandas as pd
-import requests
 
 from .base import Base
 from .urls import GET_QUOTES
@@ -7,37 +6,36 @@ from .urls import GET_QUOTES
 
 class Quotes(Base):
 
-    """ A class for searching for an account. """
+    """A class for searching for an account."""
+
     def __init__(self, **query):
         Base.__init__(self)
 
-    
     def get_quotes(self, instruments=None):
-        '''
+        """
 
-            Serves as the mechanism to make a request to the Get Quote and Get Quotes Endpoint.
-            If one item is provided a Get Quote request will be made and if more than one item
-            is provided then a Get Quotes request will be made.
+        Serves as the mechanism to make a request to the Get Quote and Get Quotes Endpoint.
+        If one item is provided a Get Quote request will be made and if more than one item
+        is provided then a Get Quotes request will be made.
 
-            Documentation Link: https://developer.tdameritrade.com/quotes/apis
+        Documentation Link: https://developer.tdameritrade.com/quotes/apis
 
-            NAME: instruments
-            DESC: A list of different financial instruments.
-            TYPE: List
+        NAME: instruments
+        DESC: A list of different financial instruments.
+        TYPE: List
 
-            EXAMPLES:
+        EXAMPLES:
 
-            SessionObject.get_quotes(instruments = ['MSFT'])
-            SessionObject.get_quotes(instruments = ['MSFT','SQ'])
+        SessionObject.get_quotes(instruments = ['MSFT'])
+        SessionObject.get_quotes(instruments = ['MSFT','SQ'])
 
-        '''
+        """
 
         # because we have a list argument, prep it for the request.
         instruments = self.prepare_arguments_list(parameter_list=instruments)
 
         # build the params dictionary
-        data = {'apikey': self.config['consumer_id'],
-                'symbol': instruments}
+        data = {"apikey": self.config["consumer_id"], "symbol": instruments}
 
         # define the endpoint
         endpoint = GET_QUOTES
@@ -49,15 +47,14 @@ class Quotes(Base):
 
         # return the response of the get request.
         return self._data
-    
+
     def get_quotes_flatten(self, instruments=None):
         quotes_str = self.get_quotes(instruments=instruments)
         quotes = []
         for i in instruments:
             quotes.append(quotes_str[i])
         return quotes
-        
-    def get_quotesDF(self, instruments=None):
-        '''get transaction information as Dataframe'''
-        return pd.json_normalize(self.get_quotes_flatten(instruments=instruments))
 
+    def get_quotesDF(self, instruments=None):
+        """get transaction information as Dataframe"""
+        return pd.json_normalize(self.get_quotes_flatten(instruments=instruments))

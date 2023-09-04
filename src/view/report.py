@@ -1,8 +1,9 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
-from app import app
 from dash import Input, Output, State, dcc, html
+
+from app import app
 from service.account_transactions import get_report
 from utils.functions import change_date_format, formatter_currency_with_cents
 
@@ -81,7 +82,7 @@ TOP_COLUMN = dbc.Form(
                             color="primary",
                             id="chart-btn",
                             className="mt-4",
-                            size="md"
+                            size="md",
                         ),
                     ],
                     className="text-end",
@@ -119,11 +120,14 @@ layout = dbc.Container(
 )
 def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
     df = get_report(start_date, end_date, ticker, instrument_type)
-
     if not df.empty:
         total = df["TOTAL_PRICE"].sum()
         message = html.Div(
-            dbc.Alert(id="total-message", children=f"{formatter_currency_with_cents(total)}", color="info"),
+            dbc.Alert(
+                id="total-message",
+                children=f"{formatter_currency_with_cents(total)}",
+                color="info",
+            ),
         )
         # Populate data table
         if report_type == "TABLE":
@@ -172,9 +176,9 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
         else:
             # Populate chart
             fig = px.bar(
-                df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"  
+                df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
             )
-            fig.update_layout(           
+            fig.update_layout(
                 height=400,
                 bargap=0.1,
             )
@@ -185,5 +189,5 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
         )
     else:
         return html.Div(
-            dbc.Alert(id="total-message", children="No records",color="info"),
+            dbc.Alert(id="total-message", children="No records", color="info"),
         )
