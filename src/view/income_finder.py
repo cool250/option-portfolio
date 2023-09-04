@@ -221,6 +221,24 @@ def on_button_click(
     ticker,
     ticker_list,
 ):
+    """
+    Callback function triggered on button click to perform income search.
+
+    Args:
+        n (int): Number of button clicks.
+        contractType (str): Selected instrument type.
+        min_expiration_days (int): Minimum expiration days.
+        max_expiration_days (int): Maximum expiration days.
+        min_delta (float): Minimum delta.
+        max_delta (float): Maximum delta.
+        premium (str): Premium value.
+        moneyness (str): Moneyness value.
+        ticker (str): Ticker input.
+        ticker_list (str): Selected watchlist.
+
+    Returns:
+        tuple: A tuple of results to update the income output, message visibility, and message content.
+    """
     if n is None:
         raise PreventUpdate
     else:
@@ -285,6 +303,15 @@ def on_button_click(
     [Input("screener-table", "rowClicked")],
 )
 def display_output(value):
+    """
+    Callback function triggered when a row is clicked in the table to display the corresponding chart.
+
+    Args:
+        value (dict): The row values of the clicked row.
+
+    Returns:
+        tuple: A tuple of results to update the chart output and modal visibility.
+    """
     if value:
         # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
         ticker = value["TICKER"]

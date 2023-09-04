@@ -55,7 +55,7 @@ navbar = dbc.NavbarSimple(
             )
         ),
     ],
-    brand="Option Guru",
+    brand="Options Guru",
     brand_href="#",
     color="primary",
     dark=True,

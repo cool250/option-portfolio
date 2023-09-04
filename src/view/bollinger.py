@@ -28,7 +28,7 @@ TOP_COLUMN = dbc.Form(
                     ],
                 ),
                 dbc.Col(
-                    width=2,
+                    width=1,
                     children=[
                         dbc.Button(
                             "Search",
@@ -54,7 +54,6 @@ layout = dbc.Container(
         html.P(),
         dbc.Row(CHART_LAYOUT),
     ],
-    fluid=True,
 )
 
 
@@ -103,6 +102,12 @@ def show_bollinger_chart(ticker):
         )
 
     df = data[["close"]]
+
+    # Append current price to historical close prices
+    price, date_time = get_current_price(ticker)
+    curent_price_row = {"close": price}
+    df.loc[date_time] = curent_price_row
+
     sma = df.rolling(window=20).mean().dropna()
     std = df.rolling(window=20).std().dropna()
     upper_band = sma + 2 * std
@@ -113,8 +118,9 @@ def show_bollinger_chart(ticker):
     bb = df.join(upper_band).join(lower_band)
     bb = bb.dropna()
 
-    buyers = bb[bb["close"] <= bb["lower"]]
-    sellers = bb[bb["close"] >= bb["upper"]]
+    # Buy when close price is below lower band and sell when above upper band
+    buy = bb[bb["close"] <= bb["lower"]]
+    sell = bb[bb["close"] >= bb["upper"]]
 
     fig = go.Figure()
     fig.add_trace(
@@ -143,8 +149,8 @@ def show_bollinger_chart(ticker):
     )
     fig.add_trace(
         go.Scatter(
-            x=buyers.index,
-            y=buyers["close"],
+            x=buy.index,
+            y=buy["close"],
             name="Buy",
             mode="markers",
             marker=dict(
@@ -155,8 +161,8 @@ def show_bollinger_chart(ticker):
     )
     fig.add_trace(
         go.Scatter(
-            x=sellers.index,
-            y=sellers["close"],
+            x=sell.index,
+            y=sell["close"],
             name="Sell",
             mode="markers",
             marker=dict(
@@ -169,7 +175,6 @@ def show_bollinger_chart(ticker):
     return content
 
 
-# Function to get historical prices
 def get_prices(stock, start, end):
     """
     Fetch historical price data for the specified stock symbol within a given date range.
@@ -199,10 +204,10 @@ def get_prices(stock, start, end):
         return pd.DataFrame()
 
 
-# Function to get current price
-def get_cur_price(stock):
+def get_current_price(stock):
     """
     Fetch the current price and timestamp for the specified stock symbol.
+    This is appended to historical price
 
     Args:
         stock (str): The stock ticker symbol.
