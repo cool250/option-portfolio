@@ -10,6 +10,7 @@ from broker.history import History
 from broker.quotes import Quotes
 from utils.functions import date_from_milliseconds
 
+# Define constants
 TOP_COLUMN = dbc.Form(
     [
         dbc.Row(
@@ -21,7 +22,7 @@ TOP_COLUMN = dbc.Form(
                         dbc.Input(
                             type="text",
                             id="bollinger-ticker",
-                            placeholder="symbol",
+                            placeholder="Symbol",
                             size="sm",
                         ),
                     ],
@@ -44,6 +45,7 @@ TOP_COLUMN = dbc.Form(
     ],
     className="p-2",
 )
+
 CHART_LAYOUT = html.Div(id="bollinger_content")
 
 layout = dbc.Container(
@@ -56,131 +58,165 @@ layout = dbc.Container(
 )
 
 
+# Callback for button click
 @app.callback(
     Output("bollinger_content", "children"),
-    [
-        Input("bollinger-btn", "n_clicks"),
-    ],
-    [
-        State("bollinger-ticker", "value"),
-    ],
+    [Input("bollinger-btn", "n_clicks")],
+    [State("bollinger-ticker", "value")],
 )
-def on_page_load(n, ticker):
-    if n is None:
+def on_page_load(n_clicks, ticker):
+    """
+    Callback triggered when the search button is clicked.
+
+    Args:
+        n_clicks (int): The number of times the button has been clicked.
+        ticker (str): The ticker symbol entered by the user.
+
+    Returns:
+        dash.Container: A container with the Bollinger chart or an alert if no records are found.
+    """
+    if n_clicks is None or not ticker.strip():
         raise PreventUpdate
-    else:
-        return dbc.Container(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(show_bollinger_chart(ticker)),
-                    ]
-                ),
-            ]
-        )
+    return dbc.Container(
+        [dbc.Row([dbc.Col(show_bollinger_chart(ticker.strip().upper()))])]
+    )
 
 
+# Function to show Bollinger chart
 def show_bollinger_chart(ticker):
+    """
+    Generate and display a Bollinger Bands chart for the specified stock ticker.
+
+    Args:
+        ticker (str): The stock ticker symbol.
+
+    Returns:
+        dash.Graph: A Plotly graph containing the Bollinger Bands chart.
+    """
     now = datetime.now()
     start = now - timedelta(days=365)
     data = get_prices(ticker, start, now)
-    if not data.empty:
-        df = data[["close"]]
-        sma = df.rolling(window=20).mean().dropna()
-        rstd = df.rolling(window=20).std().dropna()
-        upper_band = sma + 2 * rstd
-        lower_band = sma - 2 * rstd
 
-        upper_band = upper_band.rename(columns={"close": "upper"})
-        lower_band = lower_band.rename(columns={"close": "lower"})
-        bb = df.join(upper_band).join(lower_band)
-        bb = bb.dropna()
-
-        upper = upper_band["upper"].iloc[-1]
-        lower = lower_band["lower"].iloc[-1]
-
-        buyers = bb[bb["close"] <= bb["lower"]]
-        sellers = bb[bb["close"] >= bb["upper"]]
-
-        fig = go.Figure()
-        fig.add_trace(
-            go.Scatter(
-                x=lower_band.index,
-                y=lower_band["lower"],
-                name="Lower Band",
-                line_color="rgba(173,204,255,0.2)",
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=upper_band.index,
-                y=upper_band["upper"],
-                name="Upper Band",
-                fill="tonexty",
-                fillcolor="rgba(173,204,255,0.2)",
-                line_color="rgba(173,204,255,0.2)",
-            )
-        )
-        fig.add_trace(
-            go.Scatter(x=df.index, y=df["close"], name="close", line_color="#636EFA")
-        )
-        fig.add_trace(
-            go.Scatter(x=sma.index, y=sma["close"], name="SMA", line_color="#FECB52")
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=buyers.index,
-                y=buyers["close"],
-                name="Buyers",
-                mode="markers",
-                marker=dict(
-                    color="#00CC96",
-                    size=10,
-                ),
-            )
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=sellers.index,
-                y=sellers["close"],
-                name="Sellers",
-                mode="markers",
-                marker=dict(
-                    color="#EF553B",
-                    size=10,
-                ),
-            )
-        )
-        content = dcc.Graph(figure=fig)
-        return content
-    else:
+    if data.empty:
         return html.Div(
             dbc.Alert(id="total-message", children="No records found", color="info"),
         )
 
+    df = data[["close"]]
+    sma = df.rolling(window=20).mean().dropna()
+    std = df.rolling(window=20).std().dropna()
+    upper_band = sma + 2 * std
+    lower_band = sma - 2 * std
 
-def get_prices(stock, start, end):
-    # fetch price history using tda-api
-    c = History()
+    upper_band = upper_band.rename(columns={"close": "upper"})
+    lower_band = lower_band.rename(columns={"close": "lower"})
+    bb = df.join(upper_band).join(lower_band)
+    bb = bb.dropna()
 
-    df = c.get_price_historyDF(
-        symbol=stock,
-        startDate=start,
-        endDate=end,
-        periodType="month",
-        frequencyType="daily",
-        frequency=1,
-        needExtendedHoursData=False,
+    buyers = bb[bb["close"] <= bb["lower"]]
+    sellers = bb[bb["close"] >= bb["upper"]]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=lower_band.index,
+            y=lower_band["lower"],
+            name="Lower Band",
+            line_color="rgba(173,204,255,0.2)",
+        )
     )
+    fig.add_trace(
+        go.Scatter(
+            x=upper_band.index,
+            y=upper_band["upper"],
+            name="Upper Band",
+            fill="tonexty",
+            fillcolor="rgba(173,204,255,0.2)",
+            line_color="rgba(173,204,255,0.2)",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df["close"], name="close", line_color="#636EFA")
+    )
+    fig.add_trace(
+        go.Scatter(x=sma.index, y=sma["close"], name="SMA", line_color="#FECB52")
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=buyers.index,
+            y=buyers["close"],
+            name="Buy",
+            mode="markers",
+            marker=dict(
+                color="#00CC96",
+                size=10,
+            ),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=sellers.index,
+            y=sellers["close"],
+            name="Sell",
+            mode="markers",
+            marker=dict(
+                color="#EF553B",
+                size=10,
+            ),
+        )
+    )
+    content = dcc.Graph(figure=fig)
+    return content
 
-    return df
+
+# Function to get historical prices
+def get_prices(stock, start, end):
+    """
+    Fetch historical price data for the specified stock symbol within a given date range.
+
+    Args:
+        stock (str): The stock ticker symbol.
+        start (datetime): The start date for fetching historical data.
+        end (datetime): The end date for fetching historical data.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing historical price data.
+    """
+    try:
+        c = History()
+        df = c.get_price_historyDF(
+            symbol=stock,
+            startDate=start,
+            endDate=end,
+            periodType="month",
+            frequencyType="daily",
+            frequency=1,
+            needExtendedHoursData=False,
+        )
+        return df
+    except Exception as e:
+        print(f"Error fetching prices for {stock}: {str(e)}")
+        return pd.DataFrame()
 
 
-# function to retrive current price of stock
+# Function to get current price
 def get_cur_price(stock):
-    c = Quotes()
-    r = c.get_quotes(stock)
-    price = r[stock]["lastPrice"]
-    date_time = date_from_milliseconds(r[stock]["quoteTimeInLong"])
+    """
+    Fetch the current price and timestamp for the specified stock symbol.
 
-    return price, date_time
+    Args:
+        stock (str): The stock ticker symbol.
+
+    Returns:
+        float: The current stock price.
+        datetime: The timestamp of the stock price.
+    """
+    try:
+        c = Quotes()
+        r = c.get_quotes(stock)
+        price = r[stock]["lastPrice"]
+        date_time = date_from_milliseconds(r[stock]["quoteTimeInLong"])
+        return price, date_time
+    except Exception as e:
+        print(f"Error fetching current price for {stock}: {str(e)}")
+        return None, None

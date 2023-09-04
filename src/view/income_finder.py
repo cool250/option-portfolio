@@ -1,9 +1,10 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
-from app import app
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+
+from app import app
 from service.chart_helper import update_graph
 from service.search_income import watchlist_income
 from utils.constants import screener_list
@@ -160,7 +161,7 @@ SIDE_COLUMN = (
 SEARCH_RESULT = html.Div(
     [
         html.Div(
-            dbc.Alert(id="income-message", dismissable=True),
+            dbc.Alert(id="income-message", dismissable=True, is_open=False),
         ),
         dbc.Modal(
             [
@@ -221,7 +222,7 @@ def on_button_click(
     ticker_list,
 ):
     if n is None:
-        return None, False, ""
+        raise PreventUpdate
     else:
         params = {}
 
@@ -242,8 +243,8 @@ def on_button_click(
         # Convert ticker to list for consistency with ticker list
         # Ticker can take comma seperated values
         if ticker:
-            tickers = ticker.split(',')
-            tickers = [item.strip() for item in tickers] # strip any whitespace
+            tickers = ticker.split(",")
+            tickers = [item.strip() for item in tickers]  # strip any whitespace
         elif ticker_list:
             tickers = screener_list.get(ticker_list)
         else:
