@@ -68,9 +68,10 @@ TOP_COLUMN = dbc.Form(
                             id="db_report-type",
                             options=[
                                 {"label": "TABLE", "value": "TABLE"},
-                                {"label": "CHART", "value": "CHART"},
+                                {"label": "TIME CHART", "value": "TIME"},
+                                {"label": "STOCK CHART", "value": "STOCKS"},
                             ],
-                            value="TABLE",
+                            value="STOCKS",
                             size="sm",
                         ),
                     ]
@@ -173,16 +174,18 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
                 ),
             )
             content = html.Div(children=dt)
-        else:
+        elif report_type == "TIME":
             # Populate chart
+            dfs = df.groupby("medal").sum()
             fig = px.bar(
                 df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
             )
-            fig.update_layout(
-                height=400,
-                bargap=0.1,
-            )
             content = dcc.Graph(id="graph", figure=fig)
+        else:
+            # Populate chart
+            fig = px.bar(df, x="TICKER", y="TOTAL_PRICE", color="TICKER")
+            content = dcc.Graph(id="graph", figure=fig)
+
         return (
             message,
             content,
