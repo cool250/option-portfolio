@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
+import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 
 from app import app
@@ -175,15 +176,27 @@ def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
             )
             content = html.Div(children=dt)
         elif report_type == "TIME":
-            # Populate chart
-            dfs = df.groupby("medal").sum()
             fig = px.bar(
                 df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
             )
             content = dcc.Graph(id="graph", figure=fig)
         else:
-            # Populate chart
+            dfs = df[["TICKER", "TOTAL_PRICE", "QTY"]].copy()
+            dfs = dfs.groupby("TICKER").sum().round()
             fig = px.bar(df, x="TICKER", y="TOTAL_PRICE", color="TICKER")
+            fig.add_trace(
+                go.Scatter(
+                    x=dfs.index,
+                    y=dfs["TOTAL_PRICE"],
+                    text=dfs["TOTAL_PRICE"],
+                    mode="text",
+                    textposition="top center",
+                    textfont=dict(
+                        size=10,
+                    ),
+                    showlegend=False,
+                )
+            )
             content = dcc.Graph(id="graph", figure=fig)
 
         return (

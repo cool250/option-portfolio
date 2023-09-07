@@ -185,23 +185,34 @@ def on_button_click(n):
         stocks_dt,
         html.Div(
             [
-                f" Account Value:{formatter_currency(balance.accountValue)}  Cash Balance:{formatter_currency(balance.marginBalance)}  Maintenance:{formatter_currency(balance.maintenanceRequirement)}",
-                html.Br(),
+                dbc.Alert(
+                    children=f" Account Value:{formatter_currency(balance.accountValue)}  Cash Balance:{formatter_currency(balance.marginBalance)}  Maintenance:{formatter_currency(balance.maintenanceRequirement)}",
+                    color="info",
+                ),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f"Total:{puts_count}  Exposure:{puts_cash} Maintenance:{puts_maintenance}", color="info"),
+                dbc.Alert(
+                    children=f"Total:{puts_count}  Exposure:{puts_cash} Maintenance:{puts_maintenance}",
+                    color="info",
+                ),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f"Total:{calls_count} Maintenance:{calls_maintenance}", color="info"),
+                dbc.Alert(
+                    children=f"Total:{calls_count} Maintenance:{calls_maintenance}",
+                    color="info",
+                ),
             ]
         ),
         html.Div(
             [
-                dbc.Alert(children=f"Total:{stocks_count}  Value:{format_stock_value}   Cost:{format_stock_cost}  P/L: {stock_profit} Maintenance:{stocks_maintenance}", color="info"),
+                dbc.Alert(
+                    children=f"Total:{stocks_count}  Value:{format_stock_value}   Cost:{format_stock_cost}  P/L: {stock_profit} Maintenance:{stocks_maintenance}",
+                    color="info",
+                ),
             ]
         ),
     )
