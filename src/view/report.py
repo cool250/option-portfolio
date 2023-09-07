@@ -72,7 +72,7 @@ TOP_COLUMN = dbc.Form(
                                 {"label": "TIME CHART", "value": "TIME"},
                                 {"label": "STOCK CHART", "value": "STOCKS"},
                             ],
-                            value="STOCKS",
+                            value="TABLE",
                             size="sm",
                         ),
                     ]

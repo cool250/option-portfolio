@@ -177,7 +177,7 @@ SEARCH_RESULT = html.Div(
     ]
 )
 
-layout = dbc.Container(
+layout = dbc.Form(
     [
         dbc.Row(
             [
@@ -186,7 +186,6 @@ layout = dbc.Container(
             ],
         )
     ],
-    fluid=True,
 )
 
 

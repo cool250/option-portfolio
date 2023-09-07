@@ -8,7 +8,7 @@ from dash_bootstrap_templates import load_figure_template
 from dotenv import find_dotenv, load_dotenv
 
 from app import app
-from view import analysis, bollinger, home, income_finder, oauth, portfolio, report
+from view import analysis, home, income_finder, oauth, portfolio, report, trade_chart
 
 load_dotenv(find_dotenv())  # read local .env file
 
@@ -50,9 +50,7 @@ navbar = dbc.NavbarSimple(
             )
         ),
         dbc.NavItem(
-            dbc.NavLink(
-                "Bollinger", href="/bollinger", id="page-6-link", class_name="nav-link"
-            )
+            dbc.NavLink("Chart", href="/chart", id="page-6-link", class_name="nav-link")
         ),
     ],
     brand="Options Guru",
@@ -83,8 +81,8 @@ def render_page_content(pathname):
         return report.layout
     elif pathname == "/analysis":
         return analysis.layout
-    elif pathname == "/bollinger":
-        return bollinger.layout
+    elif pathname == "/chart":
+        return trade_chart.layout
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [
