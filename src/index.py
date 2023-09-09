@@ -17,7 +17,7 @@ load_figure_template("bootstrap")
 
 logging.basicConfig(
     filename="app.log",
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(message)s",
 )
 

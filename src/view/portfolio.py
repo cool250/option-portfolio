@@ -96,6 +96,20 @@ layout = dbc.Container(
     ],
 )
 def on_button_click(n):
+    """Display account summary and positions tables.
+
+    Retrieves account balance, put positions, call positions, and stock positions.
+    Renders the data in Tabulator tables and summary alerts.
+
+    Returns:
+        puts_table (DashTabulator): Put positions table
+        calls_table (DashTabulator): Call positions table
+        stocks_table (DashTabulator): Stock positions table
+        balance_detail (html.Div): Account balance summary alert
+        put_detail (html.Div): Put positions summary alert
+        call_detail (html.Div): Call positions summary alert
+        stock_detail (html.Div): Stock positions summary alert
+    """
     account = AccountPositions()
     balance = account.get_account(field="balances")
     df_puts = account.get_put_positions()
@@ -218,8 +232,6 @@ def on_button_click(n):
     )
 
 
-# dash_tabulator can register a callback on rowClicked
-# to receive a dict of the row values
 @app.callback(
     [
         Output("payoff-chart", "children"),
@@ -234,6 +246,21 @@ def on_button_click(n):
     prevent_initial_call=True,
 )
 def display_output(n, put_trades, call_trades, stock_trades):
+    """Plot payoff diagram for selected positions.
+
+    When payoff button is clicked, renders a payoff diagram based on currently
+    selected rows in the positions tables.
+
+    Args:
+        n (int): Payoff button click
+        put_trades (list): Selected put position rows
+        call_trades (list): Selected call position rows
+        stock_trades (list): Selected stock position rows
+
+    Returns:
+        chart (html.Div): Plotly graph with payoff diagram
+        is_open (bool): Whether to open the modal
+    """
     spot_price = 0
     trades = []
 

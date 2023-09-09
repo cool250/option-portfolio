@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -44,14 +45,15 @@ class RsiBollingerBands:
         sma, upper_band, lower_band = self.get_bollinger_bands(df)
         rsi = self.get_rsi(df)
 
-        bb = df.join(upper_band).join(lower_band)
-        bb = bb.dropna()
+        df = df.join(upper_band).join(lower_band)
 
         # Buy when close price is below lower band and sell when above upper band
-        buy = bb[bb["close"] <= bb["lower"]]
-        sell = bb[bb["close"] >= bb["upper"]]
+        buy = df[df["close"] <= df["lower"]]
+        sell = df[df["close"] >= df["upper"]]
 
-        return df, buy, sell, rsi, sma, upper_band, lower_band, price
+        df = df.join(rsi).join(sma)
+
+        return df, buy, sell, price
 
     def get_bollinger_bands(self, df: pd.DataFrame, sma: bool = True) -> tuple:
         """
@@ -88,6 +90,7 @@ class RsiBollingerBands:
 
         upper_band = upper_band.rename(columns={"close": "upper"})
         lower_band = lower_band.rename(columns={"close": "lower"})
+        sma = sma.rename(columns={"close": "sma"})
 
         return sma, upper_band, lower_band
 
@@ -114,6 +117,7 @@ class RsiBollingerBands:
         rsi = ma_up / ma_down
         rsi = 100 - (100 / (1 + rsi))
         rsi = rsi.to_frame()
+        rsi = rsi.rename(columns={"close": "rsi"})
         return rsi
 
     def get_historical_prices(self, start: datetime, end: datetime) -> pd.DataFrame:
@@ -142,7 +146,7 @@ class RsiBollingerBands:
             )
             return df
         except Exception as e:
-            print(f"Error fetching prices for {stock}: {str(e)}")
+            logging.error(f"Error fetching historical prices for {stock}: {str(e)}")
             return pd.DataFrame()
 
     def get_current_price(self) -> tuple[str, str]:
@@ -166,5 +170,5 @@ class RsiBollingerBands:
             date = date_from_milliseconds(r[stock]["quoteTimeInLong"])
             return price, date
         except Exception as e:
-            print(f"Error fetching current price for {stock}: {str(e)}")
+            logging.error(f"Error fetching current price for {stock}: {str(e)}")
             return None, None

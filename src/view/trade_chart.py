@@ -89,14 +89,14 @@ def show_charts(ticker: str) -> dcc.Graph:
     """
 
     strategy = RsiBollingerBands(ticker)
-    df, buy, sell, rsi, sma, upper_band, lower_band, _ = strategy.generate_chart_data()
+    df, buy, sell, _ = strategy.generate_chart_data()
 
     # Initialize figure with subplots
     fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3])
     fig.add_trace(
         go.Scatter(
-            x=lower_band.index,
-            y=lower_band["lower"],
+            x=df.index,
+            y=df["lower"],
             name="Lower Band",
             line_color="rgba(173,204,255,0.2)",
         ),
@@ -105,8 +105,8 @@ def show_charts(ticker: str) -> dcc.Graph:
     )
     fig.add_trace(
         go.Scatter(
-            x=upper_band.index,
-            y=upper_band["upper"],
+            x=df.index,
+            y=df["upper"],
             name="Upper Band",
             fill="tonexty",
             fillcolor="rgba(173,204,255,0.2)",
@@ -121,7 +121,7 @@ def show_charts(ticker: str) -> dcc.Graph:
         col=1,
     )
     fig.add_trace(
-        go.Scatter(x=sma.index, y=sma["close"], name="SMA", line_color="#FECB52"),
+        go.Scatter(x=df.index, y=df["sma"], name="SMA", line_color="#FECB52"),
         row=1,
         col=1,
     )
@@ -154,7 +154,7 @@ def show_charts(ticker: str) -> dcc.Graph:
         col=1,
     )
     fig.add_trace(
-        go.Scatter(x=rsi.index, y=rsi["close"], name="close", line_color="#CE2D2D"),
+        go.Scatter(x=df.index, y=df["rsi"], name="close", line_color="#CE2D2D"),
         row=2,
         col=1,
     )
