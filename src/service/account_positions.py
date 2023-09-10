@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 
@@ -50,10 +52,10 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] > row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.positions
+        positions = self.positions
         # Filter for puts
-        is_put = res["option_type"] == PUT_CALL.PUT.value
-        df = res[is_put]
+        is_put = positions["option_type"] == PUT_CALL.PUT.value
+        df = positions[is_put]
 
         res_df = pd.DataFrame()
         res_df[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -65,9 +67,8 @@ class AccountPositions:
             #  Retain only the columns needed and rename
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
-            df["theta"] = df["theta"].apply(formatter_number_2_digits)
             df["delta"] = df["delta"] * df["quantity"] * 100
-            df["delta"] = df["delta"].apply(formatter_number_2_digits)
+            df = df.round(2)
             df.rename(columns=self.params_options, inplace=True)
 
         # Add liquidity for Puts if assigned
@@ -92,11 +93,11 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] < row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.positions
+        positions = self.positions
 
         # Filter for calls
-        is_call = res["option_type"] == PUT_CALL.CALL.value
-        df = res[is_call]
+        is_call = positions["option_type"] == PUT_CALL.CALL.value
+        df = positions[is_call]
 
         res_df = pd.DataFrame()
         res_df[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -108,9 +109,8 @@ class AccountPositions:
             #  Retain only the columns needed and rename
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
-            df["theta"] = df["theta"].apply(formatter_number_2_digits)
             df["delta"] = df["delta"] * df["quantity"] * 100
-            df["delta"] = df["delta"].apply(formatter_number_2_digits)
+            df = df.round(2)
             df.rename(columns=self.params_options, inplace=True)
 
         return df
@@ -121,12 +121,12 @@ class AccountPositions:
         for the symbol via Qouotes
         """
 
-        res = self.positions
+        positions = self.positions
 
         # Filter for stocks
         options = ["EQUITY", "MUTUAL_FUND"]
-        is_equity = res["instrument_type"].isin(options)
-        df = res[is_equity]
+        is_equity = positions["instrument_type"].isin(options)
+        df = positions[is_equity]
 
         if not df.empty:
             #  Retain only the columns needed and rename
@@ -143,24 +143,28 @@ def add_prices(df):
     Get pricing info or the symbol via Quotes
     """
 
-    quotes = Quotes()
-    instruments = df["symbol"]
-    res = quotes.get_quotesDF(instruments)
-    res_filter = res[
-        [
-            "symbol",
-            "underlyingPrice",
-            "strikePrice",
-            "mark",
-            "theta",
-            "delta",
-            "daysToExpiration",
+    try:
+        quotes = Quotes()
+        instruments = df["symbol"]
+        res = quotes.get_quotesDF(instruments)
+        res_filter = res[
+            [
+                "symbol",
+                "underlyingPrice",
+                "strikePrice",
+                "mark",
+                "theta",
+                "delta",
+                "daysToExpiration",
+            ]
         ]
-    ]
-    # For Money Market Funds
-    res_filter.loc[:, "mark"] = res_filter["mark"].fillna(1)
-    merged_df = pd.merge(df, res_filter, on="symbol")
-    return merged_df
+        # For Money Market Funds
+        res_filter.loc[:, "mark"] = res_filter["mark"].fillna(1)
+        merged_df = pd.merge(df, res_filter, on="symbol")
+        return merged_df
+    except Exception as e:
+        logging.error(f"Error fetching prices: {str(e)}")
+        return pd.DataFrame()
 
 
 def get_account():
@@ -174,9 +178,13 @@ def get_account():
         _type_: _description_
     """
 
-    account = Account().get_portfolio(account=ACCOUNT_NUMBER)
-    position_df = convert_to_df(account.positions)
+    try:
+        account = Account().get_portfolio(account=ACCOUNT_NUMBER)
+        position_df = convert_to_df(account.positions)
 
-    # Populate pricing for all tickers
-    positions = add_prices(position_df)
-    return positions, account.balance
+        # Populate pricing for all tickers
+        positions = add_prices(position_df)
+        return positions, account.balance
+    except Exception as e:
+        logging.error(f"Error fetching account data: {str(e)}")
+        return pd.DataFrame(), None

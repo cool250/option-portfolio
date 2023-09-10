@@ -19,27 +19,24 @@ class RsiBollingerBands:
     Attributes:
 
         ticker (str): The stock symbol
-        rsi_period (int): Period for calculating RSI
-        bb_period (int): Period for calculating Bollinger Bands
-        bb_dev (int): Standard deviation multiplier for Bollinger Bands
-        oversold (int): RSI below this level is considered oversold
-        overbought (int): RSI above this is considered overbought
-        def __init__(self, ticker: str):
-            self.ticker = ticker
-            self.rsi_period = 14
-            self.bb_period = 20
-            self.bb_dev = 2
-            self.oversold = 30
-            self.overbought = 70
+        params:
+            rsi_period (int): Period for calculating RSI
+            bb_period (int): Period for calculating Bollinger Bands
+            bb_dev (int): Standard deviation multiplier for Bollinger Bands
+            oversold (int): RSI below this level is considered oversold
+            overbought (int): RSI above this is considered overbought
     """
 
     def __init__(self, ticker: str):
         self.ticker = ticker
-        self.rsi_period = 14
-        self.bb_period = 20
-        self.bb_dev = 2
-        self.oversold = 30
-        self.overbought = 70
+        self.params = {
+            "rsi_period": 14,
+            "bb_period": 20,
+            "bb_dev": 2,
+            "oversold": 30,
+            "overbought": 70,
+            "chart_period": 90,
+        }
 
     # Function to show Bollinger chart
     def generate_chart_data(self) -> tuple:
@@ -55,7 +52,7 @@ class RsiBollingerBands:
                  price (float): Current price
         """
         now = datetime.now()
-        start = now - timedelta(days=365)
+        start = now - timedelta(days=self.params["chart_period"])
         data = self.get_historical_prices(start, now)
 
         if data.empty:
@@ -92,8 +89,8 @@ class RsiBollingerBands:
             sma, upper_band, lower_band (Series):
                 Containing SMA, Upper Band, Lower Band
         """
-        period = self.bb_period
-        std_dev = self.bb_dev
+        period = self.params["bb_period"]
+        std_dev = self.params["bb_dev"]
 
         if sma:
             sma = df.rolling(window=period).mean().dropna()
@@ -119,7 +116,7 @@ class RsiBollingerBands:
         Returns:
             rsi (DataFrame): DataFrame containing RSI values
         """
-        periods = self.rsi_period
+        periods = self.params["rsi_period"]
         close_delta = df["close"].diff()
 
         # Make two series: one for lower closes and one for higher closes

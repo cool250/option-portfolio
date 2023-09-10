@@ -174,6 +174,7 @@ def parse_option_response(df, instrument_type):
         # Calculate profits by subtracting closing costs from opening
         final_df = calculate_final_payoff(oa_df)
         final_df = final_df.sort_values(by=["DATE"])
+        final_df = final_df.round(2)
         return final_df
 
 
