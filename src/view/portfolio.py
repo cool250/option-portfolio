@@ -111,7 +111,7 @@ def on_button_click(n):
         stock_detail (html.Div): Stock positions summary alert
     """
     account = AccountPositions()
-    balance = account.get_account(field="balances")
+    balance = account.balance
     df_puts = account.get_put_positions()
     df_calls = account.get_call_positions()
     df_stocks = account.get_stock_positions()

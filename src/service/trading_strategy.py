@@ -9,6 +9,30 @@ from utils.functions import date_from_milliseconds
 
 
 class RsiBollingerBands:
+    """
+    RsiBollingerBands class implements a trading strategy using RSI and Bollinger Bands.
+
+    Parameters:
+
+        ticker (str): The stock symbol to trade
+
+    Attributes:
+
+        ticker (str): The stock symbol
+        rsi_period (int): Period for calculating RSI
+        bb_period (int): Period for calculating Bollinger Bands
+        bb_dev (int): Standard deviation multiplier for Bollinger Bands
+        oversold (int): RSI below this level is considered oversold
+        overbought (int): RSI above this is considered overbought
+        def __init__(self, ticker: str):
+            self.ticker = ticker
+            self.rsi_period = 14
+            self.bb_period = 20
+            self.bb_dev = 2
+            self.oversold = 30
+            self.overbought = 70
+    """
+
     def __init__(self, ticker: str):
         self.ticker = ticker
         self.rsi_period = 14
@@ -20,13 +44,15 @@ class RsiBollingerBands:
     # Function to show Bollinger chart
     def generate_chart_data(self) -> tuple:
         """
-        Generate and display a Bollinger Bands chart for the specified stock ticker.
+        Generates historical data, calculates indicators, identifies signals,
+         and returns DataFrames for charting.
 
-        Args:
-            ticker (str): The stock ticker symbol.
-
-        Returns:
-            dash.Graph: A Plotly graph containing the Bollinger Bands chart.
+         Returns:
+             (df, buy, sell, price):
+                 df (DataFrame): Contains close price, bands, RSI, SMA
+                 buy (DataFrame): Buy signals
+                 sell (DataFrame): Sell signals
+                 price (float): Current price
         """
         now = datetime.now()
         start = now - timedelta(days=365)
@@ -57,25 +83,14 @@ class RsiBollingerBands:
 
     def get_bollinger_bands(self, df: pd.DataFrame, sma: bool = True) -> tuple:
         """
-        Calculate Bollinger Bands for a given DataFrame of financial data.
+        Calculates SMA, Upper Band, Lower Band for given DataFrame.
 
         Parameters:
-            df (pd.DataFrame): The DataFrame containing financial data, including a 'close' column.
-            sma (bool, optional): Whether to use Simple Moving Average (SMA) for Bollinger Bands. Default is True.
+            df (DataFrame): Dataframe with close prices
 
         Returns:
-            tuple: A tuple containing the following elements:
-                - sma (pd.Series): The Simple Moving Average (SMA) of the 'close' prices.
-                - upper_band (pd.Series): The upper Bollinger Band values.
-                - lower_band (pd.Series): The lower Bollinger Band values.
-                - buy (pd.DataFrame): DataFrame of buy signals (close price below lower band).
-                - sell (pd.DataFrame): DataFrame of sell signals (close price above upper band).
-
-        Raises:
-            NotImplementedError: If sma is set to False, as only SMA calculation is currently supported.
-
-        Usage:
-            sma, upper_band, lower_band, buy, sell = get_bollinger_bands(df, periods=20, sma=True)
+            sma, upper_band, lower_band (Series):
+                Containing SMA, Upper Band, Lower Band
         """
         period = self.bb_period
         std_dev = self.bb_dev
@@ -96,7 +111,13 @@ class RsiBollingerBands:
 
     def get_rsi(self, df: pd.DataFrame, ema: bool = True):
         """
-        Returns a pd.Dataframe with the relative strength index.
+        Calculates Relative Strength Index for given DataFrame.
+
+        Parameters:
+            df (DataFrame): Dataframe with close prices
+
+        Returns:
+            rsi (DataFrame): DataFrame containing RSI values
         """
         periods = self.rsi_period
         close_delta = df["close"].diff()
@@ -122,15 +143,14 @@ class RsiBollingerBands:
 
     def get_historical_prices(self, start: datetime, end: datetime) -> pd.DataFrame:
         """
-        Fetch historical price data for the specified stock symbol within a given date range.
+        Fetches historical price data from API.
 
-        Args:
-            stock (str): The stock ticker symbol.
-            start (datetime): The start date for fetching historical data.
-            end (datetime): The end date for fetching historical data.
+        Parameters:
+            start (datetime): Start date
+            end (datetime): End date
 
         Returns:
-            pandas.DataFrame: A DataFrame containing historical price data.
+            df (DataFrame): Historical prices
         """
         stock = self.ticker
         try:
@@ -151,15 +171,11 @@ class RsiBollingerBands:
 
     def get_current_price(self) -> tuple[str, str]:
         """
-        Fetch the current price and timestamp for the specified stock symbol.
-        This is appended to historical price
-
-        Args:
-            stock (str): The stock ticker symbol.
+        Fetches current price from API.
 
         Returns:
-            float: The current stock price.
-            date: The date of the stock price.
+            price (float): Current price
+            date (datetime): Date of current price
         """
 
         stock = self.ticker

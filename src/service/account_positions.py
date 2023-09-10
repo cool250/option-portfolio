@@ -11,6 +11,7 @@ from utils.functions import convert_to_df, formatter_number_2_digits, formatter_
 class AccountPositions:
     def __init__(self):
         super().__init__()
+        self.positions, self.balance = get_account()
         self.params_options = {
             "quantity": "QTY",
             "underlying": "TICKER",
@@ -37,10 +38,6 @@ class AccountPositions:
             "maintenanceRequirement": "MARGIN",
         }
 
-        # Get All Open Positions
-        self.securities_account = None
-        self.positions = pd.DataFrame()
-
     def get_put_positions(self):
         """
         Get all open Puts first from Accounts API and later pricing information
@@ -53,7 +50,7 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] > row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.get_account()
+        res = self.positions
         # Filter for puts
         is_put = res["option_type"] == PUT_CALL.PUT.value
         df = res[is_put]
@@ -95,7 +92,7 @@ class AccountPositions:
             itm = np.where(row["strikePrice"] < row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, itm
 
-        res = self.get_account()
+        res = self.positions
 
         # Filter for calls
         is_call = res["option_type"] == PUT_CALL.CALL.value
@@ -124,7 +121,7 @@ class AccountPositions:
         for the symbol via Qouotes
         """
 
-        res = self.get_account()
+        res = self.positions
 
         # Filter for stocks
         options = ["EQUITY", "MUTUAL_FUND"]
@@ -134,56 +131,52 @@ class AccountPositions:
         if not df.empty:
             #  Retain only the columns needed and rename
             df = df[self.params_stocks.keys()]
-            # TODO: get an error "value is trying to be set on a copy of a slice
-            # from a DataFrame" when this line is before dropping columns
             df["NET"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
                 formatter_number_2_digits
             )
             df.rename(columns=self.params_stocks, inplace=True)
         return df
 
-    def get_account(self, field="positions"):
-        """
-        Get open positions and balances for a given account
 
-        Args:
-            field (str, optional): positions or balances. Defaults to 'positions'.
+def add_prices(df):
+    """
+    Get pricing info or the symbol via Quotes
+    """
 
-        Returns:
-            _type_: _description_
-        """
-        if self.securities_account is None:
-            account = Account()
-            self.securities_account = account.get_portfolio(account=ACCOUNT_NUMBER)
-            position_df = convert_to_df(self.securities_account.positions)
-
-            # Populate pricing for all tickers
-            self.positions = self.__get_pricing(position_df)
-        if field == "balances":
-            return self.securities_account.balance
-        else:
-            return self.positions
-
-    def __get_pricing(self, df):
-        """
-        Get pricing info or the symbol via Quotes
-        """
-
-        quotes = Quotes()
-        instruments = df["symbol"]
-        res = quotes.get_quotesDF(instruments)
-        res_filter = res[
-            [
-                "symbol",
-                "underlyingPrice",
-                "strikePrice",
-                "mark",
-                "theta",
-                "delta",
-                "daysToExpiration",
-            ]
+    quotes = Quotes()
+    instruments = df["symbol"]
+    res = quotes.get_quotesDF(instruments)
+    res_filter = res[
+        [
+            "symbol",
+            "underlyingPrice",
+            "strikePrice",
+            "mark",
+            "theta",
+            "delta",
+            "daysToExpiration",
         ]
-        # For Money Market Funds
-        res_filter.loc[:, "mark"] = res_filter["mark"].fillna(1)
-        merged_df = pd.merge(df, res_filter, on="symbol")
-        return merged_df
+    ]
+    # For Money Market Funds
+    res_filter.loc[:, "mark"] = res_filter["mark"].fillna(1)
+    merged_df = pd.merge(df, res_filter, on="symbol")
+    return merged_df
+
+
+def get_account():
+    """
+    Get open positions and balances for a given account
+
+    Args:
+        field (str, optional): positions or balances. Defaults to 'positions'.
+
+    Returns:
+        _type_: _description_
+    """
+
+    account = Account().get_portfolio(account=ACCOUNT_NUMBER)
+    position_df = convert_to_df(account.positions)
+
+    # Populate pricing for all tickers
+    positions = add_prices(position_df)
+    return positions, account.balance
