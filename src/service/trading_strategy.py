@@ -44,7 +44,7 @@ class RsiBollingerBands:
         }
 
     # Function to show Bollinger chart
-    def analyze_strategy(self) -> tuple:
+    def analyze_ticker(self) -> tuple:
         """
         Generates historical data, calculates indicators, identifies signals,
          and returns DataFrames for charting.
@@ -192,42 +192,52 @@ class RsiBollingerBands:
             return None, None
 
 
-def get_buy_signal(ticker):
+def get_trade_signal(ticker: str, trade_type: str):
     strategy = RsiBollingerBands(ticker)
     try:
-        _, buy, _, price = strategy.analyze_strategy()
-        latest_buy = buy.tail(1)
-        if not latest_buy.empty:
-            buy_date = latest_buy.index[0]
-            buy_price = latest_buy["close"][0]
-            logging.info(f"Buy Price for ticker {ticker} is {buy_price}")
+        _, buy, sell, current_price = strategy.analyze_ticker()
+        if trade_type == "buy":
+            latest_buy = buy.tail(1)
+            if not latest_buy.empty:
+                date = latest_buy.index[0]
+                price = latest_buy["close"][0]
+                logging.info(f" Buy Price for ticker {ticker} is {price}")
+            else:
+                return None
         else:
-            return None
+            latest_sell = sell.tail(1)
+            if not latest_sell.empty:
+                date = latest_sell.index[0]
+                price = latest_sell["close"][0]
+                logging.info(f" Sell Price for ticker {ticker} is {price}")
+            else:
+                return None
+
     except Exception as e:
-        logging.error(f" Error in buy signal for ticker {ticker} : {str(e)}")
+        logging.error(f" Error in trade signal for ticker {ticker} : {str(e)}")
         return None
     return (
         ticker,
-        buy_date,
-        buy_price,
+        date,
         price,
+        current_price,
     )
 
 
-def buy_stocks(ticker_list: str) -> pd.DataFrame:
+def analyze_watchlist(ticker_list: str, trade_type: str) -> pd.DataFrame:
     tickers = screener_list.get(ticker_list)
     df = pd.DataFrame()
     try:
         results = Parallel(n_jobs=num_cores)(
-            delayed(get_buy_signal)(i) for i in tickers
+            delayed(get_trade_signal)(i, trade_type) for i in tickers
         )
         #  Aggregate the results
         for result in results:
             if result:
                 ticker_row = {
                     "Ticker": result[0],
-                    "Buy_Date": result[1],
-                    "Buy_Price": result[2],
+                    "Date": result[1],
+                    "Price": result[2],
                     "Current_Price": result[3],
                 }
                 df2 = pd.DataFrame([ticker_row])

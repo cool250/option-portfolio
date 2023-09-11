@@ -6,7 +6,7 @@ from dash.exceptions import PreventUpdate
 from plotly.subplots import make_subplots
 
 from app import app
-from service.trading_strategy import RsiBollingerBands, buy_stocks
+from service.trading_strategy import RsiBollingerBands, analyze_watchlist
 from utils.constants import screener_list
 
 # Define constants
@@ -23,6 +23,21 @@ TOP_COLUMN = dbc.Form(
                             value="",
                             id="ticker_list",
                             placeholder="Select",
+                            size="sm",
+                        ),
+                    ],
+                ),
+                dbc.Col(
+                    width=2,
+                    children=[
+                        dbc.Label("Trade Type", size="sm"),
+                        dbc.Select(
+                            id="trade_type",
+                            options=[
+                                {"label": "SELL", "value": "sell"},
+                                {"label": "BUY", "value": "buy"},
+                            ],
+                            value="buy",
                             size="sm",
                         ),
                     ],
@@ -86,14 +101,16 @@ layout = dbc.Container(
 
 @app.callback(
     [Output("stock_screener", "children"), Output("bollinger_content", "children")],
-    Input("scan-btn", "n_clicks"),
-    State("ticker_list", "value"),
+    [Input("scan-btn", "n_clicks")],
+    [State("ticker_list", "value"), State("trade_type", "value")],
 )
-def scan_stocks(n_clicks, ticker_list):
+def scan_stocks(n_clicks, ticker_list, trade_type):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        df = buy_stocks(ticker_list)
+        if len(ticker_list) == 0 or trade_type is None:
+            raise PreventUpdate
+        df = analyze_watchlist(ticker_list, trade_type)
         if not df.empty:
             dt = (
                 dash_tabulator.DashTabulator(
@@ -148,7 +165,7 @@ def show_charts(ticker: str) -> dcc.Graph:
     """
 
     strategy = RsiBollingerBands(ticker)
-    df, buy, sell, _ = strategy.analyze_strategy()
+    df, buy, sell, _ = strategy.analyze_ticker()
 
     # Initialize figure with subplots
     fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3])
