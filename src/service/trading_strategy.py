@@ -40,7 +40,7 @@ class RsiBollingerBands:
             "bb_dev": 2,
             "oversold": 30,
             "overbought": 70,
-            "chart_period": 365,
+            "chart_period": 60,
         }
 
     # Function to show Bollinger chart
@@ -204,7 +204,8 @@ def get_buy_signal(ticker):
         else:
             return None
     except Exception as e:
-        logging.error(f"Error in buy signal for ticker {ticker} : {str(e)}")
+        logging.error(f" Error in buy signal for ticker {ticker} : {str(e)}")
+        return None
     return (
         ticker,
         buy_date,
@@ -213,8 +214,8 @@ def get_buy_signal(ticker):
     )
 
 
-def buy_stocks() -> pd.DataFrame:
-    tickers = screener_list.get("option_stocks")
+def buy_stocks(ticker_list: str) -> pd.DataFrame:
+    tickers = screener_list.get(ticker_list)
     df = pd.DataFrame()
     try:
         results = Parallel(n_jobs=num_cores)(
@@ -222,14 +223,15 @@ def buy_stocks() -> pd.DataFrame:
         )
         #  Aggregate the results
         for result in results:
-            ticker_row = {
-                "Ticker": result[0],
-                "Buy_Date": result[1],
-                "Buy_Price": result[2],
-                "Current_Price": result[3],
-            }
-            df2 = pd.DataFrame([ticker_row])
-            df = pd.concat([df, df2], ignore_index=True)
+            if result:
+                ticker_row = {
+                    "Ticker": result[0],
+                    "Buy_Date": result[1],
+                    "Buy_Price": result[2],
+                    "Current_Price": result[3],
+                }
+                df2 = pd.DataFrame([ticker_row])
+                df = pd.concat([df, df2], ignore_index=True)
         return df
     except Exception as e:
         logging.error(f"Error running Parallel: {str(e)}")

@@ -7,12 +7,38 @@ from plotly.subplots import make_subplots
 
 from app import app
 from service.trading_strategy import RsiBollingerBands, buy_stocks
+from utils.constants import screener_list
 
 # Define constants
 TOP_COLUMN = dbc.Form(
     [
         dbc.Row(
             [
+                dbc.Col(
+                    width=2,
+                    children=[
+                        dbc.Label("WatchList", size="sm"),
+                        dbc.Select(
+                            options=[{"label": i, "value": i} for i in screener_list],
+                            value="",
+                            id="ticker_list",
+                            placeholder="Select",
+                            size="sm",
+                        ),
+                    ],
+                ),
+                dbc.Col(
+                    width=2,
+                    children=[
+                        dbc.Button(
+                            "Run Scan",
+                            color="primary",
+                            id="scan-btn",
+                            className="mt-4",
+                            size="md",
+                        ),
+                    ],
+                ),
                 dbc.Col(
                     width=2,
                     children=[
@@ -32,19 +58,6 @@ TOP_COLUMN = dbc.Form(
                             "Search",
                             color="primary",
                             id="bollinger-btn",
-                            className="mt-4",
-                            size="md",
-                        ),
-                    ],
-                    className="text-end",
-                ),
-                dbc.Col(
-                    width=1,
-                    children=[
-                        dbc.Button(
-                            "Scan",
-                            color="secondary",
-                            id="scan-btn",
                             className="mt-4",
                             size="md",
                         ),
@@ -72,33 +85,40 @@ layout = dbc.Container(
 
 
 @app.callback(
-    Output("stock_screener", "children"),
+    [Output("stock_screener", "children"), Output("bollinger_content", "children")],
     Input("scan-btn", "n_clicks"),
+    State("ticker_list", "value"),
 )
-def scan_stocks(n_clicks):
+def scan_stocks(n_clicks, ticker_list):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        df = buy_stocks()
-        dt = (
-            dash_tabulator.DashTabulator(
-                id="screener-table",
-                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
-                data=df.to_dict("records"),
-            ),
-        )
-        return dt
+        df = buy_stocks(ticker_list)
+        if not df.empty:
+            dt = (
+                dash_tabulator.DashTabulator(
+                    id="screener-table",
+                    columns=[{"id": i, "title": i, "field": i} for i in df.columns],
+                    data=df.to_dict("records"),
+                ),
+            )
+            return dt, None
 
 
 # Callback for button click
 @app.callback(
-    Output("bollinger_content", "children"),
+    [
+        Output("bollinger_content", "children", allow_duplicate=True),
+        Output("stock_screener", "children", allow_duplicate=True),
+    ],
     [Input("bollinger-btn", "n_clicks")],
     [State("bollinger-ticker", "value")],
+    prevent_initial_call=True,
 )
 def on_search(n_clicks: int, ticker: str) -> dbc.Container:
     """
-    Callback triggered when the search button is clicked.
+    Callback triggered when the search button is clicked. It shows the chart and hides
+    the stock screening table
 
     Args:
         n_clicks (int): The number of times the button has been clicked.
@@ -109,7 +129,10 @@ def on_search(n_clicks: int, ticker: str) -> dbc.Container:
     """
     if n_clicks is None or not ticker.strip():
         raise PreventUpdate
-    return dbc.Container([dbc.Row([dbc.Col(show_charts(ticker.strip().upper()))])])
+    return (
+        dbc.Container([dbc.Row([dbc.Col(show_charts(ticker.strip().upper()))])]),
+        None,
+    )
 
 
 # Function to show Bollinger chart
