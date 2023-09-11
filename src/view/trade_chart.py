@@ -1,11 +1,12 @@
 import dash_bootstrap_components as dbc
+import dash_tabulator
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
 from dash.exceptions import PreventUpdate
 from plotly.subplots import make_subplots
 
 from app import app
-from service.trading_strategy import RsiBollingerBands
+from service.trading_strategy import RsiBollingerBands, buy_stocks
 
 # Define constants
 TOP_COLUMN = dbc.Form(
@@ -37,21 +38,56 @@ TOP_COLUMN = dbc.Form(
                     ],
                     className="text-end",
                 ),
+                dbc.Col(
+                    width=1,
+                    children=[
+                        dbc.Button(
+                            "Scan",
+                            color="secondary",
+                            id="scan-btn",
+                            className="mt-4",
+                            size="md",
+                        ),
+                    ],
+                    className="text-end",
+                ),
             ],
         ),
     ],
     className="p-2",
 )
 
+SCREENED_STOCKS = html.Div(id="stock_screener")
 CHART_LAYOUT = html.Div(id="bollinger_content")
 
 layout = dbc.Container(
     [
         dbc.Row(TOP_COLUMN),
         html.P(),
+        dbc.Row(SCREENED_STOCKS),
+        html.P(),
         dbc.Row(CHART_LAYOUT),
     ],
 )
+
+
+@app.callback(
+    Output("stock_screener", "children"),
+    Input("scan-btn", "n_clicks"),
+)
+def scan_stocks(n_clicks):
+    if n_clicks is None:
+        raise PreventUpdate
+    else:
+        df = buy_stocks()
+        dt = (
+            dash_tabulator.DashTabulator(
+                id="screener-table",
+                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
+                data=df.to_dict("records"),
+            ),
+        )
+        return dt
 
 
 # Callback for button click
@@ -60,7 +96,7 @@ layout = dbc.Container(
     [Input("bollinger-btn", "n_clicks")],
     [State("bollinger-ticker", "value")],
 )
-def on_page_load(n_clicks: int, ticker: str) -> dbc.Container:
+def on_search(n_clicks: int, ticker: str) -> dbc.Container:
     """
     Callback triggered when the search button is clicked.
 
@@ -89,7 +125,7 @@ def show_charts(ticker: str) -> dcc.Graph:
     """
 
     strategy = RsiBollingerBands(ticker)
-    df, buy, sell, _ = strategy.generate_chart_data()
+    df, buy, sell, _ = strategy.analyze_strategy()
 
     # Initialize figure with subplots
     fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3])

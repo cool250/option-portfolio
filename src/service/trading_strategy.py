@@ -1,11 +1,16 @@
 import logging
+import multiprocessing
 from datetime import datetime, timedelta
 
 import pandas as pd
+from joblib import Parallel, delayed
 
 from broker.history import History
 from broker.quotes import Quotes
+from utils.constants import screener_list
 from utils.functions import date_from_milliseconds
+
+num_cores = multiprocessing.cpu_count()
 
 
 class RsiBollingerBands:
@@ -35,11 +40,11 @@ class RsiBollingerBands:
             "bb_dev": 2,
             "oversold": 30,
             "overbought": 70,
-            "chart_period": 90,
+            "chart_period": 365,
         }
 
     # Function to show Bollinger chart
-    def generate_chart_data(self) -> tuple:
+    def analyze_strategy(self) -> tuple:
         """
         Generates historical data, calculates indicators, identifies signals,
          and returns DataFrames for charting.
@@ -185,3 +190,47 @@ class RsiBollingerBands:
         except Exception as e:
             logging.error(f"Error fetching current price for {stock}: {str(e)}")
             return None, None
+
+
+def get_buy_signal(ticker):
+    strategy = RsiBollingerBands(ticker)
+    try:
+        _, buy, _, price = strategy.analyze_strategy()
+        latest_buy = buy.tail(1)
+        if not latest_buy.empty:
+            buy_date = latest_buy.index[0]
+            buy_price = latest_buy["close"][0]
+            logging.info(f"Buy Price for ticker {ticker} is {buy_price}")
+        else:
+            return None
+    except Exception as e:
+        logging.error(f"Error in buy signal for ticker {ticker} : {str(e)}")
+    return (
+        ticker,
+        buy_date,
+        buy_price,
+        price,
+    )
+
+
+def buy_stocks() -> pd.DataFrame:
+    tickers = screener_list.get("option_stocks")
+    df = pd.DataFrame()
+    try:
+        results = Parallel(n_jobs=num_cores)(
+            delayed(get_buy_signal)(i) for i in tickers
+        )
+        #  Aggregate the results
+        for result in results:
+            ticker_row = {
+                "Ticker": result[0],
+                "Buy_Date": result[1],
+                "Buy_Price": result[2],
+                "Current_Price": result[3],
+            }
+            df2 = pd.DataFrame([ticker_row])
+            df = pd.concat([df, df2], ignore_index=True)
+        return df
+    except Exception as e:
+        logging.error(f"Error running Parallel: {str(e)}")
+        return None

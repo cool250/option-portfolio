@@ -7,7 +7,7 @@ VALID_USERNAME_PASSWORD_PAIRS = [["hello", "nishant"]]
 
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.LUX],
+    external_stylesheets=[dbc.themes.LUX, dbc.icons.FONT_AWESOME],
     suppress_callback_exceptions=True,
 )
 

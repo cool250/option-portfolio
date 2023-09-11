@@ -219,6 +219,8 @@ def merge_openclose(df_open, df_close, df_assigned):
 
 def handle_early_assignment(df_options, df_assigned):
     """Handle expiry dates of early assignment to match open trade expiry date
+    We try to match open trades that don't have a closing trade with the assigned stock when
+    QTY and ticker matches. This allows us to tag option trades that were assigned early
 
     Args:
         df_options (_type_): _description_
@@ -231,21 +233,21 @@ def handle_early_assignment(df_options, df_assigned):
     df_option_openonly = df_options[df_options["PRICE_C"].isna()]
 
     # Create a copy to avoid pandas warning when adding new column later to filtered Dataframes
-    df_option_copied = df_option_openonly.copy()
-    df_assigned_copied = df_assigned.copy()
+    df_option_open = df_option_openonly.copy()
+    df_assigned = df_assigned.copy()
 
     # Add timestamp and sort for merge asof operation using closest timestamp
-    df_option_copied["EXPIRY_DATE_TS"] = pd.to_datetime(df_option_copied["EXPIRY_DATE"])
-    df_assigned_copied["EXPIRY_DATE_TS"] = pd.to_datetime(df_assigned["EXPIRY_DATE"])
+    df_option_open["EXPIRY_DATE_TS"] = pd.to_datetime(df_option_open["EXPIRY_DATE"])
+    df_assigned["EXPIRY_DATE_TS"] = pd.to_datetime(df_assigned["EXPIRY_DATE"])
 
-    df_option_copied = df_option_copied.sort_values(by=["EXPIRY_DATE_TS"])
-    df_assigned_copied = df_assigned_copied.sort_values(by=["EXPIRY_DATE_TS"])
+    df_option_open = df_option_open.sort_values(by=["EXPIRY_DATE_TS"])
+    df_assigned = df_assigned.sort_values(by=["EXPIRY_DATE_TS"])
 
     # Adjust stock assignments date to match opening expiration date for early assignments if needed
     # Do not add suffix to options df for merge later
     df_adjusted_assigned = pd.merge_asof(
-        df_assigned_copied,
-        df_option_copied,
+        df_assigned,
+        df_option_open,
         on="EXPIRY_DATE_TS",
         by=["QTY", "TICKER"],
         allow_exact_matches=True,

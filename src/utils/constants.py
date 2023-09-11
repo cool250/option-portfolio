@@ -17,13 +17,12 @@ screener_list["option_stocks"] = [
     "DIS",
     "NVDA",
     "EA",
-    "FB",
+    "META",
     "AAPL",
     "BA",
     "AMD",
     "LYFT",
     "TSLA",
-    "TWTR",
     "SPCE",
 ]
 screener_list["finance"] = ["WF", "BAC", "JPM", "C", "GS", "V", "AXP", "COF"]
@@ -55,5 +54,4 @@ screener_list["ETF"] = [
     "SLV",
     "SPY",
 ]
-screener_list["Favorites"] = ["SPY", "QQQ","IWM"]
-
+screener_list["Favorites"] = ["SPY", "QQQ", "IWM"]
