@@ -1,3 +1,5 @@
+import logging
+
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.graph_objects as go
@@ -165,10 +167,19 @@ def show_charts(ticker: str) -> dcc.Graph:
     """
 
     strategy = RsiBollingerBands(ticker)
-    df, buy, sell, _ = strategy.analyze_ticker()
+    try:
+        df, buy, sell, _ = strategy.analyze_ticker()
+    except Exception as e:
+        logging.error(f"Error calling analyze_ticker for ticker {ticker} {str(e)}")
+        return "No Results Found"
 
     # Initialize figure with subplots
-    fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3])
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        row_heights=[0.7, 0.3],
+        shared_xaxes=True,
+    )
     fig.add_trace(
         go.Scatter(
             x=df.index,
@@ -233,6 +244,10 @@ def show_charts(ticker: str) -> dcc.Graph:
         go.Scatter(x=df.index, y=df["rsi"], name="close", line_color="#CE2D2D"),
         row=2,
         col=1,
+    )
+    fig.update_layout(
+        height=600,
+        width=1200,
     )
     content = dcc.Graph(figure=fig)
     return content

@@ -60,28 +60,33 @@ class RsiBollingerBands:
         start = now - timedelta(days=self.params["chart_period"])
         data = self.get_historical_prices(start, now)
 
-        if data.empty:
-            raise NotImplementedError()
+        if not data.empty:
+            df = data[["close"]].copy()
 
-        df = data[["close"]].copy()
+            # Append current price to historical close prices
+            price, date = self.get_current_price()
+            index = date
+            df.loc[index] = price
 
-        # Append current price to historical close prices
-        price, date = self.get_current_price()
-        index = date
-        df.loc[index] = price
+            sma, upper_band, lower_band = self.get_bollinger_bands(df)
+            rsi = self.get_rsi(df)
 
-        sma, upper_band, lower_band = self.get_bollinger_bands(df)
-        rsi = self.get_rsi(df)
+            df = df.join(upper_band).join(lower_band)
 
-        df = df.join(upper_band).join(lower_band)
+            # Buy when close price is below lower band and sell when above upper band
+            buy = df[df["close"] <= df["lower"]]
+            sell = df[df["close"] >= df["upper"]]
 
-        # Buy when close price is below lower band and sell when above upper band
-        buy = df[df["close"] <= df["lower"]]
-        sell = df[df["close"] >= df["upper"]]
+            df = df.join(rsi).join(sma)
 
-        df = df.join(rsi).join(sma)
+            # Drop rows for initial dates where bollinger bands are not poplulated
+            df = df.dropna(subset=["lower"])
 
-        return df, buy, sell, price
+            return df, buy, sell, price
+        else:
+            raise SystemError(
+                f"Historical Prices not available for ticker: {self.ticker}"
+            )
 
     def get_bollinger_bands(self, df: pd.DataFrame, sma: bool = True) -> tuple:
         """

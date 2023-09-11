@@ -16,9 +16,10 @@ load_dotenv(find_dotenv())  # read local .env file
 load_figure_template("bootstrap")
 
 logging.basicConfig(
+    format="%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s %(funcName)s:%(lineno)d] %(message)s",
+    datefmt="%Y-%m-%d:%H:%M:%S",
     filename="app.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(message)s",
+    level=logging.DEBUG,
 )
 
 navbar = dbc.NavbarSimple(
@@ -60,8 +61,6 @@ navbar = dbc.NavbarSimple(
 )
 
 content = html.Div(id="page-content", className="p-3")
-
-
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 
