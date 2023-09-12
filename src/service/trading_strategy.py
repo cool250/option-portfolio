@@ -32,18 +32,19 @@ class RsiBollingerBands:
             overbought (int): RSI above this is considered overbought
     """
 
+    DEFAULT_PARAMS = {
+        "rsi_period": 14,
+        "bb_period": 20,
+        "bb_dev": 2,
+        "oversold": 30,
+        "overbought": 70,
+        "chart_period": 60,
+    }
+
     def __init__(self, ticker: str):
         self.ticker = ticker
-        self.params = {
-            "rsi_period": 14,
-            "bb_period": 20,
-            "bb_dev": 2,
-            "oversold": 30,
-            "overbought": 70,
-            "chart_period": 60,
-        }
+        self.params = self.DEFAULT_PARAMS.copy()
 
-    # Function to show Bollinger chart
     def analyze_ticker(self) -> tuple:
         """
         Generates historical data, calculates indicators, identifies signals,
@@ -60,33 +61,49 @@ class RsiBollingerBands:
         start = now - timedelta(days=self.params["chart_period"])
         data = self.get_historical_prices(start, now)
 
-        if not data.empty:
-            df = data[["close"]].copy()
-
-            # Append current price to historical close prices
-            price, date = self.get_current_price()
-            index = date
-            df.loc[index] = price
-
-            sma, upper_band, lower_band = self.get_bollinger_bands(df)
-            rsi = self.get_rsi(df)
-
-            df = df.join(upper_band).join(lower_band)
-
-            # Buy when close price is below lower band and sell when above upper band
-            buy = df[df["close"] <= df["lower"]]
-            sell = df[df["close"] >= df["upper"]]
-
-            df = df.join(rsi).join(sma)
-
-            # Drop rows for initial dates where bollinger bands are not poplulated
-            df = df.dropna(subset=["lower"])
-
-            return df, buy, sell, price
-        else:
+        if data.empty:
             raise SystemError(
                 f"Historical Prices not available for ticker: {self.ticker}"
             )
+
+        df, current_price = self.prepare_dataframe(data)
+        # Buy when close price is below lower band and sell when above upper band
+        buy = df[df["close"] <= df["lower"]]
+        sell = df[df["close"] >= df["upper"]]
+
+        return df, buy, sell, current_price
+
+    def prepare_dataframe(self, data: pd.DataFrame) -> pd.DataFrame:
+        """
+        This method appends the current price to the historical close prices, calculates Bollinger Bands, RSI, and SMA,
+        and drops initial rows (less than bb_period) where Bollinger Bands are not populated.
+
+        Parameters:
+            data (pd.DataFrame): The historical price data as a DataFrame.
+
+        Returns:
+            Tuple[pd.DataFrame, float]: A tuple containing the prepared DataFrame and the current price.
+                - The prepared DataFrame contains the following columns:
+                    - close (float): Historical close prices.
+                    - upper (float): Upper Bollinger Band values.
+                    - lower (float): Lower Bollinger Band values.
+                    - rsi (float): Relative Strength Index values.
+                    - sma (float): Simple Moving Average values.
+
+                - The current price is a float representing the most recent price.
+        """
+        df = data[["close"]].copy()
+        # Append current price to historical close prices to include today's price
+        current_price, date = self.get_current_price()
+        index = date
+        df.loc[index] = current_price
+        sma, upper_band, lower_band = self.get_bollinger_bands(df)
+        rsi = self.get_rsi(df)
+        df = df.join(upper_band).join(lower_band)
+        df = df.join(rsi).join(sma)
+        # Drop rows for initial dates where bollinger bands are not poplulated
+        df = df.dropna(subset=["lower"])
+        return df, current_price
 
     def get_bollinger_bands(self, df: pd.DataFrame, sma: bool = True) -> tuple:
         """
@@ -198,25 +215,32 @@ class RsiBollingerBands:
 
 
 def get_trade_signal(ticker: str, trade_type: str):
+    """
+    Generates a trading signal for a given ticker and trade type (buy or sell) using the RsiBollingerBands strategy.
+
+    Parameters:
+        ticker (str): The stock symbol to generate a signal for.
+        trade_type (str): The type of trade signal to generate, either 'buy' or 'sell'.
+
+    Returns:
+        tuple or None: A tuple containing the following information if a signal is generated:
+            - Ticker (str): The stock symbol.
+            - Date (datetime): The date of the trade signal.
+            - Price (float): The price at which the trade signal was generated.
+            - Current_Price (float): The current price of the stock.
+        Returns None if no signal is generated or an error occurs.
+    """
     strategy = RsiBollingerBands(ticker)
     try:
         _, buy, sell, current_price = strategy.analyze_ticker()
-        if trade_type == "buy":
-            latest_buy = buy.tail(1)
-            if not latest_buy.empty:
-                date = latest_buy.index[0]
-                price = latest_buy["close"][0]
-                logging.info(f" Buy Price for ticker {ticker} is {price}")
-            else:
-                return None
-        else:
-            latest_sell = sell.tail(1)
-            if not latest_sell.empty:
-                date = latest_sell.index[0]
-                price = latest_sell["close"][0]
-                logging.info(f" Sell Price for ticker {ticker} is {price}")
-            else:
-                return None
+        trade_type = buy if trade_type == "buy" else sell
+        latest_trade = trade_type.tail(1)
+
+        if latest_trade.empty:
+            return None
+
+        date = latest_trade.index[0]
+        price = latest_trade["close"][0]
 
     except Exception as e:
         logging.error(f" Error in trade signal for ticker {ticker} : {str(e)}")
@@ -230,6 +254,26 @@ def get_trade_signal(ticker: str, trade_type: str):
 
 
 def analyze_watchlist(ticker_list: str, trade_type: str) -> pd.DataFrame:
+    """
+    Analyzes a list of tickers from a watchlist and generates trade signals for each ticker.
+
+    Parameters:
+        ticker_list (str): The name of the watchlist containing the tickers to analyze.
+        trade_type (str): The type of trade signal to generate, either 'buy' or 'sell'.
+
+    Returns:
+        A DataFrame containing trade signal information for the tickers in the watchlist, or None if an error occurs during the analysis.
+
+        - If trade signals are generated for one or more tickers, the DataFrame will have the following columns:
+            - Ticker (str): The stock symbol.
+            - Date (datetime): The date of the trade signal.
+            - Price (float): The price at which the trade signal was generated.
+            - Current_Price (float): The current price of the stock.
+
+        - If no trade signals are generated for any ticker in the watchlist, an empty DataFrame is returned.
+
+        - If an error occurs during the analysis, None is returned, and an error message is logged.
+    """
     tickers = screener_list.get(ticker_list)
     df = pd.DataFrame()
     try:
