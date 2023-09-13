@@ -94,9 +94,12 @@ layout = dbc.Container(
     [
         dbc.Row(TOP_COLUMN),
         html.P(),
-        dbc.Row(SCREENED_STOCKS),
-        html.P(),
-        dbc.Row(CHART_LAYOUT),
+        dbc.Spinner(
+            children=[
+                dbc.Row(SCREENED_STOCKS),
+                dbc.Row(CHART_LAYOUT),
+            ]
+        ),
     ],
 )
 

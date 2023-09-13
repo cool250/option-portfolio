@@ -138,8 +138,8 @@ def on_button_click(n):
             data=df_puts.to_dict("records"),
             options=tabulator_options,
             columns=[
-                {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
+                {"title": "QTY", "field": "QTY"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
                 {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
@@ -161,8 +161,8 @@ def on_button_click(n):
             data=df_calls.to_dict("records"),
             options=tabulator_options,
             columns=[
-                {"title": "QTY", "field": "QTY"},
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
+                {"title": "QTY", "field": "QTY"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
                 {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
@@ -183,8 +183,8 @@ def on_button_click(n):
             data=df_stocks.to_dict("records"),
             options=tabulator_options,
             columns=[
-                {"title": "QTY", "field": "QTY"},
                 {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
+                {"title": "QTY", "field": "QTY"},
                 {"title": "MARK", "field": "MARK"},
                 {"title": "AVG COST", "field": "AVG COST"},
                 {"title": "MARGIN", "field": "MARGIN"},
