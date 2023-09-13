@@ -243,6 +243,7 @@ def show_charts(ticker: str) -> dcc.Graph:
         row=1,
         col=1,
     )
+    fig.update_yaxes(title_text="Price", row=1, col=1)
     fig.add_trace(
         go.Scatter(x=df.index, y=df["rsi"], name="close", line_color="#CE2D2D"),
         row=2,
@@ -252,5 +253,7 @@ def show_charts(ticker: str) -> dcc.Graph:
         height=600,
         width=1200,
     )
+    fig.update_yaxes(title_text="RSI", row=2, col=1)
+    fig.update_xaxes(title_text="Date")
     content = dcc.Graph(figure=fig)
     return content

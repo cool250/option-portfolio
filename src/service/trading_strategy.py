@@ -38,7 +38,7 @@ class RsiBollingerBands:
         "bb_dev": 2,
         "oversold": 30,
         "overbought": 70,
-        "chart_period": 60,
+        "chart_period": 90,
     }
 
     def __init__(self, ticker: str):
