@@ -68,8 +68,9 @@ class AccountPositions:
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
             df["delta"] = df["delta"] * df["quantity"] * 100
-            df = df.round(2)
             df.rename(columns=self.params_options, inplace=True)
+
+        df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"].abs() * 100
@@ -78,7 +79,7 @@ class AccountPositions:
             .abs()
             .apply(formatter_percent)
         )
-
+        df = df.round(2)
         return df
 
     def get_call_positions(self):

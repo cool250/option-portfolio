@@ -29,14 +29,6 @@ navbar = dbc.NavbarSimple(
         ),
         dbc.NavItem(
             dbc.NavLink(
-                "Scanner",
-                href="/income_finder",
-                id="page-2-link",
-                class_name="nav-link",
-            )
-        ),
-        dbc.NavItem(
-            dbc.NavLink(
                 "Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link"
             )
         ),
@@ -45,13 +37,23 @@ navbar = dbc.NavbarSimple(
                 "Report", href="/report", id="page-4-link", class_name="nav-link"
             )
         ),
+        # dbc.NavItem(
+        #     dbc.NavLink(
+        #         "Analysis", href="/analysis", id="page-5-link", class_name="nav-link"
+        #     )
+        # ),
         dbc.NavItem(
             dbc.NavLink(
-                "Analysis", href="/analysis", id="page-5-link", class_name="nav-link"
+                "Stock_Scan", href="/chart", id="page-6-link", class_name="nav-link"
             )
         ),
         dbc.NavItem(
-            dbc.NavLink("Chart", href="/chart", id="page-6-link", class_name="nav-link")
+            dbc.NavLink(
+                "Options_Scan",
+                href="/income_finder",
+                id="page-2-link",
+                class_name="nav-link",
+            )
         ),
     ],
     brand="Options Guru",
