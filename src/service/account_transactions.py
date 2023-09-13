@@ -34,7 +34,11 @@ params = {
 
 
 def get_report(
-    start_close_date=None, end_close_date=None, symbol=None, instrument_type=None
+    start_close_date=None,
+    end_close_date=None,
+    symbol=None,
+    instrument_type=None,
+    status=None,
 ):
     """
     This method is called from Reports screen.
@@ -98,6 +102,8 @@ def get_report(
             df = parse_option_response(df, instrument_type)
             if not df.empty:
                 df = filter_date(df)
+                if status != "ALL":
+                    df = df[df["STATUS"] == status]
 
         elif instrument_type == "EQUITY":
             # Filter for EQUITY
@@ -111,6 +117,8 @@ def get_report(
             df = pd.concat([df_puts, df_calls])
             if not df.empty:
                 df = filter_date(df)
+                if status != "All":
+                    df = df[df["STATUS"] == status]
 
     return df
 

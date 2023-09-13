@@ -64,6 +64,23 @@ TOP_COLUMN = dbc.Form(
                 ),
                 dbc.Col(
                     children=[
+                        dbc.Label("Status", size="sm"),
+                        dbc.Select(
+                            id="status-type",
+                            options=[
+                                {"label": "EXPIRED", "value": "Expired"},
+                                {"label": "CLOSED", "value": "Closed"},
+                                {"label": "ASSIGNED", "value": "Assigned"},
+                                {"label": "ACTIVE", "value": "Active"},
+                                {"label": "ALL", "value": "All"},
+                            ],
+                            value="All",
+                            size="sm",
+                        ),
+                    ],
+                ),
+                dbc.Col(
+                    children=[
                         dbc.Label("Report Type", size="sm"),
                         dbc.Select(
                             id="db_report-type",
@@ -116,12 +133,15 @@ layout = dbc.Container(
         State("db_report-ticker", "value"),
         State("db_instrument-type", "value"),
         State("db_report-type", "value"),
+        State("status-type", "value"),
         State("db_start-date-picker", "date"),
         State("db_end-date-picker", "date"),
     ],
 )
-def on_search(n, ticker, instrument_type, report_type, start_date, end_date):
-    df = get_report(start_date, end_date, ticker, instrument_type)
+def on_search(
+    n, ticker, instrument_type, report_type, status_type, start_date, end_date
+):
+    df = get_report(start_date, end_date, ticker, instrument_type, status_type)
     if not df.empty:
         total = df["TOTAL_PRICE"].sum()
         message = html.Div(
