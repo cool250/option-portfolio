@@ -38,7 +38,7 @@ def get_report(
     end_close_date=None,
     symbol=None,
     instrument_type=None,
-    status=None,
+    status="All",
 ):
     """
     This method is called from Reports screen.
@@ -102,7 +102,7 @@ def get_report(
             df = parse_option_response(df, instrument_type)
             if not df.empty:
                 df = filter_date(df)
-                if status != "ALL":
+                if status != "All":
                     df = df[df["STATUS"] == status]
 
         elif instrument_type == "EQUITY":
