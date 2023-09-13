@@ -249,6 +249,12 @@ def show_charts(ticker: str) -> dcc.Graph:
         row=2,
         col=1,
     )
+    fig.add_hline(
+        y=30, line_dash="dash", line_width=3, line_color="black", row=2, col=1
+    )
+    fig.add_hline(
+        y=70, line_dash="dash", line_width=3, line_color="black", row=2, col=1
+    )
     fig.update_layout(
         height=600,
         width=1200,

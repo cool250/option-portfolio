@@ -6,9 +6,9 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 from app import app, cache
-from opstrat import multi_plotter
 from service import option_analysis
 from utils.functions import formatter_number_2_digits
+from utils.opstrat import multi_plotter
 
 TICKER_LOOKUP_ROW = dbc.Row(
     children=[
@@ -141,11 +141,7 @@ STRATEGY_ENTRY_ROW = dbc.Row(
         dbc.Col(
             children=[
                 dbc.Button(
-                    "Add",
-                    color="primary",
-                    id="add-btn",
-                    className="mt-4",
-                    size="md"
+                    "Add", color="primary", id="add-btn", className="mt-4", size="md"
                 ),
             ],
             width=2,
@@ -169,7 +165,7 @@ STRATEGY_LIST = dbc.Row(
                     color="primary",
                     id="analysis-btn",
                     className="mt-4",
-                    size="md"
+                    size="md",
                 ),
             ]
         ),
@@ -218,12 +214,11 @@ def on_lookup_click(n, ticker):
     if n is None:
         raise PreventUpdate
     else:
-
         # quotes = Quotes()
         # res = quotes.get_quotes(ticker)
         # mark = res["mark"]
         mark, weeks = option_analysis.get_ticker_details(ticker=ticker)
-        mark=formatter_number_2_digits(mark)
+        mark = formatter_number_2_digits(mark)
         return mark, weeks, dict()
 
 

@@ -69,7 +69,7 @@ def multi_plotter(
         op_pr = float(op["op_pr"])
         try:
             contract = float(op["contract"])
-        except:
+        except Exception as e:
             contract = 1
         y_list.append(payoff_calculator(x, op_type, strike, op_pr, tr_type, contract))
 
@@ -79,7 +79,7 @@ def multi_plotter(
         for i in range(len(op_list)):
             try:
                 contract = str(op_list[i]["contract"])
-            except:
+            except Exception as e:
                 contract = "1"
 
             label = (
