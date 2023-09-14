@@ -72,7 +72,7 @@ TOP_COLUMN = dbc.Form(
                     width=1,
                     children=[
                         dbc.Button(
-                            "Search",
+                            "Go",
                             color="primary",
                             id="bollinger-btn",
                             className="mt-4",
