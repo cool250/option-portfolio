@@ -1,5 +1,6 @@
 import dbm
 import json
+import logging
 from abc import ABC, abstractmethod
 
 import redis
@@ -73,9 +74,13 @@ class LocalStore(Store):
         db.close()
 
     def get_dict(self, key):
-        db = dbm.open("mydb", "r")
-        json_string = db.get(key)
-        db.close()
+        try:
+            db = dbm.open("mydb", "r")
+            json_string = db.get(key)
+            db.close()
+        except Exception as err:
+            logging.error(f" Error reading from cache , {str(err)}")
+            raise SystemError("Unable to connect", err)
         # Convert JSON string to Dict
         if json_string:
             return json.loads(json_string)

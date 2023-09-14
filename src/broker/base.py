@@ -7,7 +7,7 @@ import requests
 from utils.exceptions import APIException
 from utils.store import Store_Factory
 
-from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
+from .user_config import REDIRECT_URI, UserConfig
 
 
 class Base:
@@ -47,8 +47,8 @@ class Base:
 
         # define the configuration settings.
         self.config = {
-            "consumer_id": CONSUMER_ID,
-            "account_number": ACCOUNT_NUMBER,
+            "consumer_id": UserConfig.CONSUMER_ID,
+            "account_number": UserConfig.ACCOUNT_NUMBER,
             "account_password": None,
             "redirect_uri": REDIRECT_URI,
             "resource": "https://api.tdameritrade.com",

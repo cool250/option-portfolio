@@ -4,14 +4,13 @@ from datetime import datetime as dt
 from datetime import timedelta
 
 from broker.account import Account
-from broker.config import ACCOUNT_NUMBER
 from broker.option_chain import OptionChain
 from broker.options import Options
 from broker.quotes import Quotes
+from broker.user_config import UserConfig
 
 
 class APIResponses(unittest.TestCase):
-
     def test_quotes(self):
         ticker = "LYFT"
         quotes = Quotes()
@@ -20,7 +19,7 @@ class APIResponses(unittest.TestCase):
 
     def test_position(self):
         account = Account()
-        res = account.get_portfolio(account=ACCOUNT_NUMBER)
+        res = account.get_portfolio(account=UserConfig.ACCOUNT_NUMBER)
         assert res[0] is not None
 
     def test_history(self):
@@ -30,9 +29,15 @@ class APIResponses(unittest.TestCase):
         startDate = endDate - timedelta(days=45)
 
         history = History()
-        res = history.get_price_history(symbol="MSFT", periodType="month",
-                                        frequencyType="daily", frequency=1, startDate=startDate, endDate=endDate)
-        assert res['candles'] is not None
+        res = history.get_price_history(
+            symbol="MSFT",
+            periodType="month",
+            frequencyType="daily",
+            frequency=1,
+            startDate=startDate,
+            endDate=endDate,
+        )
+        assert res["candles"] is not None
 
     def test_options(self):
         startDate = dt.now()
@@ -48,19 +53,24 @@ class APIResponses(unittest.TestCase):
             toDate=endDate,
         )
         res = options.get_options_chain(option_chain=option_chain_req)
-        assert res['symbol'] is not None
+        assert res["symbol"] is not None
 
     def test_strategies(self):
-        from service.option_strategies import (long_call, long_put, short_call,
-                                               short_put, watchlist_income)
+        from service.option_strategies import (
+            long_call,
+            long_put,
+            short_call,
+            short_put,
+            watchlist_income,
+        )
 
-        tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
+        tickers = ["AAPL", "MSFT", "LYFT", "CAT", "DIS"]
 
         params = {
-            'moneyness': 2,
-            'premium': 2,
-            'min_expiration_days': 15,
-            'max_expiration_days': 40,
+            "moneyness": 2,
+            "premium": 2,
+            "min_expiration_days": 15,
+            "max_expiration_days": 40,
         }
 
         res = watchlist_income(tickers, params, short_put)
@@ -68,5 +78,7 @@ class APIResponses(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    logging.basicConfig (filename="tests.log", level=logging.DEBUG, format='%(asctime)s %(message)s')
+    logging.basicConfig(
+        filename="tests.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
+    )
     unittest.main()

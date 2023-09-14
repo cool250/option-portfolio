@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 from pandas.tseries.offsets import CustomBusinessDay
 
-from broker.config import ACCOUNT_NUMBER
 from broker.transactions import Transaction
+from broker.user_config import UserConfig
 from utils.functions import parse_option_symbol
 from utils.ustradingcalendar import USTradingCalendar
 
@@ -71,7 +71,7 @@ def get_report(
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(
-        ACCOUNT_NUMBER,
+        UserConfig.ACCOUNT_NUMBER,
         transaction_type="TRADE",
         symbol=symbol,
         start_date=search_start_date,

@@ -94,7 +94,7 @@ def render_page_content(pathname):
     )
 
 
-port = int(os.environ.get("SERVER_PORT", 80))
+port = int(os.environ.get("SERVER_PORT", 8080))
 # Adding Host
 if __name__ == "__main__":
     app.run(debug=True, port=port)

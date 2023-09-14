@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 
 from broker.account import Account
-from broker.config import ACCOUNT_NUMBER
 from broker.quotes import Quotes
+from broker.user_config import UserConfig
 from utils.enums import PUT_CALL
 from utils.functions import convert_to_df, formatter_number_2_digits, formatter_percent
 
@@ -180,7 +180,7 @@ def get_account():
     """
 
     try:
-        account = Account().get_portfolio(account=ACCOUNT_NUMBER)
+        account = Account().get_portfolio(account=UserConfig.ACCOUNT_NUMBER)
         position_df = convert_to_df(account.positions)
 
         # Populate pricing for all tickers
