@@ -2,9 +2,15 @@ import configparser
 
 
 class Config(object):
-    def __init__(self):
-        self._config = configparser.ConfigParser()
-        self._config.read("config.ini")
+    CONFIGURATION = None
 
-    def get(self, *args, fallback):
-        return self._config.get(*args, fallback=fallback)
+    def __init__(self):
+        if Config.CONFIGURATION is None:
+            config = configparser.ConfigParser()
+            file_path = "config.ini"
+            config.read(file_path)
+            Config.CONFIGURATION = config
+
+    def get(self, *args):
+        response = self.CONFIGURATION.get(*args)
+        return response

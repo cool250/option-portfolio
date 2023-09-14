@@ -12,7 +12,7 @@ from utils.exceptions import HaltCallbackException
 class Store_Factory:
     def get_store():
         config = Config()
-        cache_type = config.get("CACHE", "CACHE_TYPE", fallback="local")
+        cache_type = config.get("CACHE", "CACHE_TYPE")
         if cache_type == "local":
             return LocalStore()
         else:
@@ -31,9 +31,9 @@ class Store(ABC):
 class RedisStore(Store):
     def __init__(self):
         config = Config()
-        host = config.get("REDIS", "HOST", fallback="localhost")
-        port = config.get("REDIS", "PORT", fallback=6379)
-        password = config.get("REDIS", "PWD", fallback="")
+        host = config.get("REDIS", "HOST")
+        port = config.get("REDIS", "PORT")
+        password = config.get("REDIS", "PWD")
         self.client = redis.StrictRedis(
             host,
             port,
@@ -85,8 +85,3 @@ class LocalStore(Store):
         except Exception as err:
             logging.error(f" Error reading from cache , {str(err)}")
             raise SystemError("Unable to connect", err)
-        # Convert JSON string to Dict
-        if json_string:
-            return json.loads(json_string)
-        else:
-            return None
