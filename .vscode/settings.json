@@ -8,4 +8,7 @@
 
   "python.formatting.provider": "none",
   "isort.args": ["--profile", "black"],
+  "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}/src",
+  },
 }
