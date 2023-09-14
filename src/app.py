@@ -11,7 +11,7 @@ from dotenv import find_dotenv, load_dotenv
 from flask_caching import Cache
 
 from broker.user_config import UserConfig
-from utils.config import Config
+from utils.config import ConfigManager
 from view import home, income_finder, oauth, portfolio, report, trade_chart
 
 load_dotenv(find_dotenv())  # read local .env file
@@ -107,13 +107,22 @@ def render_page_content(pathname):
         return report.layout
     elif pathname == "/chart":
         return trade_chart.layout
+    # User switch from DropdownMenu
     elif pathname == "/brokerage":
-        UserConfig.ACCOUNT_NUMBER = Config().get("brokerage", "ACCOUNT_NUMBER")
-        UserConfig.CONSUMER_ID = Config().get("brokerage", "CONSUMER_ID")
+        UserConfig.ACCOUNT_NUMBER = ConfigManager.getInstance().getConfig(
+            "brokerage", "ACCOUNT_NUMBER"
+        )
+        UserConfig.CONSUMER_ID = ConfigManager.getInstance().getConfig(
+            "brokerage", "CONSUMER_ID"
+        )
         raise PreventUpdate
     elif pathname == "/ira":
-        UserConfig.ACCOUNT_NUMBER = Config().get("ira", "ACCOUNT_NUMBER")
-        UserConfig.CONSUMER_ID = Config().get("ira", "CONSUMER_ID")
+        UserConfig.ACCOUNT_NUMBER = ConfigManager.getInstance().getConfig(
+            "ira", "ACCOUNT_NUMBER"
+        )
+        UserConfig.CONSUMER_ID = ConfigManager.getInstance().getConfig(
+            "ira", "CONSUMER_ID"
+        )
         raise PreventUpdate
     # If the user tries to reach a different page, return a 404 message
     return html.Div(

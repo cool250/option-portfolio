@@ -1,10 +1,10 @@
 import os
 
-from utils.config import Config
+from utils.config import ConfigManager
 
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 
 class UserConfig:
-    ACCOUNT_NUMBER = Config().get("primary", "ACCOUNT_NUMBER")
-    CONSUMER_ID = Config().get("primary", "CONSUMER_ID")
+    ACCOUNT_NUMBER = ConfigManager.getInstance().getConfig("primary", "ACCOUNT_NUMBER")
+    CONSUMER_ID = ConfigManager.getInstance().getConfig("primary", "CONSUMER_ID")

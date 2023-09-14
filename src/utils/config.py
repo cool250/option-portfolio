@@ -1,16 +1,19 @@
 import configparser
 
 
-class Config(object):
-    CONFIGURATION = None
+class ConfigManager:
+    _instance = None
+
+    @staticmethod
+    def getInstance():
+        if ConfigManager._instance is None:
+            ConfigManager._instance = ConfigManager()
+        return ConfigManager._instance
 
     def __init__(self):
-        if Config.CONFIGURATION is None:
-            config = configparser.ConfigParser()
-            file_path = "config.ini"
-            config.read(file_path)
-            Config.CONFIGURATION = config
+        self.config = configparser.ConfigParser()
+        file_path = "config.ini"
+        self.config.read(file_path)
 
-    def get(self, *args):
-        response = self.CONFIGURATION.get(*args)
-        return response
+    def getConfig(self, *args):
+        return self.config.get(*args)
