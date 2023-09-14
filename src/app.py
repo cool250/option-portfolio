@@ -5,16 +5,20 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 from dotenv import find_dotenv, load_dotenv
 from flask_caching import Cache
 
+from broker.user_config import UserConfig
 from view import home, income_finder, oauth, portfolio, report, trade_chart
 
 load_dotenv(find_dotenv())  # read local .env file
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
+
+USERS = ["brokerage", "ira"]
 
 app = dash.Dash(
     __name__,
@@ -56,11 +60,6 @@ navbar = dbc.NavbarSimple(
                 "Report", href="/report", id="page-4-link", class_name="nav-link"
             )
         ),
-        # dbc.NavItem(
-        #     dbc.NavLink(
-        #         "Analysis", href="/analysis", id="page-5-link", class_name="nav-link"
-        #     )
-        # ),
         dbc.NavItem(
             dbc.NavLink(
                 "Stock_Scan", href="/chart", id="page-6-link", class_name="nav-link"
@@ -73,6 +72,12 @@ navbar = dbc.NavbarSimple(
                 id="page-2-link",
                 class_name="nav-link",
             )
+        ),
+        dbc.DropdownMenu(
+            [dbc.DropdownMenuItem(user, href=user) for user in USERS],
+            nav=True,
+            in_navbar=True,
+            label="Select User",
         ),
     ],
     brand="Options Guru",
@@ -101,6 +106,14 @@ def render_page_content(pathname):
         return report.layout
     elif pathname == "/chart":
         return trade_chart.layout
+    elif pathname == "/brokerage":
+        UserConfig.ACCOUNT_NUMBER = "686032712"
+        UserConfig.CONSUMER_ID = "GQTHCKNPSPG5KKTTNNKFA1KVTRGMEMMF"
+        raise PreventUpdate
+    elif pathname == "/ira":
+        UserConfig.ACCOUNT_NUMBER = "236382688"
+        UserConfig.CONSUMER_ID = "LC3SRNDLMRWPEIS4TZSJJOA3W8RBLVCL"
+        raise PreventUpdate
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [

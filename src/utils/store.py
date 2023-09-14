@@ -78,6 +78,10 @@ class LocalStore(Store):
             db = dbm.open("mydb", "r")
             json_string = db.get(key)
             db.close()
+            if json_string:
+                return json.loads(json_string)
+            else:
+                return None
         except Exception as err:
             logging.error(f" Error reading from cache , {str(err)}")
             raise SystemError("Unable to connect", err)

@@ -4,7 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dash import Input, Output, State, callback, dcc, html
 
-from app import app
 from service.account_transactions import get_report
 from utils.functions import change_date_format, formatter_currency_with_cents
 
