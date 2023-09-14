@@ -1,10 +1,9 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
-from dash import dcc, html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app import app
 from service.account_positions import AccountPositions
 from utils.functions import formatter_currency
 from utils.opstrat.basic_multi import multi_plotter
@@ -81,7 +80,7 @@ layout = dbc.Container(
 )
 
 
-@app.callback(
+@callback(
     [
         Output("puts_table", "children"),
         Output("calls_table", "children"),
@@ -233,7 +232,7 @@ def on_button_click(n):
     )
 
 
-@app.callback(
+@callback(
     [
         Output("payoff-chart", "children"),
         Output("payoff-modal", "is_open"),

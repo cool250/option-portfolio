@@ -3,11 +3,10 @@ import logging
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.graph_objects as go
-from dash import Input, Output, State, dcc, html
+from dash import Input, Output, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
 from plotly.subplots import make_subplots
 
-from app import app
 from service.trading_strategy import RsiBollingerBands, analyze_watchlist
 from utils.constants import screener_list
 
@@ -104,7 +103,7 @@ layout = dbc.Container(
 )
 
 
-@app.callback(
+@callback(
     [Output("stock_screener", "children"), Output("bollinger_content", "children")],
     [Input("scan-btn", "n_clicks")],
     [State("ticker_list", "value"), State("trade_type", "value")],
@@ -128,7 +127,7 @@ def scan_stocks(n_clicks, ticker_list, trade_type):
 
 
 # Callback for button click
-@app.callback(
+@callback(
     [
         Output("bollinger_content", "children", allow_duplicate=True),
         Output("stock_screener", "children", allow_duplicate=True),

@@ -1,11 +1,11 @@
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import pandas as pd
-from dash import dcc, html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app import app, cache
+from app import cache
 from service import option_analysis
 from utils.functions import formatter_number_2_digits
 from utils.opstrat import multi_plotter
@@ -191,7 +191,7 @@ layout = dbc.Container(
 )
 
 
-@app.callback(
+@callback(
     Output("a_spot", "children"),
     Output("a_weeks", "options"),
     Output("strategy_entry_row", "style"),
@@ -222,7 +222,7 @@ def on_lookup_click(n, ticker):
         return mark, weeks, dict()
 
 
-@app.callback(
+@callback(
     Output("a_content", "children"),
     Output("strategy_list_row", "style"),
     [Input("add-btn", "n_clicks")],
@@ -286,7 +286,7 @@ def on_add_click(n, op_type, tr_type, op_pr, contract, strike):
         return dt, dict()
 
 
-@app.callback(
+@callback(
     Output("graph_div", "children"),
     [Input("analysis-btn", "n_clicks"), Input("dummy-div", "children")],
     State("a_spot", "children"),
@@ -313,7 +313,7 @@ def on_analyze_click(n, dummy, spot_price):
 
 # dash_tabulator can register a callback on dataChanged
 # to receive a dict of the row values
-@app.callback(
+@callback(
     Output("dummy-div", "children"),
     Input("analysis-table", "dataChanged"),
 )
