@@ -19,7 +19,7 @@ load_dotenv(find_dotenv())  # read local .env file
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
 
-USERS = ["brokerage", "ira"]
+ACCOUNTS = ["brokerage", "ira"]
 
 app = dash.Dash(
     __name__,
@@ -75,10 +75,10 @@ navbar = dbc.NavbarSimple(
             )
         ),
         dbc.DropdownMenu(
-            [dbc.DropdownMenuItem(user, href=user) for user in USERS],
+            [dbc.DropdownMenuItem(account, href=account) for account in ACCOUNTS],
             nav=True,
             in_navbar=True,
-            label="Select User",
+            label="Accounts",
         ),
     ],
     brand="Options Guru",

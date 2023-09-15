@@ -1,5 +1,5 @@
 Python Flask Web Framework to integrate with Broker. Currently supports TD Broker.
-Run index.py to start Flask server.  The OAuth token is retrieved from Redis but can be changed to pick up from any persistent store including File.
+Run app.py to start Flask server.  The OAuth token is retrieved from Redis but can be changed to pick up from any persistent store including File.
 
 Features
 

@@ -1,6 +1,6 @@
 body {
     letter-spacing: 0px;
-    font-family: Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
+    font-family: Helvetica, Candara, Segoe, Segoe UI, Optima, Arial, sans-serif; 
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -21,8 +21,4 @@ body {
 .tabulator .tabulator-header .tabulator-col {
     background: #808080;
     color: #fff;
-}
-
-.navbar {
-    font-size: 1.1rem;
 }

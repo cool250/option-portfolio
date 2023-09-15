@@ -4,7 +4,7 @@ from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from service.chart_helper import update_graph
+from service.chart_helper import show_charts
 from service.search_income import watchlist_income
 from utils.constants import screener_list
 
@@ -311,13 +311,8 @@ def display_output(value):
     if value:
         # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
         ticker = value["TICKER"]
-        fig, info_text = update_graph(ticker)
-        chart = html.Div(
-            [
-                dbc.Alert(info_text, color="primary"),
-                dcc.Graph(figure=fig),
-            ]
-        )
+        fig = show_charts(ticker)
+        chart = dcc.Graph(figure=fig)
         return chart, True
     else:
         return "", False

@@ -2,6 +2,7 @@ import logging
 import multiprocessing
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 
@@ -269,6 +270,7 @@ def analyze_watchlist(ticker_list: str, trade_type: str) -> pd.DataFrame:
             - Date (datetime): The date of the trade signal.
             - Price (float): The price at which the trade signal was generated.
             - Current_Price (float): The current price of the stock.
+            - Buy (boolean) : If current price is less than signal price
 
         - If no trade signals are generated for any ticker in the watchlist, an empty DataFrame is returned.
 
@@ -291,6 +293,7 @@ def analyze_watchlist(ticker_list: str, trade_type: str) -> pd.DataFrame:
                 }
                 df2 = pd.DataFrame([ticker_row])
                 df = pd.concat([df, df2], ignore_index=True)
+                df["Buy"] = np.where(df["Price"] > df["Current_Price"], True, False)
         return df
     except Exception as e:
         logging.error(f"Error running Parallel: {str(e)}")

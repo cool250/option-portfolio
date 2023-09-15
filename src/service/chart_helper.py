@@ -1,126 +1,115 @@
 import logging
-from datetime import datetime as dt
-from datetime import timedelta
-from statistics import mean
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from broker.history import History
-from broker.search import Search
-from utils.functions import formatter_number_2_digits
+from service.trading_strategy import RsiBollingerBands
 
 PERIOD = 30
 
 
-def update_graph(ticker):
-    endDate = dt.now()
-    startDate = endDate - timedelta(days=120)
+# Function to show Bollinger chart
+def show_charts(ticker: str):
+    """
+    Generate and display a Bollinger Bands chart for the specified stock ticker.
 
-    # Retrieve Prices and volumes for a ticker
-    history = History()
-    df = history.get_price_historyDF(
-        symbol=ticker,
-        periodType="month",
-        frequencyType="daily",
-        frequency=1,
-        startDate=startDate,
-        endDate=endDate,
-    )
+    Args:
+        ticker (str): The stock ticker symbol.
 
-    search = Search()
-    company = search.search_instruments(symbol=ticker, projection="fundamental")
+    Returns:
+        dash.Graph: A Plotly graph containing the Bollinger Bands chart.
+    """
 
-    # Get Company Fundamentals
-    pe_ratio = company[ticker]["fundamental"]["peRatio"]
-    peg_ratio = company[ticker]["fundamental"]["pegRatio"]
-    eps = company[ticker]["fundamental"]["epsTTM"]
+    strategy = RsiBollingerBands(ticker)
+    try:
+        df, buy, sell, _ = strategy.analyze_ticker()
+    except Exception as e:
+        logging.error(f"Error calling analyze_ticker for ticker {ticker} {str(e)}")
+        return "No Results Found"
 
-    description = company[ticker]["description"]
-
-    low_period = min(df.low.tail(PERIOD))
-    high_period = max(df.high.tail(PERIOD))
-    mean_period = formatter_number_2_digits(mean(df.close.tail(PERIOD)))
-
-    logging.info("low_30 %s high_30 %s", low_period, high_period)
-
-    logging.info("end date is %s", df.iloc[-1].at["datetime"])
-    logging.info("start date is %s", df.iloc[-21].at["datetime"])
-
+    # Initialize figure with subplots
     fig = make_subplots(
-        rows=4,
+        rows=2,
         cols=1,
-        row_heights=[0.5, 0.1, 0.2, 0.2],
+        row_heights=[0.7, 0.3],
         shared_xaxes=True,
-        vertical_spacing=0.05,
     )
-
-    # Stock price Candelstick -  Chart 1
     fig.add_trace(
-        go.Candlestick(
-            x=df["datetime"],
-            open=df["open"],
-            high=df["high"],
-            low=df["low"],
-            close=df["close"],
-            name="Candle",
+        go.Scatter(
+            x=df.index,
+            y=df["lower"],
+            name="Lower Band",
+            line_color="rgba(173,204,255,0.2)",
         ),
         row=1,
         col=1,
     )
-
-    # shape defined programatically
-    fig.add_shape(
-        line_color="blue",
-        type="line",
-        xref="x1",
-        yref="y1",
-        x0=df.iloc[-21].at["datetime"],
-        y0=low_period,
-        x1=df.iloc[-1].at["datetime"],
-        y1=low_period,
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df["upper"],
+            name="Upper Band",
+            fill="tonexty",
+            fillcolor="rgba(173,204,255,0.2)",
+            line_color="rgba(173,204,255,0.2)",
+        ),
+        row=1,
+        col=1,
     )
-    fig.add_shape(
-        line_color="blue",
-        type="line",
-        xref="x1",
-        yref="y1",
-        x0=df.iloc[-21].at["datetime"],
-        y0=high_period,
-        x1=df.iloc[-1].at["datetime"],
-        y1=high_period,
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df["close"], name="close", line_color="#636EFA"),
+        row=1,
+        col=1,
     )
-
-    fig.add_annotation(
-        y=high_period + 2,
-        x=df.iloc[-21].at["datetime"],
-        text="30 Day High : " + str(high_period),
-        showarrow=False,
-        xref="x1",
-        yref="y1",
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df["sma"], name="SMA", line_color="#FECB52"),
+        row=1,
+        col=1,
     )
-
-    fig.add_annotation(
-        y=low_period + 2,
-        x=df.iloc[-21].at["datetime"],
-        text="30 Day Low : " + str(low_period),
-        showarrow=False,
-        xref="x1",
-        yref="y1",
+    fig.add_trace(
+        go.Scatter(
+            x=buy.index,
+            y=buy["close"],
+            name="Buy",
+            mode="markers",
+            marker=dict(
+                color="#00CC96",
+                size=8,
+            ),
+        ),
+        row=1,
+        col=1,
     )
-
-    # Update yaxis properties to show chart titles
-    fig.update_yaxes(title_text="STOCK PRICE", showgrid=False, row=1, col=1)
-    fig.update_yaxes(title_text="VOLUME", showgrid=False, row=2, col=1)
-
-    fig.update(layout_xaxis_rangeslider_visible=False)
-    fig.update_layout(
-        height=800,
-        title=ticker,
-        template="plotly_white",
-        showlegend=False,
+    fig.add_trace(
+        go.Scatter(
+            x=sell.index,
+            y=sell["close"],
+            name="Sell",
+            mode="markers",
+            marker=dict(
+                color="#EF553B",
+                size=8,
+            ),
+        ),
+        row=1,
+        col=1,
     )
-
-    info_text = f" EPS:{eps} PE:{pe_ratio} 30D Avg close: {mean_period} "
-
-    return fig, info_text
+    fig.add_trace(
+        go.Scatter(x=df.index, y=df["rsi"], name="close", line_color="#CE2D2D"),
+        row=2,
+        col=1,
+    )
+    fig.add_hrect(
+        y0=30,
+        y1=70,
+        line_width=2,
+        fillcolor="red",
+        opacity=0.2,
+        row=2,
+        col=1,
+        annotation_text="RSI Band",
+    )
+    fig.update_yaxes(title_text="Price", row=1, col=1)
+    fig.update_yaxes(title_text="RSI", row=2, col=1)
+    fig.update_xaxes(title_text="Date", row=2, col=1)
+    return fig

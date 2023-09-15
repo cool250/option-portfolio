@@ -7,6 +7,7 @@ from dash import Input, Output, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
 from plotly.subplots import make_subplots
 
+from service.chart_helper import show_charts
 from service.trading_strategy import RsiBollingerBands, analyze_watchlist
 from utils.constants import screener_list
 
@@ -150,115 +151,8 @@ def on_search(n_clicks: int, ticker: str) -> dbc.Container:
     """
     if n_clicks is None or not ticker.strip():
         raise PreventUpdate
-    return (
-        dbc.Container([dbc.Row([dbc.Col(show_charts(ticker.strip().upper()))])]),
-        None,
-    )
 
-
-# Function to show Bollinger chart
-def show_charts(ticker: str) -> dcc.Graph:
-    """
-    Generate and display a Bollinger Bands chart for the specified stock ticker.
-
-    Args:
-        ticker (str): The stock ticker symbol.
-
-    Returns:
-        dash.Graph: A Plotly graph containing the Bollinger Bands chart.
-    """
-
-    strategy = RsiBollingerBands(ticker)
-    try:
-        df, buy, sell, _ = strategy.analyze_ticker()
-    except Exception as e:
-        logging.error(f"Error calling analyze_ticker for ticker {ticker} {str(e)}")
-        return "No Results Found"
-
-    # Initialize figure with subplots
-    fig = make_subplots(
-        rows=2,
-        cols=1,
-        row_heights=[0.7, 0.3],
-        shared_xaxes=True,
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=df.index,
-            y=df["lower"],
-            name="Lower Band",
-            line_color="rgba(173,204,255,0.2)",
-        ),
-        row=1,
-        col=1,
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=df.index,
-            y=df["upper"],
-            name="Upper Band",
-            fill="tonexty",
-            fillcolor="rgba(173,204,255,0.2)",
-            line_color="rgba(173,204,255,0.2)",
-        ),
-        row=1,
-        col=1,
-    )
-    fig.add_trace(
-        go.Scatter(x=df.index, y=df["close"], name="close", line_color="#636EFA"),
-        row=1,
-        col=1,
-    )
-    fig.add_trace(
-        go.Scatter(x=df.index, y=df["sma"], name="SMA", line_color="#FECB52"),
-        row=1,
-        col=1,
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=buy.index,
-            y=buy["close"],
-            name="Buy",
-            mode="markers",
-            marker=dict(
-                color="#00CC96",
-                size=8,
-            ),
-        ),
-        row=1,
-        col=1,
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=sell.index,
-            y=sell["close"],
-            name="Sell",
-            mode="markers",
-            marker=dict(
-                color="#EF553B",
-                size=8,
-            ),
-        ),
-        row=1,
-        col=1,
-    )
-    fig.update_yaxes(title_text="Price", row=1, col=1)
-    fig.add_trace(
-        go.Scatter(x=df.index, y=df["rsi"], name="close", line_color="#CE2D2D"),
-        row=2,
-        col=1,
-    )
-    fig.add_hline(
-        y=30, line_dash="dash", line_width=3, line_color="black", row=2, col=1
-    )
-    fig.add_hline(
-        y=70, line_dash="dash", line_width=3, line_color="black", row=2, col=1
-    )
-    fig.update_layout(
-        height=600,
-        width=1200,
-    )
-    fig.update_yaxes(title_text="RSI", row=2, col=1)
-    fig.update_xaxes(title_text="Date")
-    content = dcc.Graph(figure=fig)
-    return content
+    ticker = ticker.strip().upper()
+    fig = show_charts(ticker)
+    chart = dcc.Graph(figure=fig)
+    return chart, None
