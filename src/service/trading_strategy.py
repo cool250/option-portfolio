@@ -11,8 +11,6 @@ from broker.quotes import Quotes
 from utils.constants import screener_list
 from utils.functions import date_from_milliseconds
 
-num_cores = multiprocessing.cpu_count()
-
 
 class RsiBollingerBands:
     """
@@ -279,7 +277,9 @@ def analyze_watchlist(ticker_list: str, trade_type: str) -> pd.DataFrame:
     tickers = screener_list.get(ticker_list)
     df = pd.DataFrame()
     try:
-        results = Parallel(n_jobs=num_cores)(
+        num_workers = min(len(tickers), multiprocessing.cpu_count())
+
+        results = Parallel(n_jobs=num_workers)(
             delayed(get_trade_signal)(i, trade_type) for i in tickers
         )
         #  Aggregate the results
