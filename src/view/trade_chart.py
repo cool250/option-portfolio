@@ -1,14 +1,10 @@
-import logging
-
 import dash_bootstrap_components as dbc
 import dash_tabulator
-import plotly.graph_objects as go
 from dash import Input, Output, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
-from plotly.subplots import make_subplots
 
 from service.chart_helper import show_charts
-from service.trading_strategy import RsiBollingerBands, analyze_watchlist
+from service.trading_strategy import analyze_watchlist
 from utils.constants import screener_list
 
 # Define constants
