@@ -78,7 +78,7 @@ navbar = dbc.NavbarSimple(
             [dbc.DropdownMenuItem(account, href=account) for account in ACCOUNTS],
             nav=True,
             in_navbar=True,
-            label="Accounts",
+            label=html.I(className="fas fa-user"),
         ),
     ],
     brand="Options Guru",

@@ -22,3 +22,7 @@ body {
     background: #808080;
     color: #fff;
 }
+
+.navbar .navbar-nav .fas {
+    color: white;
+}
