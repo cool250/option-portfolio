@@ -29,7 +29,6 @@ class Store(ABC):
 
 class RedisStore(Store):
     def __init__(self):
-        config = Config()
         host = ConfigManager.getInstance().getConfig("REDIS", "HOST")
         port = ConfigManager.getInstance().getConfig("REDIS", "PORT")
         password = ConfigManager.getInstance().getConfig("REDIS", "PWD")
