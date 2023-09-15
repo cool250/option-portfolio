@@ -7,7 +7,7 @@ import requests
 from utils.exceptions import APIException
 from utils.store import Store_Factory
 
-from .config import ACCOUNT_NUMBER, CONSUMER_ID, REDIRECT_URI
+from .user_config import REDIRECT_URI, UserConfig
 
 
 class Base:
@@ -47,8 +47,8 @@ class Base:
 
         # define the configuration settings.
         self.config = {
-            "consumer_id": CONSUMER_ID,
-            "account_number": ACCOUNT_NUMBER,
+            "consumer_id": UserConfig.CONSUMER_ID,
+            "account_number": UserConfig.ACCOUNT_NUMBER,
             "account_password": None,
             "redirect_uri": REDIRECT_URI,
             "resource": "https://api.tdameritrade.com",
@@ -194,6 +194,7 @@ class Base:
         TYPE: String
         """
 
+        cache_key = "auth_state" + UserConfig.ACCOUNT_NUMBER
         # define the initalized state, these are the default values.
         initialized_state = {
             "access_token": None,
@@ -212,15 +213,19 @@ class Base:
 
             # if they allowed for caching get from cache
             if self.config["cache_state"]:
-                current_auth_state = Base.store.get_dict("auth_state")
+                current_auth_state = Base.store.get_dict(cache_key)
                 if current_auth_state:  # If data available in cache
                     self.state.update(current_auth_state)
+                else:
+                    logging.error(
+                        f" Auth State not available in cache for user {UserConfig.ACCOUNT_NUMBER}"
+                    )
 
         # if they want to save it and have allowed for caching then read from cache
         elif action == "save" and self.config["cache_state"]:
             # build JSON string using dictionary comprehension.
             json_string = {key: self.state[key] for key in initialized_state}
-            Base.store.set_dict("auth_state", json_string)
+            Base.store.set_dict(cache_key, json_string)
 
     def login(self, url_str):
         """

@@ -2,9 +2,8 @@ import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
 import plotly.graph_objects as go
-from dash import Input, Output, State, dcc, html
+from dash import Input, Output, State, callback, dcc, html
 
-from app import app
 from service.account_transactions import get_report
 from utils.functions import change_date_format, formatter_currency_with_cents
 
@@ -124,7 +123,7 @@ layout = dbc.Container(
 )
 
 
-@app.callback(
+@callback(
     Output("dashboard_content", "children"),
     [
         Input("chart-btn", "n_clicks"),

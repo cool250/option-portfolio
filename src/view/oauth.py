@@ -1,8 +1,7 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import callback, html
 from dash.dependencies import Input, Output, State
 
-from app import app
 from broker.base import Base
 
 layout = dbc.Container(
@@ -37,7 +36,7 @@ layout = dbc.Container(
 )
 
 
-@app.callback(
+@callback(
     Output("success-message", "children"),
     Input("oauth-btn", "n_clicks"),
     [

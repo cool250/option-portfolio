@@ -7,3 +7,5 @@ TestClient.py
 venv/
 .DS_Store
 .env
+authurl.txt
+config.ini
