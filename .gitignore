@@ -9,3 +9,4 @@ TestClient.py
 .env
 authurl.txt
 config.ini
+accounts.json
