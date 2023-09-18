@@ -11,15 +11,13 @@ from dotenv import find_dotenv, load_dotenv
 from flask_caching import Cache
 
 from broker.user_config import UserConfig
-from utils.config import ConfigManager
+from utils.accounts import Accounts
 from view import home, income_finder, oauth, portfolio, report, trade_chart
 
 load_dotenv(find_dotenv())  # read local .env file
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
-
-ACCOUNTS = ["brokerage", "ira"]
 
 app = dash.Dash(
     __name__,
@@ -45,6 +43,15 @@ logging.basicConfig(
     filename="app.log",
     level=logging.INFO,
 )
+
+user_bar = dbc.DropdownMenu(
+    [
+        dbc.DropdownMenuItem(account, href=account)
+        for account in Accounts().get_account_list()
+    ],
+    label=html.I(className="fa-regular fa-user"),
+)
+
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -74,12 +81,7 @@ navbar = dbc.NavbarSimple(
                 class_name="nav-link",
             )
         ),
-        dbc.DropdownMenu(
-            [dbc.DropdownMenuItem(account, href=account) for account in ACCOUNTS],
-            nav=True,
-            in_navbar=True,
-            label="Accounts",
-        ),
+        user_bar,
     ],
     brand="Options Guru",
     brand_href="#",
@@ -109,20 +111,12 @@ def render_page_content(pathname):
         return trade_chart.layout
     # User switch from DropdownMenu
     elif pathname == "/brokerage":
-        UserConfig.ACCOUNT_NUMBER = ConfigManager.getInstance().getConfig(
-            "brokerage", "ACCOUNT_NUMBER"
-        )
-        UserConfig.CONSUMER_ID = ConfigManager.getInstance().getConfig(
-            "brokerage", "CONSUMER_ID"
-        )
+        UserConfig.ACCOUNT_NUMBER = Accounts().get_account_number("brokerage")
+        UserConfig.CONSUMER_ID = Accounts().get_consumer_id("brokerage")
         raise PreventUpdate
     elif pathname == "/ira":
-        UserConfig.ACCOUNT_NUMBER = ConfigManager.getInstance().getConfig(
-            "ira", "ACCOUNT_NUMBER"
-        )
-        UserConfig.CONSUMER_ID = ConfigManager.getInstance().getConfig(
-            "ira", "CONSUMER_ID"
-        )
+        UserConfig.ACCOUNT_NUMBER = Accounts().get_account_number("ira")
+        UserConfig.CONSUMER_ID = Accounts().get_consumer_id("ira")
         raise PreventUpdate
     # If the user tries to reach a different page, return a 404 message
     return html.Div(

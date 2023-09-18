@@ -11,8 +11,6 @@ from broker.options import Options
 from utils.enums import PUT_CALL
 from utils.functions import formatter_currency_with_cents, formatter_percent
 
-num_cores = multiprocessing.cpu_count()
-
 # Mapping column for UI display
 TABLE_MAPPING = {
     "strike_price": "STRIKE",
@@ -214,7 +212,9 @@ def watchlist_income(watch_list: list, params: dict) -> pd.DataFrame:
 
     # Get Option chain for watch list
     # Parallel mode for API calls
-    results = Parallel(n_jobs=num_cores)(
+    num_workers = min(len(watch_list), multiprocessing.cpu_count())
+
+    results = Parallel(n_jobs=num_workers)(
         delayed(income_finder)(i, **params) for i in watch_list
     )
 

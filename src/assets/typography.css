@@ -22,3 +22,8 @@ body {
     background: #808080;
     color: #fff;
 }
+
+.navbar-nav a {
+    font-size: 1.1em;
+    font-family: Candara, Segoe, Segoe UI, Optima; 
+}

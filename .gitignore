@@ -4,7 +4,7 @@ app.log
 *.pyc
 .idea/
 TestClient.py
-venv/
+.venv/
 .DS_Store
 .env
 authurl.txt
