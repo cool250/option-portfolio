@@ -6,15 +6,11 @@ from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
-from dotenv import find_dotenv, load_dotenv
 
 from broker.user_config import UserConfig
 from utils.accounts import Accounts
+from utils.settings import APP_DEBUG, APP_HOST, APP_PORT
 from view import home, income_finder, oauth, portfolio, report, trade_chart
-
-load_dotenv(find_dotenv())  # read local .env file
-
-debug = False if os.environ["DASH_DEBUG_MODE"] == "False" else True
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
@@ -32,7 +28,7 @@ logging.basicConfig(
     format="%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s %(funcName)s:%(lineno)d] %(message)s",
     datefmt="%Y-%m-%d:%H:%M:%S",
     filename="app.log",
-    level=logging.INFO,
+    level=logging.DEBUG,
 )
 
 user_bar = dbc.DropdownMenu(
@@ -122,4 +118,4 @@ def render_page_content(pathname):
 port = int(os.environ.get("SERVER_PORT", 8080))
 # Adding Host
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0", port=port, use_reloader=False)
+    app.run_server(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT, use_reloader=False)

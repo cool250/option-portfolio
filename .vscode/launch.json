@@ -9,7 +9,10 @@
             "type": "python",
             "request": "launch",
             "program": "src/app.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "env": {
+                "ENVIRONMENT_FILE": ".env.development"
+            }
         },
         {
             "name": "Docker: Python - Flask",
