@@ -1,14 +1,12 @@
 import logging
 import os
 
-import dash
 import dash_bootstrap_components as dbc
-from dash import dcc, html
+from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 from dotenv import find_dotenv, load_dotenv
-from flask_caching import Cache
 
 from broker.user_config import UserConfig
 from utils.accounts import Accounts
@@ -16,26 +14,19 @@ from view import home, income_finder, oauth, portfolio, report, trade_chart
 
 load_dotenv(find_dotenv())  # read local .env file
 
+debug = False if os.environ["DASH_DEBUG_MODE"] == "False" else True
+
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
 
-app = dash.Dash(
+app = Dash(
     __name__,
     external_stylesheets=[dbc.themes.LUX, dbc.icons.FONT_AWESOME],
     suppress_callback_exceptions=True,
 )
-
-cache = Cache(
-    app.server,
-    config={
-        "CACHE_TYPE": "filesystem",
-        "CACHE_DIR": "cache-directory",
-        "CACHE_THRESHOLD": 50,  # should be equal to maximum number of active users
-    },
-)
-
-
 app.title = "Options Tracker"
+
+server = app.server
 
 logging.basicConfig(
     format="%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s %(funcName)s:%(lineno)d] %(message)s",
@@ -131,4 +122,4 @@ def render_page_content(pathname):
 port = int(os.environ.get("SERVER_PORT", 8080))
 # Adding Host
 if __name__ == "__main__":
-    app.run(debug=True, port=port)
+    app.run_server(debug=True, host="0.0.0.0", port=port, use_reloader=False)

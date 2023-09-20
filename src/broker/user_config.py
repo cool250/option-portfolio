@@ -2,7 +2,7 @@ import os
 
 from utils.accounts import Accounts
 
-REDIRECT_URI = os.getenv("REDIRECT_URI")
+REDIRECT_URI = "http://localhost"
 
 
 class UserConfig:
