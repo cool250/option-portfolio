@@ -82,5 +82,5 @@ class LocalStore(Store):
             else:
                 return None
         except Exception as err:
-            logging.error(f" Error reading from cache , {str(err)}")
+            logging.error(f" Error reading from dbm at {STORE_PATH}, {str(err)}")
             raise SystemError("Unable to connect", err)

@@ -1,5 +1,4 @@
 import logging
-import os
 
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
@@ -115,7 +114,6 @@ def render_page_content(pathname):
     )
 
 
-port = int(os.environ.get("SERVER_PORT", 8080))
 # Adding Host
 if __name__ == "__main__":
     app.run_server(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT, use_reloader=False)
