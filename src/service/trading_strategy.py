@@ -239,7 +239,7 @@ def get_trade_signal(ticker: str, trade_type: str):
             return None
 
         date = latest_trade.index[0]
-        price = latest_trade["close"][0]
+        price = latest_trade["close"].iloc[0]
 
     except Exception as e:
         logging.error(f" Error in trade signal for ticker {ticker} : {str(e)}")

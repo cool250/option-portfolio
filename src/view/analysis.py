@@ -5,8 +5,8 @@ from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from app import cache
 from service import option_analysis
+from utils.cache import cache
 from utils.functions import formatter_number_2_digits
 from utils.opstrat import multi_plotter
 

@@ -7,6 +7,7 @@ import redis
 
 from utils.config import ConfigManager
 from utils.exceptions import HaltCallbackException
+from utils.settings import STORE_PATH
 
 
 class Store_Factory:
@@ -65,7 +66,7 @@ class LocalStore(Store):
         pass
 
     def set_dict(self, key, val):
-        db = dbm.open("mydb", "c")
+        db = dbm.open(STORE_PATH, "c")
         # Convert Dict to JSON string
         json_val = json.dumps(val)
         db[key] = json_val
@@ -73,7 +74,7 @@ class LocalStore(Store):
 
     def get_dict(self, key):
         try:
-            db = dbm.open("mydb", "r")
+            db = dbm.open(STORE_PATH, "r")
             json_string = db.get(key)
             db.close()
             if json_string:
@@ -81,5 +82,5 @@ class LocalStore(Store):
             else:
                 return None
         except Exception as err:
-            logging.error(f" Error reading from cache , {str(err)}")
+            logging.error(f" Error reading from dbm at {STORE_PATH}, {str(err)}")
             raise SystemError("Unable to connect", err)

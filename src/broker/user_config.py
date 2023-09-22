@@ -2,9 +2,9 @@ import os
 
 from utils.accounts import Accounts
 
-REDIRECT_URI = os.getenv("REDIRECT_URI")
+REDIRECT_URI = "http://localhost"
 
 
 class UserConfig:
-    ACCOUNT_NUMBER = Accounts().get_account_number("brokerage")
-    CONSUMER_ID = Accounts().get_consumer_id("brokerage")
+    ACCOUNT_NUMBER = Accounts().get_default_account_number()
+    CONSUMER_ID = Accounts().get_default_consumer_id()

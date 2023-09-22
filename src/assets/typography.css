@@ -23,7 +23,6 @@ body {
     color: #fff;
 }
 
-.navbar-nav a {
-    font-size: 1.1em;
+.navbar-nav, .navbar-brand {
     font-family: Candara, Segoe, Segoe UI, Optima; 
 }

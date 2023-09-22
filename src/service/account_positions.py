@@ -111,9 +111,10 @@ class AccountPositions:
             df = df[self.params_options.keys()]
             df["theta"] = df["theta"] * df["quantity"] * 100
             df["delta"] = df["delta"] * df["quantity"] * 100
-            df = df.round(2)
             df.rename(columns=self.params_options, inplace=True)
 
+        df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
+        df = df.round(2)
         return df
 
     def get_stock_positions(self):
@@ -132,10 +133,10 @@ class AccountPositions:
         if not df.empty:
             #  Retain only the columns needed and rename
             df = df[self.params_stocks.keys()]
-            df["NET"] = (df["quantity"] * (df["mark"] - df["averagePrice"])).apply(
-                formatter_number_2_digits
-            )
+            df["NET"] = df["quantity"] * (df["mark"] - df["averagePrice"])
             df.rename(columns=self.params_stocks, inplace=True)
+
+        df = df.round(2)
         return df
 
 
