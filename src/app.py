@@ -9,7 +9,15 @@ from dash_bootstrap_templates import load_figure_template
 from broker.user_config import UserConfig
 from utils.accounts import Accounts
 from utils.settings import APP_DEBUG, APP_HOST, APP_PORT
-from view import home, income_finder, oauth, portfolio, report, trade_chart
+from view import (
+    chatbot_view,
+    home,
+    income_finder,
+    oauth,
+    portfolio,
+    report,
+    trade_chart,
+)
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
@@ -46,26 +54,29 @@ navbar = dbc.NavbarSimple(
         ),
         dbc.NavItem(
             dbc.NavLink(
-                "Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link"
+                "Portfolio", href="/portfolio", id="page-2-link", class_name="nav-link"
             )
         ),
         dbc.NavItem(
             dbc.NavLink(
-                "Report", href="/report", id="page-4-link", class_name="nav-link"
+                "Report", href="/report", id="page-3-link", class_name="nav-link"
             )
         ),
         dbc.NavItem(
             dbc.NavLink(
-                "Stock_Scan", href="/chart", id="page-6-link", class_name="nav-link"
+                "Stock_Scan", href="/chart", id="page-4-link", class_name="nav-link"
             )
         ),
         dbc.NavItem(
             dbc.NavLink(
                 "Options_Scan",
                 href="/income_finder",
-                id="page-2-link",
+                id="page-5-link",
                 class_name="nav-link",
             )
+        ),
+        dbc.NavItem(
+            dbc.NavLink("Chat", href="/chat", id="page-6-link", class_name="nav-link")
         ),
         user_bar,
     ],
@@ -95,6 +106,8 @@ def render_page_content(pathname):
         return report.layout
     elif pathname == "/chart":
         return trade_chart.layout
+    elif pathname == "/chat":
+        return chatbot_view.layout
     # User switch from DropdownMenu
     elif pathname == "/brokerage":
         UserConfig.ACCOUNT_NUMBER = Accounts().get_account_number("brokerage")
