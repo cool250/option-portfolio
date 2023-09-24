@@ -26,3 +26,22 @@ body {
 .navbar-nav, .navbar-brand {
     font-family: Candara, Segoe, Segoe UI, Optima; 
 }
+
+.chat-overview {
+    overflow-y: auto;
+    display: flex;
+    height: calc(90vh - 132px);
+    flex-direction: column-reverse;
+}
+
+.border-radius-25 {
+    border-radius: 25px;
+    background-color: #FFFFFF;
+    border: 0px solid;
+}
+
+.margin-chat{
+    margin-left: 70px;
+    margin-right: 70px;
+    margin-bottom: 20px;
+}

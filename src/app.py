@@ -129,4 +129,4 @@ def render_page_content(pathname):
 
 # Adding Host
 if __name__ == "__main__":
-    app.run(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT, use_reloader=False)
+    app.run(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT)
