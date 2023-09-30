@@ -83,7 +83,6 @@ def clear_input(n_clicks, n_submit):
     State(component_id="store-conversation", component_property="data"),
 )
 def run_chatbot(n_clicks, n_submit, user_input, chat_history):
-    print("In run_chatbot")
     if n_clicks == 0 and n_submit is None:
         return "", None
 
