@@ -10,7 +10,7 @@ def render_textbox(text: str, box: str = "AI"):
     # Add CSS classes based on the 'box' parameter
     if box == "human":
         thumbnail_human = html.Img(
-            src=app.get_asset_url("human.png"),
+            src="assets/human.png",
             className="thumbnail thumbnail-human",
         )
         textbox_human = dbc.Card(text, className="textbox-common textbox-human")
@@ -18,7 +18,7 @@ def render_textbox(text: str, box: str = "AI"):
 
     elif box == "AI":
         thumbnail = html.Img(
-            src=app.get_asset_url("chatbot.png"),
+            src="assets/chatbot.png",
             className="thumbnail thumbnail-ai",
         )
         textbox = dbc.Card(text, className="textbox-common textbox-ai")
