@@ -1,20 +1,15 @@
 import json
-import os
 import re
-import warnings
 
 import openai
 import requests
 import yfinance as yf
 from bs4 import BeautifulSoup
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain.prompts.chat import HumanMessage, SystemMessage
 
-warnings.filterwarnings("ignore")
-
-os.environ["OPENAI_API_KEY"] = "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"
-
-
-llm = OpenAI(temperature=0, model_name="gpt-3.5-turbo-16k-0613")
+llm = ChatOpenAI()
 
 
 # Fetch stock data from Yahoo Finance
@@ -25,7 +20,6 @@ def get_stock_price(ticker, history=5):
     df.index = [str(x).split()[0] for x in list(df.index)]
     df.index.rename("Date", inplace=True)
     df = df[-history:]
-    # print(df.columns)
 
     return df.to_string()
 
@@ -119,17 +113,33 @@ def get_stock_ticker(query):
 
 
 def analyze_stock(query):
-    Company_name, ticker = get_stock_ticker(query)
+    company_name, ticker = get_stock_ticker(query)
+    print({"Query": query, "Company_name": company_name, "Ticker": ticker})
     stock_data = get_stock_price(ticker, history=10)
     stock_financials = get_financial_statements(ticker)
-    stock_news = get_recent_stock_news(Company_name)
+    stock_news = get_recent_stock_news(company_name)
 
     available_information = f"Stock Price: {stock_data}\n\nStock Financials: {stock_financials}\n\nStock News: {stock_news}"
-    analysis = llm(
-        f"Give detail stock analysis, Use the available data and provide investment recommendation. \
-             The user is fully aware about the investment risk, dont include any kind of warning like 'It is recommended to conduct further research and analysis or consult with a financial advisor before making an investment decision' in the answer \
-             User question: {query} \
-             You have the following information available about {Company_name}. Write (5-8) pointwise investment analysis to answer user query, At the end conclude with proper explaination.Try to Give positives and negatives  : \
-              {available_information} "
+    user_message = f" User question: {query} \
+            You have the following information available about {company_name}, {available_information} \
+            Write (5-8) pointwise investment analysis to answer user query, At the end conclude with proper explaination. \
+            Try to Give positives and negatives  : \
+            "
+    template = ChatPromptTemplate.from_messages(
+        [
+            SystemMessage(
+                content=(
+                    "Give detail stock analysis, Use the available data and provide investment recommendation"
+                    "The user is fully aware about the investment risk, dont include any kind of warning such as 'It is recommended to conduct further research and analysis or consult with a financial advisor before making an investment decision' in the answer "
+                )
+            ),
+            HumanMessage(content=(user_message)),
+        ]
     )
-    return analysis
+    messages = template.format_messages(
+        name="junk",
+        information="junk",
+        question=query,
+    )
+    analysis = llm(messages)
+    return analysis.content
