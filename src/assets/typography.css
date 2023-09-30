@@ -59,11 +59,11 @@ body {
 
 .textbox-human {
     margin-left: auto;
-    margin-right: 0;
+    margin-right: 0px;
 }
 
 .textbox-ai {
-    margin-left: 0;
+    margin-left: 0px;
     margin-right: auto;
 }
 

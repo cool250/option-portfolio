@@ -5,7 +5,7 @@ from app import app
 
 
 def render_textbox(text: str, box: str = "AI"):
-    text = text.replace(f"ChatBot:", "").replace("Human:", "")
+    text = text.replace("ChatBot:", "").replace("Human:", "")
 
     # Add CSS classes based on the 'box' parameter
     if box == "human":
