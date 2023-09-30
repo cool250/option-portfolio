@@ -1,8 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html
 
-from app import app
-
 
 def render_textbox(text: str, box: str = "AI"):
     text = text.replace("ChatBot:", "").replace("Human:", "")
