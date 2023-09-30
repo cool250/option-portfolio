@@ -90,7 +90,7 @@ def run_chatbot(n_clicks, n_submit, user_input, chat_history):
         return chat_history, None
 
     chat_history += f"Human: {user_input}<split>ChatBot: "
-    result_ai = analyze_stock(query=user_input)
+    result_ai = analyze_stock(user_query=user_input)
     model_output = result_ai.strip()
     chat_history += f"{model_output}<split>"
     return chat_history, None
