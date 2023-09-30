@@ -7,9 +7,18 @@ from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
 from broker.user_config import UserConfig
+from components.main_layout import content, navbar
 from utils.accounts import Accounts
 from utils.settings import APP_DEBUG, APP_HOST, APP_PORT
-from view import home, income_finder, oauth, portfolio, report, trade_chart
+from view import (
+    chatbot_view,
+    home,
+    income_finder,
+    oauth,
+    portfolio,
+    report,
+    trade_chart,
+)
 
 # loads the "lux" template and sets it as the default
 load_figure_template("bootstrap")
@@ -30,52 +39,6 @@ logging.basicConfig(
     level=logging.DEBUG,
 )
 
-user_bar = dbc.DropdownMenu(
-    [
-        dbc.DropdownMenuItem(account, href=account)
-        for account in Accounts().get_account_list()
-    ],
-    label=html.I(className="fa-regular fa-user"),
-)
-
-
-navbar = dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(
-            dbc.NavLink("Home", href="/home", id="page-1-link", class_name="nav-link")
-        ),
-        dbc.NavItem(
-            dbc.NavLink(
-                "Portfolio", href="/portfolio", id="page-3-link", class_name="nav-link"
-            )
-        ),
-        dbc.NavItem(
-            dbc.NavLink(
-                "Report", href="/report", id="page-4-link", class_name="nav-link"
-            )
-        ),
-        dbc.NavItem(
-            dbc.NavLink(
-                "Stock_Scan", href="/chart", id="page-6-link", class_name="nav-link"
-            )
-        ),
-        dbc.NavItem(
-            dbc.NavLink(
-                "Options_Scan",
-                href="/income_finder",
-                id="page-2-link",
-                class_name="nav-link",
-            )
-        ),
-        user_bar,
-    ],
-    brand="Options Guru",
-    brand_href="#",
-    color="primary",
-    dark=True,
-)
-
-content = html.Div(id="page-content", className="p-3")
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 
@@ -95,6 +58,8 @@ def render_page_content(pathname):
         return report.layout
     elif pathname == "/chart":
         return trade_chart.layout
+    elif pathname == "/chat":
+        return chatbot_view.layout
     # User switch from DropdownMenu
     elif pathname == "/brokerage":
         UserConfig.ACCOUNT_NUMBER = Accounts().get_account_number("brokerage")
@@ -116,4 +81,4 @@ def render_page_content(pathname):
 
 # Adding Host
 if __name__ == "__main__":
-    app.run(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT, use_reloader=False)
+    app.run(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT)

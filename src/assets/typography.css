@@ -26,3 +26,58 @@ body {
 .navbar-nav, .navbar-brand {
     font-family: Candara, Segoe, Segoe UI, Optima; 
 }
+
+/* chat styles */
+
+.chat-overview {
+    overflow-y: auto;
+    display: flex;
+    height: calc(90vh - 200px);
+    flex-direction: column-reverse;
+}
+
+.border-radius-25 {
+    border-radius: 25px;
+    background-color: #E8E8E8;
+    border: 0px solid;
+}
+
+.margin-chat{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+}
+
+.textbox-common {
+    max-width: 60%;
+    width: max-content;
+    padding: 5px 10px;
+    border-radius: 25px;
+    margin-bottom: 20px;
+    border: 0px solid;
+}
+
+.textbox-human {
+    margin-left: auto;
+    margin-right: 0px;
+}
+
+.textbox-ai {
+    margin-left: 0px;
+    margin-right: auto;
+}
+
+.thumbnail {
+    border-radius: 50%;
+    height: 36px;
+}
+
+.thumbnail-human {
+    margin-left: 5px;
+    float: right;
+}
+
+.thumbnail-ai {
+    margin-right: 5px;
+    float: left;
+}

@@ -48,4 +48,8 @@ Werkzeug
 redis
 dash-pivottable
 scipy
-
+openai
+bs4
+yfinance
+duckduckgo-search
+langchain
