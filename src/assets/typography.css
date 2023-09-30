@@ -37,7 +37,7 @@ body {
 }
 
 .border-radius-25 {
-    border-radius: 25px;
+    border-radius: 10px;
     background-color: #E8E8E8;
     border: 0px solid;
 }
@@ -49,12 +49,11 @@ body {
 }
 
 .textbox-common {
-    max-width: 60%;
+    max-width: 80%;
     width: max-content;
     padding: 5px 10px;
-    border-radius: 25px;
+    border-radius: 10px;
     margin-bottom: 20px;
-    border: 0px solid;
 }
 
 .textbox-human {
