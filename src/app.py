@@ -35,8 +35,8 @@ server = app.server
 logging.basicConfig(
     format="%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s %(funcName)s:%(lineno)d] %(message)s",
     datefmt="%Y-%m-%d:%H:%M:%S",
-    filename="dash_app.log",
-    level=logging.INFO,
+    filename="app.log",
+    level=logging.DEBUG,
 )
 
 app.layout = html.Div([dcc.Location(id="url"), navbar, content])
