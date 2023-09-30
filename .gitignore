@@ -8,5 +8,4 @@ TestClient.py
 .DS_Store
 .env
 authurl.txt
-config.ini
 accounts.json
