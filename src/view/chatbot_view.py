@@ -30,7 +30,7 @@ layout = html.Div(
                                     dbc.CardBody(
                                         [
                                             chatbot_history,  # Display chat history
-                                            dbc.Spinner
+                                            dbc.Spinner(
                                                 html.Div(
                                                     id="loading-component"
                                                 )  # Loading spinner
