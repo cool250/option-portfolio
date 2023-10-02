@@ -7,7 +7,7 @@ from broker.account import Account
 from broker.quotes import Quotes
 from broker.user_config import UserConfig
 from utils.enums import PUT_CALL
-from utils.functions import convert_to_df, formatter_number_2_digits, formatter_percent
+from utils.functions import convert_to_df, formatter_percent
 
 
 class AccountPositions:
