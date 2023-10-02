@@ -6,8 +6,8 @@ from dash_bootstrap_templates import load_figure_template
 from app import app
 from broker.user_config import UserConfig
 from components.main_layout import content, navbar
+from config.settings import APP_DEBUG, APP_HOST, APP_PORT
 from utils.accounts import Accounts
-from utils.settings import APP_DEBUG, APP_HOST, APP_PORT
 from view import (
     chatbot_view,
     home,
