@@ -119,6 +119,8 @@ def get_report(
                 df = filter_date(df)
                 if status != "All":
                     df = df[df["STATUS"] == status]
+        df = df.sort_values(by=["CLOSE_DATE"])
+        df = df.round(2)
 
     return df
 
@@ -181,8 +183,7 @@ def parse_option_response(df, instrument_type):
     else:
         # Calculate profits by subtracting closing costs from opening
         final_df = calculate_final_payoff(oa_df)
-        final_df = final_df.sort_values(by=["DATE"])
-        final_df = final_df.round(2)
+        # Add timestamp and sort using expiry date
         return final_df
 
 
@@ -341,7 +342,7 @@ def get_net_total_price(row):
     if pd.isna(close_total):
         close_total = 0
 
-    return round(open_total + close_total, 2)
+    return open_total + close_total
 
 
 def get_transaction_status(row):
