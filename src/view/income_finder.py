@@ -159,18 +159,22 @@ SIDE_COLUMN = (
 )
 SEARCH_RESULT = html.Div(
     [
-        dbc.Alert(id="income-message", dismissable=True, is_open=False),
-        dbc.Modal(
-            [
-                dbc.ModalHeader("Charts"),
-                dbc.ModalBody(
-                    id="chart-output",
+        dbc.Spinner(
+            children=[
+                dbc.Alert(id="income-message", dismissable=True, is_open=False),
+                dbc.Modal(
+                    [
+                        dbc.ModalHeader("Charts"),
+                        dbc.ModalBody(
+                            id="chart-output",
+                        ),
+                    ],
+                    id="modal-chart",
+                    size="xl",
                 ),
-            ],
-            id="modal-chart",
-            size="xl",
-        ),
-        dbc.Spinner(html.Div(id="income-output")),
+                (html.Div(id="income-output")),
+            ]
+        )
     ]
 )
 

@@ -5,14 +5,13 @@ from abc import ABC, abstractmethod
 
 import redis
 
-from utils.config import ConfigManager
+from config.settings import CACHE_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PWD, STORE_PATH
 from utils.exceptions import HaltCallbackException
-from utils.settings import STORE_PATH
 
 
 class Store_Factory:
     def get_store():
-        cache_type = ConfigManager.getInstance().getConfig("CACHE", "CACHE_TYPE")
+        cache_type = CACHE_TYPE
         if cache_type == "local":
             return LocalStore()
         else:
@@ -30,9 +29,9 @@ class Store(ABC):
 
 class RedisStore(Store):
     def __init__(self):
-        host = ConfigManager.getInstance().getConfig("REDIS", "HOST")
-        port = ConfigManager.getInstance().getConfig("REDIS", "PORT")
-        password = ConfigManager.getInstance().getConfig("REDIS", "PWD")
+        host = REDIS_HOST
+        port = REDIS_PORT
+        password = REDIS_PWD
         self.client = redis.StrictRedis(
             host,
             port,

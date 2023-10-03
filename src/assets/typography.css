@@ -29,32 +29,32 @@ body {
 
 /* chat styles */
 
-.chat-overview {
+.chat-history {
     overflow-y: auto;
     display: flex;
     height: calc(90vh - 200px);
     flex-direction: column-reverse;
 }
 
-.border-radius-25 {
-    border-radius: 25px;
+.main-chat{
+    border-radius: 10px;
     background-color: #E8E8E8;
     border: 0px solid;
 }
 
-.margin-chat{
+.margin-input-chat{
     margin-left: 10px;
     margin-right: 10px;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
 .textbox-common {
-    max-width: 60%;
+    max-width: 80%;
     width: max-content;
     padding: 5px 10px;
-    border-radius: 25px;
+    border-radius: 10px;
     margin-bottom: 20px;
-    border: 0px solid;
 }
 
 .textbox-human {

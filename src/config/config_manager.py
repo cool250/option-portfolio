@@ -1,4 +1,7 @@
-import configparser
+import logging
+import os
+
+from dotenv import load_dotenv
 
 """
 ConfigManager Class
@@ -21,18 +24,6 @@ Methods:
 * setConfig() : Sets the configuration object.
 * getConfig() : Gets the configuration object.
 
-Raises:
-------
-
-* ValueError : If the configuration file cannot be read.
-
-Examples:
---------
-
->>> config_manager = ConfigManager('config.ini')
->>> config_manager.setConfig({'section': {'option': 'value'}})
->>> config_manager.getConfig('section', 'option')
-'value'
 """
 
 
@@ -46,12 +37,9 @@ class ConfigManager:
         return ConfigManager._instance
 
     def __init__(self):
-        self.config = configparser.ConfigParser()
-        file_path = "config.ini"
-        self.config.read(file_path)
+        dotenv_path = os.getenv("ENVIRONMENT_FILE")
+        logging.info(f"dotenv_path : {dotenv_path}")
+        load_dotenv(dotenv_path=dotenv_path, override=True)
 
-    def setConfig(self, config):
-        self.config = config
-
-    def getConfig(self, *args):
-        return self.config.get(*args)
+    def getConfig(self, key):
+        return os.environ.get(key)

@@ -8,9 +8,9 @@ from components.textbox import render_textbox
 from utils.fetch_stock_info import analyze_stock
 
 # Define the layout for the chatbot application
-chatbot_layout = html.Div(
+chatbot_history = html.Div(
     html.Div(id="display-conversation"),
-    className="chat-overview",
+    className="chat-history",
 )
 
 # Create the main layout of the application
@@ -29,20 +29,20 @@ layout = html.Div(
                                 [
                                     dbc.CardBody(
                                         [
-                                            chatbot_layout,  # Display chat history
-                                            html.Div(
-                                                render_chat_input(),  # Render user input field
-                                                className="margin-chat",
-                                            ),
+                                            chatbot_history,  # Display chat history
                                             dbc.Spinner(
                                                 html.Div(
                                                     id="loading-component"
                                                 )  # Loading spinner
                                             ),
+                                            html.Div(
+                                                render_chat_input(),  # Render user input field
+                                                className="margin-input-chat",
+                                            ),
                                         ]
                                     )
                                 ],
-                                className="border-radius-25",
+                                className="main-chat",
                             ),
                         ),
                         dbc.Col(width=1),

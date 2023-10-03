@@ -8,7 +8,7 @@ from service.account_positions import AccountPositions
 from utils.functions import formatter_currency
 from utils.opstrat.basic_multi import multi_plotter
 
-layout = dbc.Container(
+layout = html.Div(
     dbc.Spinner(
         [
             dbc.Row(
@@ -141,16 +141,16 @@ def on_button_click(n):
                 {"title": "QTY", "field": "QTY"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
                 {"title": "PREMIUM", "field": "PREMIUM"},
+                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
+                {"title": "MARK", "field": "MARK"},
                 {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
-                {"title": "MARK", "field": "MARK"},
-                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
                 {"title": "DAYS", "field": "DAYS"},
                 {"title": "ITM", "field": "ITM"},
                 {"title": "RETURNS", "field": "RETURNS"},
-                {"title": "MARGIN", "field": "MARGIN", "visible": False},
                 {"title": "THETA", "field": "THETA"},
                 {"title": "DELTA", "field": "DELTA"},
+                {"title": "MARGIN", "field": "MARGIN", "visible": False},
                 {"title": "COST", "field": "COST", "visible": False},
             ],
         ),
@@ -164,14 +164,15 @@ def on_button_click(n):
                 {"title": "UNDERLYING", "field": "TICKER", "headerFilter": "input"},
                 {"title": "QTY", "field": "QTY"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
+                {"title": "PREMIUM", "field": "PREMIUM"},
+                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
+                {"title": "MARK", "field": "MARK"},
                 {"title": "UNDERLYING PRICE", "field": "UNDERLYING PRICE"},
                 {"title": "STRIKE", "field": "STRIKE PRICE"},
-                {"title": "EXTRINSIC", "field": "EXTRINSIC"},
-                {"title": "MARK", "field": "MARK"},
-                {"title": "PURCHASE", "field": "PURCHASE PRICE"},
                 {"title": "DAYS", "field": "DAYS"},
                 {"title": "ITM", "field": "ITM"},
                 {"title": "DELTA", "field": "DELTA"},
+                {"title": "EXTRINSIC", "field": "EXTRINSIC", "visible": False},
                 {"title": "MARGIN", "field": "MARGIN", "visible": False},
                 {"title": "THETA", "field": "THETA", "visible": False},
             ],
