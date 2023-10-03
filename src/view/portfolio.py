@@ -8,7 +8,7 @@ from service.account_positions import AccountPositions
 from utils.functions import formatter_currency
 from utils.opstrat.basic_multi import multi_plotter
 
-layout = dbc.Container(
+layout = html.Div(
     dbc.Spinner(
         [
             dbc.Row(

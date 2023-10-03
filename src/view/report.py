@@ -111,15 +111,14 @@ TOP_COLUMN = dbc.Form(
     className="p-2",
 )
 
-SEARCH_RESULT = html.Div(id="dashboard_content")
+SEARCH_RESULT = dbc.Spinner(html.Div(id="dashboard_content"))
 
-layout = dbc.Container(
+layout = html.Div(
     [
-        dbc.Row(TOP_COLUMN),
+        TOP_COLUMN,
         html.P(),
-        dbc.Row(SEARCH_RESULT),
+        SEARCH_RESULT,
     ],
-    fluid=True,
 )
 
 
