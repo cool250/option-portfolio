@@ -139,89 +139,98 @@ layout = html.Div(
 def on_search(
     n, ticker, instrument_type, report_type, status_type, start_date, end_date
 ):
-    df = get_report(start_date, end_date, ticker, instrument_type, status_type)
-    if not df.empty:
-        total = df["TOTAL_PRICE"].sum()
-        message = html.Div(
-            dbc.Alert(
-                id="total-message",
-                children=f"{formatter_currency_with_cents(total)}",
-                color="info",
-            ),
-        )
-        # Populate data table
-        if report_type == "TABLE":
-            # Change open and close date format to mm/dd/yy to match TD reports for reconcile later
-            df["DATE"] = df["DATE"].apply(change_date_format)
-            df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
-            columns = [
-                {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
-                {"title": "TYPE", "field": "INSTRUCTION"},
-                {"title": "OPEN DATE", "field": "DATE"},
-                {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
-                {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
-                {
-                    "title": "TOTAL PRICE",
-                    "field": "TOTAL_PRICE",
-                    "topCalc": "sum",
-                    "topCalcParams": {
-                        "precision": 2,
-                    },
-                },
-                {"title": "OPEN PRICE", "field": "PRICE"},
-                {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
-                {"title": "QTY", "field": "QTY"},
-                {"title": "SYMBOL", "field": "SYMBOL"},
-                {
-                    "title": "STATUS",
-                    "field": "STATUS",
-                    "headerFilter": "input",
-                    "topCalc": "count",
-                },
-            ]
-            dt = (
-                dash_tabulator.DashTabulator(
-                    id="report-table",
-                    columns=columns,
-                    data=df.to_dict("records"),
-                    # Disable for now - do not remove code
-                    # downloadButtonType={
-                    #     "css": "btn btn-primary mb-3",
-                    #     "text": "Export",
-                    #     "type": "csv",
-                    # },
+    try:
+        df = get_report(start_date, end_date, ticker, instrument_type, status_type)
+        if not df.empty:
+            total = df["TOTAL_PRICE"].sum()
+            message = html.Div(
+                dbc.Alert(
+                    id="total-message",
+                    children=f"{formatter_currency_with_cents(total)}",
+                    color="info",
                 ),
             )
-            content = html.Div(children=dt)
-        elif report_type == "TIME":
-            fig = px.bar(
-                df, x="CLOSE_DATE", y="TOTAL_PRICE", color="TICKER", text="TOTAL_PRICE"
-            )
-            content = dcc.Graph(id="graph", figure=fig)
-        else:
-            dfs = df[["TICKER", "TOTAL_PRICE", "QTY"]].copy()
-            dfs = dfs.groupby("TICKER").sum().round()
-            fig = px.bar(df, x="TICKER", y="TOTAL_PRICE", color="TICKER")
-            fig.add_trace(
-                go.Scatter(
-                    x=dfs.index,
-                    y=dfs["TOTAL_PRICE"],
-                    text=dfs["TOTAL_PRICE"],
-                    mode="text",
-                    textposition="top center",
-                    textfont=dict(
-                        size=10,
+            # Populate data table
+            if report_type == "TABLE":
+                # Change open and close date format to mm/dd/yy to match TD reports for reconcile later
+                df["DATE"] = df["DATE"].apply(change_date_format)
+                df["CLOSE_DATE"] = df["CLOSE_DATE"].apply(change_date_format)
+                columns = [
+                    {"title": "TICKER", "field": "TICKER", "headerFilter": "input"},
+                    {"title": "TYPE", "field": "INSTRUCTION"},
+                    {"title": "OPEN DATE", "field": "DATE"},
+                    {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
+                    {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
+                    {
+                        "title": "TOTAL PRICE",
+                        "field": "TOTAL_PRICE",
+                        "topCalc": "sum",
+                        "topCalcParams": {
+                            "precision": 2,
+                        },
+                    },
+                    {"title": "OPEN PRICE", "field": "PRICE"},
+                    {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
+                    {"title": "QTY", "field": "QTY"},
+                    {"title": "SYMBOL", "field": "SYMBOL"},
+                    {
+                        "title": "STATUS",
+                        "field": "STATUS",
+                        "headerFilter": "input",
+                        "topCalc": "count",
+                    },
+                ]
+                dt = (
+                    dash_tabulator.DashTabulator(
+                        id="report-table",
+                        columns=columns,
+                        data=df.to_dict("records"),
+                        # Disable for now - do not remove code
+                        # downloadButtonType={
+                        #     "css": "btn btn-primary mb-3",
+                        #     "text": "Export",
+                        #     "type": "csv",
+                        # },
                     ),
-                    showlegend=False,
                 )
-            )
-            content = dcc.Graph(id="graph", figure=fig)
+                content = html.Div(children=dt)
+            elif report_type == "TIME":
+                fig = px.bar(
+                    df,
+                    x="CLOSE_DATE",
+                    y="TOTAL_PRICE",
+                    color="TICKER",
+                    text="TOTAL_PRICE",
+                )
+                content = dcc.Graph(id="graph", figure=fig)
+            else:
+                dfs = df[["TICKER", "TOTAL_PRICE", "QTY"]].copy()
+                dfs = dfs.groupby("TICKER").sum().round()
+                fig = px.bar(df, x="TICKER", y="TOTAL_PRICE", color="TICKER")
+                fig.add_trace(
+                    go.Scatter(
+                        x=dfs.index,
+                        y=dfs["TOTAL_PRICE"],
+                        text=dfs["TOTAL_PRICE"],
+                        mode="text",
+                        textposition="top center",
+                        textfont=dict(
+                            size=10,
+                        ),
+                        showlegend=False,
+                    )
+                )
+                content = dcc.Graph(id="graph", figure=fig)
 
-        return (
-            message,
-            content,
-        )
-    else:
+            return (
+                message,
+                content,
+            )
+        else:
+            return html.Div(
+                dbc.Alert(id="total-message", children="No records", color="info"),
+            )
+    except Exception as e:
         return html.Div(
-            dbc.Alert(id="total-message", children="No records", color="info"),
+            dbc.Alert(id="total-message", children=f"{str(e)}", color="danger"),
         )
