@@ -17,20 +17,25 @@ def on_page_load(href):
     if href is None:
         raise PreventUpdate
     else:
-        df_puts = get_report(instrument_type="PUT")
-        df_calls = get_report(instrument_type="CALL")
-        return dbc.Container(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(show_payoff_chart(df_puts, title="PUTS")),
-                        dbc.Col(show_payoff_chart(df_calls, title="CALLS")),
-                    ]
-                ),
-                html.P(),
-                dbc.Row(show_capital_need(df_puts)),
-            ]
-        )
+        try:
+            df_puts = get_report(instrument_type="PUT")
+            df_calls = get_report(instrument_type="CALL")
+            return dbc.Container(
+                [
+                    dbc.Row(
+                        [
+                            dbc.Col(show_payoff_chart(df_puts, title="PUTS")),
+                            dbc.Col(show_payoff_chart(df_calls, title="CALLS")),
+                        ]
+                    ),
+                    html.P(),
+                    dbc.Row(show_capital_need(df_puts)),
+                ]
+            )
+        except Exception as e:
+            return html.Div(
+                dbc.Alert(id="message", children=f"{str(e)}", color="danger"),
+            )
 
 
 def show_payoff_chart(df, title):

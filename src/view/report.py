@@ -18,7 +18,7 @@ TOP_COLUMN = dbc.Form(
                             dcc.DatePickerSingle(
                                 id="db_start-date-picker",
                                 display_format="YYYY-MM-DD",
-                                date="2023-01-01",
+                                placeholder="Enter Date",
                             ),
                         ),
                     ]
@@ -145,8 +145,8 @@ def on_search(
             total = df["TOTAL_PRICE"].sum()
             message = html.Div(
                 dbc.Alert(
-                    id="total-message",
-                    children=f"{formatter_currency_with_cents(total)}",
+                    id="message",
+                    children=f"Total Premium: {formatter_currency_with_cents(total)}",
                     color="info",
                 ),
             )
@@ -228,9 +228,9 @@ def on_search(
             )
         else:
             return html.Div(
-                dbc.Alert(id="total-message", children="No records", color="info"),
+                dbc.Alert(id="message", children="No records", color="info"),
             )
     except Exception as e:
         return html.Div(
-            dbc.Alert(id="total-message", children=f"{str(e)}", color="danger"),
+            dbc.Alert(id="message", children=f"{str(e)}", color="danger"),
         )
