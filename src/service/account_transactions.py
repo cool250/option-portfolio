@@ -67,7 +67,12 @@ def get_report(
 
     if not end_close_date:
         # Used to filter for trade ending dates 45 days out as default
-        end_close_date = (today + timedelta(days=45)).strftime(api_date_format)
+        end_close_date = today.strftime(api_date_format)
+
+    # Modify end date to filter for trade ending dates 45 days
+    search_end_date = (
+        dt.strptime(end_close_date, api_date_format) + timedelta(days=45)
+    ).strftime(api_date_format)
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(
@@ -75,7 +80,7 @@ def get_report(
         transaction_type="TRADE",
         symbol=symbol,
         start_date=search_start_date,
-        end_date=end_close_date,
+        end_date=search_end_date,
     )
 
     if not df.empty:

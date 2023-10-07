@@ -1,3 +1,5 @@
+import logging
+
 import dash_bootstrap_components as dbc
 import dash_tabulator
 import plotly.express as px
@@ -13,7 +15,7 @@ TOP_COLUMN = dbc.Form(
             [
                 dbc.Col(
                     children=[
-                        dbc.Label("From Date", size="sm"),
+                        dbc.Label("Start Close Date", size="sm"),
                         dbc.Col(
                             dcc.DatePickerSingle(
                                 id="db_start-date-picker",
@@ -25,7 +27,7 @@ TOP_COLUMN = dbc.Form(
                 ),
                 dbc.Col(
                     children=[
-                        dbc.Label("To Date", size="sm"),
+                        dbc.Label("End Close Date", size="sm"),
                         dbc.Col(
                             dcc.DatePickerSingle(
                                 id="db_end-date-picker",
@@ -231,6 +233,7 @@ def on_search(
                 dbc.Alert(id="message", children="No records", color="info"),
             )
     except Exception as e:
+        logging.error(e)
         return html.Div(
             dbc.Alert(id="message", children=f"{str(e)}", color="danger"),
         )
