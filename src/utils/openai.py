@@ -2,10 +2,8 @@ import json
 import logging
 
 import openai
-from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
-from langchain.prompts import ChatPromptTemplate, PromptTemplate
-from langchain.prompts.chat import HumanMessage, SystemMessage
+from langchain.prompts import PromptTemplate
 
 function = [
     {
