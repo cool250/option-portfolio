@@ -41,5 +41,5 @@ class ConfigManager:
         logging.info(f"dotenv_path : {dotenv_path}")
         load_dotenv(dotenv_path=dotenv_path, override=True)
 
-    def getConfig(self, key):
-        return os.environ.get(key)
+    def getConfig(self, key, default=None):
+        return os.environ.get(key, default)
