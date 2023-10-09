@@ -5,7 +5,7 @@ from dash.exceptions import PreventUpdate
 
 from components.input import render_chat_input
 from components.textbox import render_textbox
-from utils.fetch_stock_info import analyze_stock
+from service.fetch_stock_info import analyze_stock
 
 # Define the layout for the chatbot application
 chatbot_history = html.Div(

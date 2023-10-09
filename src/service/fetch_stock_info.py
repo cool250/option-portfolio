@@ -22,9 +22,8 @@ def analyze_stock(user_query):
     stock_news = get_stock_news(company_name)
 
     available_information = f"Stock Price: {stock_data}\n\nStock Financials: {stock_financials}\n\nStock News: {stock_news}"
-    llm_query = f" User question: {user_query} \
-            You have the following information available about {company_name}, {available_information} \
-            Write (5-8) pointwise investment analysis to answer user query, At the end conclude with proper explanation. \
-            Try to Give positives and negatives"
+    context = f" You have the following information available about {company_name}, {available_information} \
+            Write (5-8) pointwise investment analysis to answer user query. Use the available data to provide \
+            investment recommendations. Try to give positives and negatives"
 
-    return prediction(llm_query)
+    return prediction(context, user_query)
