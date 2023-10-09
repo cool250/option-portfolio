@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime as dt
+from datetime import timedelta
 
 import numpy as np
 import pandas as pd
@@ -69,9 +71,6 @@ class AccountPositions:
             df["theta"] = df["theta"] * df["quantity"] * 100
             df["delta"] = df["delta"] * df["quantity"] * 100
             df.rename(columns=self.params_options, inplace=True)
-
-        df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
-
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"].abs() * 100
         df["RETURNS"] = (
@@ -79,7 +78,10 @@ class AccountPositions:
             .abs()
             .apply(formatter_percent)
         )
+        df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
+        df["CLOSE_DATE"] = df["DAYS"].apply(lambda x: dt.now() + timedelta(x))
         df = df.round(2)
+        df = df.sort_values(by=["DAYS"])
         return df
 
     def get_call_positions(self):
@@ -114,6 +116,8 @@ class AccountPositions:
             df.rename(columns=self.params_options, inplace=True)
 
         df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
+        df["CLOSE_DATE"] = df["DAYS"].apply(lambda x: dt.now() + timedelta(x))
+        df = df.sort_values(by=["DAYS"])
         df = df.round(2)
         return df
 

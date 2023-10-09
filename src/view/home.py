@@ -1,12 +1,17 @@
+from datetime import datetime as dt
+from datetime import timedelta
+
 import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash import Input, Output, callback, dcc, html
 from dash.exceptions import PreventUpdate
 
+from service.account_positions import AccountPositions
 from service.account_transactions import get_report
 from utils.functions import formatter_currency_with_cents
 
 layout = html.Div(id="home_content")
+DATE_FORMAT = "%Y-%m-%d"
 
 
 @callback(
@@ -18,8 +23,22 @@ def on_page_load(href):
         raise PreventUpdate
     else:
         try:
-            df_puts = get_report(instrument_type="PUT")
-            df_calls = get_report(instrument_type="CALL")
+            # start_date = dt.now().strftime(DATE_FORMAT)
+            # end_date = (dt.now() + timedelta(45)).strftime(DATE_FORMAT)
+            # df_puts = get_report(
+            #     instrument_type="PUT",
+            #     start_close_date=start_date,
+            #     end_close_date=end_date,
+            # )
+            account = AccountPositions()
+            df_puts = account.get_put_positions()
+            df_calls = account.get_call_positions()
+
+            # df_calls = get_report(
+            #     instrument_type="CALL",
+            #     start_close_date=start_date,
+            #     end_close_date=end_date,
+            # )
             return dbc.Container(
                 [
                     dbc.Row(
@@ -40,14 +59,14 @@ def on_page_load(href):
 
 def show_payoff_chart(df, title):
     if not df.empty:
-        total = df["TOTAL_PRICE"].sum()
+        total = df["PREMIUM"].sum()
         # Populate chart
         fig = px.bar(
             df,
             x="CLOSE_DATE",
-            y="TOTAL_PRICE",
+            y="PREMIUM",
             color="TICKER",
-            text="TOTAL_PRICE",
+            text="PREMIUM",
             title=f"{title}: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(
@@ -63,15 +82,14 @@ def show_payoff_chart(df, title):
 
 def show_capital_need(df):
     if not df.empty:
-        df["TOTAL_COST"] = df["STRIKE_PRICE"].astype(float) * df["QTY"] * 100
-        total = df["TOTAL_COST"].sum()
+        total = df["COST"].sum()
         # Populate chart
         fig = px.bar(
             df,
             x="CLOSE_DATE",
-            y="TOTAL_COST",
+            y="COST",
             color="TICKER",
-            text="TOTAL_COST",
+            text="COST",
             title=f"Capital for Puts: {formatter_currency_with_cents(total)}",
         )
         fig.update_layout(

@@ -14,7 +14,8 @@ default_start_duration = 180
 cal = USTradingCalendar()
 
 # date format needed by TD API
-api_date_format = "%Y-%m-%d"
+DATE_FORMAT = "%Y-%m-%d"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 # Mapping column for easier handling
 params = {
@@ -53,49 +54,20 @@ def get_report(
     Returns:
         [df]: [Transactions for given search criteria]
     """
-
-    # In case start date or end date is not passed, use to initialize default
-    today = dt.now()
-    if not start_close_date:
-        start_close_date = today.strftime(api_date_format)
-
-    # Modify start date to use 45 days in advance to get all options expiring before entered start date
-    # The API takes trade open date as start date not trade closing
-    search_start_date = (
-        dt.strptime(start_close_date, api_date_format) - timedelta(days=45)
-    ).strftime(api_date_format)
-
-    if not end_close_date:
-        # Used to filter for trade ending dates 45 days out as default
-        end_close_date = today.strftime(api_date_format)
-
-    # Modify end date to filter for trade ending dates 45 days
-    search_end_date = (
-        dt.strptime(end_close_date, api_date_format) + timedelta(days=45)
-    ).strftime(api_date_format)
-
-    transaction = Transaction()
-    df = transaction.get_transactionsDF(
-        UserConfig.ACCOUNT_NUMBER,
-        transaction_type="TRADE",
-        symbol=symbol,
-        start_date=search_start_date,
-        end_date=search_end_date,
-    )
-
+    df = get_api_transactions(start_close_date, end_close_date, symbol)
     if not df.empty:
         df = df.rename(columns=params)
 
         # Change df['transactionDate'] string to remove timestamp
-        df["DATE"] = pd.to_datetime(
-            df["DATE"], format="%Y-%m-%dT%H:%M:%S%z"
-        ).dt.strftime("%Y-%m-%d")
+        df["DATE"] = pd.to_datetime(df["DATE"], format=TIMESTAMP_FORMAT).dt.strftime(
+            DATE_FORMAT
+        )
 
         # Change df['optionExpirationDate'] string to remove timestamp
         df["EXPIRY_DATE"] = pd.to_datetime(
             df["EXPIRY_DATE"],
-            format="%Y-%m-%dT%H:%M:%S%z",
-        ).dt.strftime("%Y-%m-%d")
+            format=TIMESTAMP_FORMAT,
+        ).dt.strftime(DATE_FORMAT)
 
         # Lambda function to filter records based on closing date search input
         filter_date = lambda df: df[
@@ -127,6 +99,42 @@ def get_report(
         df = df.sort_values(by=["CLOSE_DATE"])
         df = df.round(2)
 
+    return df
+
+
+def get_api_transactions(
+    start_close_date=None,
+    end_close_date=None,
+    symbol=None,
+):
+    # In case start date or end date is not passed, use to initialize default
+    today = dt.now()
+    if not start_close_date:
+        start_close_date = today.strftime(DATE_FORMAT)
+
+    # Modify start date to use 45 days in advance to get all options expiring before entered start date
+    # The API takes trade open date as start date not trade closing
+    search_start_date = (
+        dt.strptime(start_close_date, DATE_FORMAT) - timedelta(days=45)
+    ).strftime(DATE_FORMAT)
+
+    if not end_close_date:
+        # Used to filter for trade ending dates 45 days out as default
+        end_close_date = today.strftime(DATE_FORMAT)
+
+    # Modify end date to filter for trade ending dates 45 days
+    search_end_date = (
+        dt.strptime(end_close_date, DATE_FORMAT) + timedelta(days=45)
+    ).strftime(DATE_FORMAT)
+
+    transaction = Transaction()
+    df = transaction.get_transactionsDF(
+        UserConfig.ACCOUNT_NUMBER,
+        transaction_type="TRADE",
+        symbol=symbol,
+        start_date=search_start_date,
+        end_date=search_end_date,
+    )
     return df
 
 
@@ -363,7 +371,7 @@ def get_transaction_status(row):
         return "Assigned"
     elif row.CLOSE_PRICE > 0:
         return "Closed"
-    elif row.CLOSE_PRICE == 0 and row.EXPIRY_DATE < dt.now().strftime("%Y-%m-%d"):
+    elif row.CLOSE_PRICE == 0 and row.EXPIRY_DATE < dt.now().strftime(DATE_FORMAT):
         return "Expired"
     else:
         return "Active"
