@@ -3,13 +3,13 @@ import logging
 import dash_bootstrap_components as dbc
 from dash import Dash
 
-# from config.settings import LOG_LEVEL
+from config.settings import LOG_LEVEL
 
 logging.basicConfig(
     format="%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s %(funcName)s:%(lineno)d] %(message)s",
     datefmt="%Y-%m-%d:%H:%M:%S",
     filename="app.log",
-    level="DEBUG",
+    level=LOG_LEVEL,
 )
 
 app = Dash(
