@@ -55,3 +55,5 @@ screener_list["ETF"] = [
     "SPY",
 ]
 screener_list["Favorites"] = ["SPY", "QQQ", "IWM"]
+DATE_FORMAT = "%Y-%m-%d"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"

@@ -8,6 +8,7 @@ import pandas as pd
 from broker.account import Account
 from broker.quotes import Quotes
 from broker.user_config import UserConfig
+from utils.constants import DATE_FORMAT
 from utils.enums import PUT_CALL
 from utils.functions import convert_to_df, formatter_percent
 
@@ -79,7 +80,9 @@ class AccountPositions:
             .apply(formatter_percent)
         )
         df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
-        df["CLOSE_DATE"] = df["DAYS"].apply(lambda x: dt.now() + timedelta(x))
+        df["CLOSE_DATE"] = df["DAYS"].apply(
+            lambda x: (dt.now() + timedelta(x)).strftime(DATE_FORMAT)
+        )
         df = df.round(2)
         df = df.sort_values(by=["DAYS"])
         return df
@@ -116,7 +119,9 @@ class AccountPositions:
             df.rename(columns=self.params_options, inplace=True)
 
         df["PREMIUM"] = df["PURCHASE PRICE"] * df["QTY"].abs() * 100
-        df["CLOSE_DATE"] = df["DAYS"].apply(lambda x: dt.now() + timedelta(x))
+        df["CLOSE_DATE"] = df["DAYS"].apply(
+            lambda x: (dt.now() + timedelta(x)).strftime(DATE_FORMAT)
+        )
         df = df.sort_values(by=["DAYS"])
         df = df.round(2)
         return df

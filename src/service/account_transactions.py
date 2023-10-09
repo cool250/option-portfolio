@@ -7,15 +7,13 @@ from pandas.tseries.offsets import CustomBusinessDay
 
 from broker.transactions import Transaction
 from broker.user_config import UserConfig
+from utils.constants import DATE_FORMAT, TIMESTAMP_FORMAT
 from utils.functions import parse_option_symbol
 from utils.ustradingcalendar import USTradingCalendar
 
 default_start_duration = 180
 cal = USTradingCalendar()
 
-# date format needed by TD API
-DATE_FORMAT = "%Y-%m-%d"
-TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 # Mapping column for easier handling
 params = {
