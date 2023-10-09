@@ -2,7 +2,7 @@ import logging
 
 from utils.fetch_news import get_stock_news
 from utils.finance import get_financial_statements, get_stock_price
-from utils.openai import get_stock_ticker, prediction
+from utils.openai import get_stock_ticker, stock_prediction
 
 
 def analyze_stock(user_query):
@@ -26,4 +26,4 @@ def analyze_stock(user_query):
             Write (5-8) pointwise investment analysis to answer user query. Use the available data to provide \
             investment recommendations. Try to give positives and negatives"
 
-    return prediction(context, user_query)
+    return stock_prediction(context, user_query)

@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 
 function = [
     {
-        "name": "get_company_Stock_ticker",
+        "name": "get_company_stock_ticker",
         "description": "This function retrieves the stock ticker of a company.",
         "parameters": {
             "type": "object",
@@ -47,7 +47,7 @@ def get_stock_ticker(query):
             }
         ],
         functions=function,
-        function_call={"name": "get_company_Stock_ticker"},
+        function_call={"name": "get_company_stock_ticker"},
     )
 
     message = response["choices"][0]["message"]
@@ -59,7 +59,7 @@ def get_stock_ticker(query):
     return company_name, company_ticker
 
 
-def prediction(context, query):
+def stock_prediction(context, query):
     """
     Generate investment analysis based on user query and available stock information.
 
