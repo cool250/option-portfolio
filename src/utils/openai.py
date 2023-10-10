@@ -71,7 +71,8 @@ def stock_prediction(context, query):
     """
     # initialize the models
     openai = OpenAI()
-    template = """You're a financial advisor. Answer the question based on the context below.
+    template = """You're a financial advisor. Use the available data to provide \
+            investment recommendations. Answer the question based on the context below.
 
     Context: {context}
 

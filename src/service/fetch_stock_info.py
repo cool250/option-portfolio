@@ -23,7 +23,6 @@ def analyze_stock(user_query):
 
     available_information = f"Stock Price: {stock_data}\n\nStock Financials: {stock_financials}\n\nStock News: {stock_news}"
     context = f" You have the following information available about {company_name}, {available_information} \
-            Write (5-8) pointwise investment analysis to answer user query. Use the available data to provide \
-            investment recommendations. Try to give positives and negatives"
+            Write (4-6) pointwise investment analysis to answer user query.Try to give positives and negatives"
 
     return stock_prediction(context, user_query)
