@@ -16,7 +16,7 @@ def analyze_stock(user_query):
         str: Investment analysis and recommendation for the specified stock.
     """
     company_name, ticker = get_stock_ticker(user_query)
-    logging.info({"Query": user_query, "Company_name": company_name, "Ticker": ticker})
+    logging.debug({"Query": user_query, "Company_name": company_name, "Ticker": ticker})
     stock_data = get_stock_price(ticker, history=10)
     stock_financials = get_financial_statements(ticker)
     stock_news = get_stock_news(company_name)
