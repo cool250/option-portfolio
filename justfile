@@ -23,3 +23,6 @@ poetry-update:
 poetry-venv:
     poetry install --no-root
 
+run-app:
+    poetry run python src/index.py
+
