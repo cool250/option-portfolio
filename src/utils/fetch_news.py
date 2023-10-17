@@ -1,3 +1,4 @@
+import logging
 import re
 
 import requests
@@ -56,5 +57,6 @@ def get_stock_news(company_name):
         news_string += f"{i + 1}. {n}\n"
 
     top4_news = "Recent News:\n\n" + news_string
+    logging.debug(f" Top News  for {company_name} : {top4_news}")
 
     return top4_news

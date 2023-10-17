@@ -1,4 +1,3 @@
-import logging
 import os
 
 from dotenv import load_dotenv
@@ -38,7 +37,6 @@ class ConfigManager:
 
     def __init__(self):
         dotenv_path = os.getenv("ENVIRONMENT_FILE")
-        logging.info(f"dotenv_path : {dotenv_path}")
         load_dotenv(dotenv_path=dotenv_path, override=True)
 
     def getConfig(self, key, default=None):

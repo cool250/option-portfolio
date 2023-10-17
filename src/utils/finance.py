@@ -1,3 +1,5 @@
+import logging
+
 import yfinance as yf
 
 
@@ -20,8 +22,10 @@ def get_stock_price(ticker, history=5):
     df.index.rename("Date", inplace=True)
 
     df = df[-history:]
+    stock_prices = df.to_string()
+    logging.debug(f" Stock Prices for {ticker} : {stock_prices}")
 
-    return df.to_string()
+    return stock_prices
 
 
 def get_financial_statements(ticker):
@@ -41,5 +45,7 @@ def get_financial_statements(ticker):
         balance_sheet = balance_sheet.iloc[:, :3]
 
     balance_sheet = balance_sheet.dropna(how="any")
+    financial_info = balance_sheet.to_string()
+    logging.debug(f" Financial Details for {ticker} : {financial_info}")
 
-    return balance_sheet.to_string()
+    return financial_info

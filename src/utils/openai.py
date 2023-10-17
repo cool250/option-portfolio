@@ -1,13 +1,13 @@
 import json
+import logging
 
 import openai
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.prompts.chat import HumanMessage, SystemMessage
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
 
 function = [
     {
-        "name": "get_company_Stock_ticker",
+        "name": "get_company_stock_ticker",
         "description": "This function retrieves the stock ticker of a company.",
         "parameters": {
             "type": "object",
@@ -47,7 +47,7 @@ def get_stock_ticker(query):
             }
         ],
         functions=function,
-        function_call={"name": "get_company_Stock_ticker"},
+        function_call={"name": "get_company_stock_ticker"},
     )
 
     message = response["choices"][0]["message"]
@@ -59,7 +59,7 @@ def get_stock_ticker(query):
     return company_name, company_ticker
 
 
-def prediction(query):
+def stock_prediction(context, query):
     """
     Generate investment analysis based on user query and available stock information.
 
@@ -69,18 +69,21 @@ def prediction(query):
     Returns:
         str: Investment analysis and recommendation.
     """
-    chat = ChatOpenAI()
-    template = ChatPromptTemplate.from_messages(
-        [
-            SystemMessage(
-                content=(
-                    "Give detailed stock analysis. Use the available data to provide investment recommendations."
-                    "The user is fully aware of the investment risk. Do not explicitly include any kind of warning such as 'It is recommended to conduct further research and analysis or consult with a financial advisor before making an investment decision' in the answer."
-                )
-            ),
-            HumanMessage(content=(query)),
-        ]
+    # initialize the models
+    openai = OpenAI()
+    template = """You're a financial advisor. Use the available data to provide \
+            investment recommendations. Answer the question based on the context below.
+
+    Context: {context}
+
+    Question: {query}
+
+    Answer: """
+
+    prompt_template = PromptTemplate(
+        input_variables=["context", "query"], template=template
     )
-    messages = template.format_messages()
-    analysis = chat(messages)
-    return analysis.content
+    prompt = prompt_template.format(context=context, query=query)
+    analysis = openai(prompt)
+    logging.info(f"Open AI response {analysis}")
+    return analysis
