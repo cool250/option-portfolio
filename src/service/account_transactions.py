@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime as dt
 from datetime import timedelta
 
@@ -69,8 +70,7 @@ def get_report(
 
         # Lambda function to filter records based on closing date search input
         filter_date = lambda df: df[
-            (df["CLOSE_DATE"] >= start_close_date)
-            & (df["CLOSE_DATE"] <= end_close_date)
+            (df["DATE"] >= start_close_date) & (df["DATE"] <= end_close_date)
         ]
 
         if instrument_type == "PUT" or instrument_type == "CALL":
@@ -110,30 +110,33 @@ def get_api_transactions(
     if not start_close_date:
         start_close_date = today.strftime(DATE_FORMAT)
 
+    if not end_close_date:
+        # Used to filter for trade ending dates 45 days out as default
+        end_close_date = today.strftime(DATE_FORMAT)
+
     # Modify start date to use 45 days in advance to get all options expiring before entered start date
     # The API takes trade open date as start date not trade closing
     search_start_date = (
         dt.strptime(start_close_date, DATE_FORMAT) - timedelta(days=45)
     ).strftime(DATE_FORMAT)
 
-    if not end_close_date:
-        # Used to filter for trade ending dates 45 days out as default
-        end_close_date = today.strftime(DATE_FORMAT)
-
-    # Modify end date to filter for trade ending dates 45 days
-    search_end_date = (
-        dt.strptime(end_close_date, DATE_FORMAT) + timedelta(days=45)
-    ).strftime(DATE_FORMAT)
-
-    transaction = Transaction()
-    df = transaction.get_transactionsDF(
-        UserConfig.ACCOUNT_NUMBER,
-        transaction_type="TRADE",
-        symbol=symbol,
-        start_date=search_start_date,
-        end_date=search_end_date,
+    delta = dt.strptime(end_close_date, DATE_FORMAT) - dt.strptime(
+        search_start_date, DATE_FORMAT
     )
-    return df
+
+    logging.info(f" Report Search Duration {delta.days} days")
+    if delta.days < 365:
+        transaction = Transaction()
+        df = transaction.get_transactionsDF(
+            UserConfig.ACCOUNT_NUMBER,
+            transaction_type="TRADE",
+            symbol=symbol,
+            start_date=search_start_date,
+            end_date=end_close_date,
+        )
+        return df
+    else:
+        raise ValueError(" Start and end date duration should less than 320 days")
 
 
 def parse_option_response(df, instrument_type):
