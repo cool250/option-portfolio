@@ -7,7 +7,7 @@ from broker.account import Account
 from broker.option_chain import OptionChain
 from broker.options import Options
 from broker.quotes import Quotes
-from broker.user_config import UserConfig
+from config.user_config import UserConfig
 
 
 class APIResponses(unittest.TestCase):

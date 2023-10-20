@@ -4,10 +4,9 @@ import urllib.parse
 
 import requests
 
+from config.user_config import REDIRECT_URI, UserConfig
 from utils.exceptions import APIException
 from utils.store import Store_Factory
-
-from .user_config import REDIRECT_URI, UserConfig
 
 
 class Base:

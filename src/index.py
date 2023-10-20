@@ -4,9 +4,9 @@ from dash.exceptions import PreventUpdate
 from dash_bootstrap_templates import load_figure_template
 
 from app import app
-from broker.user_config import UserConfig
 from components.main_layout import content, navbar
 from config.settings import APP_DEBUG, APP_HOST, APP_PORT
+from config.user_config import UserConfig
 from utils.accounts import Accounts
 from view import (
     chatbot_view,
