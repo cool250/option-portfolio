@@ -53,6 +53,14 @@ def get_report(
     Returns:
         [df]: [Transactions for given search criteria]
     """
+    # In case start date or end date is not passed, use to initialize default
+    today = dt.now()
+    if not start_close_date:
+        start_close_date = today.strftime(DATE_FORMAT)
+
+    if not end_close_date:
+        end_close_date = today.strftime(DATE_FORMAT)
+
     df = get_api_transactions(start_close_date, end_close_date, symbol)
     if not df.empty:
         df = df.rename(columns=params)
@@ -105,15 +113,6 @@ def get_api_transactions(
     end_close_date=None,
     symbol=None,
 ):
-    # In case start date or end date is not passed, use to initialize default
-    today = dt.now()
-    if not start_close_date:
-        start_close_date = today.strftime(DATE_FORMAT)
-
-    if not end_close_date:
-        # Used to filter for trade ending dates 45 days out as default
-        end_close_date = today.strftime(DATE_FORMAT)
-
     # Modify start date to use 45 days in advance to get all options expiring before entered start date
     # The API takes trade open date as start date not trade closing
     search_start_date = (
