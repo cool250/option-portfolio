@@ -102,7 +102,8 @@ def get_report(
                 df = filter_date(df)
                 if status != "All":
                     df = df[df["STATUS"] == status]
-        df = df.sort_values(by=["CLOSE_DATE"])
+        if not df.empty:
+            df = df.sort_values(by=["CLOSE_DATE"])
         df = df.round(2)
 
     return df
