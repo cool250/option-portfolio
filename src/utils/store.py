@@ -5,13 +5,13 @@ from abc import ABC, abstractmethod
 
 import redis
 
-from config.settings import CACHE_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PWD, STORE_PATH
+from config.settings import Settings
 from utils.exceptions import HaltCallbackException
 
 
 class Store_Factory:
     def get_store():
-        cache_type = CACHE_TYPE
+        cache_type = Settings.CACHE_TYPE
         if cache_type == "local":
             return LocalStore()
         else:
@@ -29,9 +29,9 @@ class Store(ABC):
 
 class RedisStore(Store):
     def __init__(self):
-        host = REDIS_HOST
-        port = REDIS_PORT
-        password = REDIS_PWD
+        host = Settings.REDIS_HOST
+        port = Settings.REDIS_PORT
+        password = Settings.REDIS_PWD
         self.client = redis.StrictRedis(
             host,
             port,
@@ -65,7 +65,7 @@ class LocalStore(Store):
         pass
 
     def set_dict(self, key, val):
-        db = dbm.open(STORE_PATH, "c")
+        db = dbm.open(Settings.STORE_PATH, "c")
         # Convert Dict to JSON string
         json_val = json.dumps(val)
         db[key] = json_val
@@ -73,7 +73,7 @@ class LocalStore(Store):
 
     def get_dict(self, key):
         try:
-            db = dbm.open(STORE_PATH, "r")
+            db = dbm.open(Settings.STORE_PATH, "r")
             json_string = db.get(key)
             db.close()
             if json_string:
@@ -81,5 +81,7 @@ class LocalStore(Store):
             else:
                 return None
         except Exception as err:
-            logging.error(f" Error reading from dbm at {STORE_PATH}, {str(err)}")
+            logging.error(
+                f" Error reading from dbm at {Settings.STORE_PATH}, {str(err)}"
+            )
             raise SystemError("Unable to connect", err)

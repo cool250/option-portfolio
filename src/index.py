@@ -5,7 +5,7 @@ from dash_bootstrap_templates import load_figure_template
 
 from app import app
 from components.main_layout import content, navbar
-from config.settings import APP_DEBUG, APP_HOST, APP_PORT
+from config.settings import Settings
 from config.user_config import UserConfig
 from utils.accounts import Accounts
 from view import (
@@ -62,4 +62,4 @@ def render_page_content(pathname):
 
 # Adding Host
 if __name__ == "__main__":
-    app.run(debug=APP_DEBUG, host=APP_HOST, port=APP_PORT)
+    app.run(debug=Settings.APP_DEBUG, host=Settings.APP_HOST, port=Settings.APP_PORT)
